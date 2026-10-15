@@ -6,6 +6,12 @@ from pathlib import Path
 
 def matrix(family, selected="all"):
     inventory = json.loads((Path(__file__).resolve().parents[1] / "nix/platforms.json").read_text())
+    forks = json.loads((Path(__file__).resolve().parents[1] / "nix/forks.json").read_text())
+    owners = {package: info["repository"] for info in forks.values() for package in info["packages"]}
+    if selected in owners:
+        raise ValueError("Package CI belongs to its application fork: " + owners[selected])
+    inventory = {system: [package for package in packages if package not in owners]
+                 for system, packages in inventory.items()}
     runners = {"aarch64-darwin": "macos-15", "x86_64-linux": "ubuntu-24.04",
                "aarch64-linux": "ubuntu-24.04-arm"}
     wanted = [system for system in inventory if (system.endswith("-darwin")) == (family == "darwin")]

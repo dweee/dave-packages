@@ -36,16 +36,12 @@ let
       inherit (final.linuxPackages) kernel;
       kernelModuleMakeFlags = final.linuxPackages.kernelModuleMakeFlags;
     };
-    schildi-revenge =
-      if prev.stdenv.hostPlatform.isDarwin then
-        prev.callPackage ../pkgs/schildi-revenge { inherit (prev) schildi-revenge; }
-      else
-        prev.schildi-revenge;
+    schildi-revenge = inputs.schildi-revenge.packages.${system}.schildi-revenge;
     slskd-mcp = final.callPackage ../pkgs/slskd-mcp { src = inputs.slskd-mcp; };
     prowlarr-mcp = final.callPackage ../pkgs/prowlarr-mcp { src = inputs.prowlarr-mcp; };
     ghidra-mcp = final.callPackage ../pkgs/ghidra-mcp { src = inputs.ghidra-mcp; };
     gdb-mcp = final.callPackage ../pkgs/gdb-mcp { src = inputs.gdb-mcp; };
-    rekordbox-mcp = final.callPackage ../pkgs/rekordbox-mcp { };
+    rekordbox-mcp = inputs.rekordbox-mcp.packages.${system}.rekordbox-mcp;
     paneru = inputs.paneru.packages.${system}.paneru;
     paneru-lua = inputs.paneru.packages.${system}.paneru-lua;
     tabrix = inputs.tabrix.packages.${system}.tabrix;

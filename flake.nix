@@ -7,12 +7,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "path:./vendor/paneru";
+      url = "git+https://git.monke.fail/d/paneru?ref=flakey";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
     tabrix = {
-      url = "path:./vendor/tabrix";
+      url = "git+https://git.monke.fail/d/tabrix?ref=flakey";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    rekordbox-mcp = {
+      url = "git+https://git.monke.fail/d/rekordbox-mcp?ref=flakey";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    schildi-revenge = {
+      url = "git+https://git.monke.fail/d/schildi-revenge?ref=flakey&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
