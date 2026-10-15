@@ -1,0 +1,729 @@
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { NativeMessageType } from '@tabrix/shared';
+import { BACKGROUND_MESSAGE_TYPES } from '@/common/message-types';
+import { STORAGE_KEYS } from '@/common/constants';
+
+vi.mock('@/entrypoints/background/tools', () => ({
+  handleCallTool: vi.fn(),
+}));
+
+vi.mock('@/entrypoints/background/keepalive-manager', () => ({
+  acquireKeepalive: vi.fn(() => vi.fn()),
+}));
+
+type RuntimeMessageHandler = (
+  message: any,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: any) => void,
+) => boolean | void;
+
+function flushMicrotasks(): Promise<void> {
+  return Promise.resolve().then(() => Promise.resolve());
+}
+
+function createMockPort() {
+  const messageListeners: Array<(message: any) => void | Promise<void>> = [];
+  const disconnectListeners: Array<() => void> = [];
+
+  return {
+    onMessage: {
+      addListener: vi.fn((listener: (message: any) => void | Promise<void>) => {
+        messageListeners.push(listener);
+      }),
+      removeListener: vi.fn(),
+    },
+    onDisconnect: {
+      addListener: vi.fn((listener: () => void) => {
+        disconnectListeners.push(listener);
+      }),
+      removeListener: vi.fn(),
+    },
+    postMessage: vi.fn(),
+    disconnect: vi.fn(() => {
+      disconnectListeners.forEach((listener) => listener());
+    }),
+    async emitMessage(message: any) {
+      for (const listener of messageListeners) {
+        await listener(message);
+      }
+    },
+    emitDisconnect() {
+      disconnectListeners.forEach((listener) => listener());
+    },
+  };
+}
+
+function createDeferred() {
+  let resolve!: () => void;
+  const promise = new Promise<void>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+}
+
+function createChromeHarness(
+  ports: ReturnType<typeof createMockPort>[],
+  options?: {
+    onStorageSet?: (value: Record<string, unknown>) => Promise<void> | void;
+  },
+) {
+  const runtimeMessageListeners: RuntimeMessageHandler[] = [];
+  const storageState: Record<string, unknown> = {
+    [STORAGE_KEYS.NATIVE_AUTO_CONNECT_ENABLED]: false,
+  };
+
+  const connectNative = vi.fn(() => {
+    const port = ports.shift();
+    if (!port) {
+      throw new Error('No mock native ports remaining');
+    }
+    return port;
+  });
+
+  const chromeMock = {
+    runtime: {
+      id: 'test-extension-id',
+      lastError: undefined as { message: string } | undefined,
+      reload: vi.fn(),
+      sendMessage: vi.fn().mockResolvedValue(undefined),
+      connectNative,
+      onMessage: {
+        addListener: vi.fn((listener: RuntimeMessageHandler) => {
+          runtimeMessageListeners.push(listener);
+        }),
+        removeListener: vi.fn(),
+      },
+      onStartup: {
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+      },
+      onInstalled: {
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+      },
+    },
+    storage: {
+      local: {
+        get: vi.fn(async (keys: string | string[]) => {
+          if (Array.isArray(keys)) {
+            return Object.fromEntries(keys.map((key) => [key, storageState[key]]));
+          }
+          return { [keys]: storageState[keys] };
+        }),
+        set: vi.fn(async (value: Record<string, unknown>) => {
+          await options?.onStorageSet?.(value);
+          Object.assign(storageState, value);
+        }),
+        remove: vi.fn(async (keys: string | string[]) => {
+          const list = Array.isArray(keys) ? keys : [keys];
+          for (const key of list) {
+            delete storageState[key];
+          }
+        }),
+      },
+    },
+  };
+
+  return {
+    chromeMock,
+    connectNative,
+    storageState,
+    async sendRuntimeMessage(message: any) {
+      const listener = runtimeMessageListeners.at(-1);
+      if (!listener) {
+        throw new Error('No runtime message listener registered');
+      }
+
+      return await new Promise<any>((resolve, reject) => {
+        let responded = false;
+        try {
+          const result = listener(message, {} as chrome.runtime.MessageSender, (response) => {
+            responded = true;
+            resolve(response);
+          });
+          if (result !== true && !responded) {
+            resolve(undefined);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
+    },
+  };
+}
+
+function createMockWebSocketHarness() {
+  const instances: MockWebSocket[] = [];
+
+  class MockWebSocket {
+    static CONNECTING = 0;
+    static OPEN = 1;
+    static CLOSING = 2;
+    static CLOSED = 3;
+
+    readyState = MockWebSocket.CONNECTING;
+    sent: string[] = [];
+    private listeners = new Map<string, Array<(event?: any) => void>>();
+
+    constructor(public readonly url: string) {
+      instances.push(this);
+    }
+
+    addEventListener(type: string, listener: (event?: any) => void) {
+      const list = this.listeners.get(type) || [];
+      list.push(listener);
+      this.listeners.set(type, list);
+    }
+
+    send(payload: string) {
+      this.sent.push(payload);
+    }
+
+    close() {
+      this.readyState = MockWebSocket.CLOSED;
+      this.emit('close');
+    }
+
+    emitOpen() {
+      this.readyState = MockWebSocket.OPEN;
+      this.emit('open');
+    }
+
+    emitMessage(payload: any) {
+      this.emit('message', { data: JSON.stringify(payload) });
+    }
+
+    emit(type: string, event?: any) {
+      const list = this.listeners.get(type) || [];
+      list.forEach((listener) => listener(event));
+    }
+  }
+
+  return {
+    MockWebSocket,
+    instances,
+  };
+}
+
+describe('native host reconnect behavior', () => {
+  const originalWebSocket = (globalThis as any).WebSocket;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    (globalThis as any).fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        status: 'ok',
+        data: {
+          isRunning: true,
+          port: 12306,
+          bridge: {
+            bridgeState: 'READY',
+          },
+        },
+      }),
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    vi.resetModules();
+    delete (globalThis as any).fetch;
+    if (originalWebSocket) {
+      (globalThis as any).WebSocket = originalWebSocket;
+    } else {
+      delete (globalThis as any).WebSocket;
+    }
+  });
+
+  it('reconnects after unexpected native disconnect and preserves last error', async () => {
+    const firstPort = createMockPort();
+    const secondPort = createMockPort();
+    const harness = createChromeHarness([firstPort, secondPort]);
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    const connectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+    await flushMicrotasks();
+    await firstPort.emitMessage({
+      type: NativeMessageType.SERVER_STARTED,
+      payload: { port: 12306 },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    const connectResponse = await connectPromise;
+
+    expect(connectResponse).toMatchObject({ success: true, connected: true });
+    expect(harness.connectNative).toHaveBeenCalledTimes(1);
+    expect(firstPort.postMessage).toHaveBeenCalledWith({
+      type: NativeMessageType.START,
+      payload: { port: 12306 },
+    });
+
+    harness.chromeMock.runtime.lastError = { message: 'Native host crashed' };
+    firstPort.emitDisconnect();
+    await flushMicrotasks();
+
+    const statusAfterDisconnect = await harness.sendRuntimeMessage({
+      type: BACKGROUND_MESSAGE_TYPES.GET_SERVER_STATUS,
+    });
+    expect(statusAfterDisconnect.connected).toBe(false);
+    expect(statusAfterDisconnect.lastError).toBe('Native host crashed');
+    expect(statusAfterDisconnect.serverStatus.isRunning).toBe(false);
+    expect(harness.chromeMock.runtime.sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: BACKGROUND_MESSAGE_TYPES.SERVER_STATUS_CHANGED,
+        connected: false,
+        lastError: 'Native host crashed',
+      }),
+    );
+
+    await vi.advanceTimersByTimeAsync(400);
+    await flushMicrotasks();
+
+    expect(harness.connectNative).toHaveBeenCalledTimes(2);
+    expect(secondPort.postMessage).toHaveBeenCalledWith({
+      type: NativeMessageType.START,
+      payload: { port: 12306 },
+    });
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    expect(
+      fetchCalls.some(
+        ([url, init]) =>
+          url === 'http://127.0.0.1:12306/bridge/recovery/start' &&
+          (init as RequestInit)?.body ===
+            JSON.stringify({ action: 'reconnect:native_port_disconnected' }),
+      ),
+    ).toBe(true);
+  });
+
+  it('does not schedule reconnect after an explicit manual disconnect', async () => {
+    const firstPort = createMockPort();
+    const secondPort = createMockPort();
+    const harness = createChromeHarness([firstPort, secondPort]);
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    const connectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+    await flushMicrotasks();
+    await firstPort.emitMessage({
+      type: NativeMessageType.SERVER_STARTED,
+      payload: { port: 12306 },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    await connectPromise;
+    harness.chromeMock.runtime.lastError = { message: 'Manual disconnect should not persist' };
+
+    const disconnectResponse = await harness.sendRuntimeMessage({
+      type: NativeMessageType.DISCONNECT_NATIVE,
+    });
+    await flushMicrotasks();
+
+    expect(disconnectResponse).toMatchObject({ success: true, lastError: null });
+
+    const statusAfterManualDisconnect = await harness.sendRuntimeMessage({
+      type: BACKGROUND_MESSAGE_TYPES.GET_SERVER_STATUS,
+    });
+    expect(statusAfterManualDisconnect.connected).toBe(false);
+    expect(statusAfterManualDisconnect.lastError).toBe(null);
+    expect(statusAfterManualDisconnect.serverStatus.isRunning).toBe(false);
+    expect(harness.chromeMock.runtime.sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: BACKGROUND_MESSAGE_TYPES.SERVER_STATUS_CHANGED,
+        connected: false,
+        lastError: null,
+      }),
+    );
+
+    await vi.advanceTimersByTimeAsync(1000);
+    await flushMicrotasks();
+
+    expect(harness.connectNative).toHaveBeenCalledTimes(1);
+    expect(secondPort.postMessage).not.toHaveBeenCalled();
+  });
+
+  it('preserves startup errors and retries when the port drops before startup settles', async () => {
+    const firstPort = createMockPort();
+    const secondPort = createMockPort();
+    const harness = createChromeHarness([firstPort, secondPort]);
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    const connectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+
+    await flushMicrotasks();
+    await flushMicrotasks();
+    expect(firstPort.onDisconnect.addListener).toHaveBeenCalled();
+    harness.chromeMock.runtime.lastError = { message: 'Native host exited before startup' };
+    firstPort.disconnect();
+    await flushMicrotasks();
+
+    const statusAfterStartupDrop = await harness.sendRuntimeMessage({
+      type: BACKGROUND_MESSAGE_TYPES.GET_SERVER_STATUS,
+    });
+    expect(statusAfterStartupDrop.connected).toBe(false);
+    expect(statusAfterStartupDrop.lastError).toBe('Native host exited before startup');
+    expect(statusAfterStartupDrop.serverStatus.isRunning).toBe(false);
+
+    await vi.advanceTimersByTimeAsync(400);
+    expect(harness.connectNative).toHaveBeenCalledTimes(2);
+
+    await secondPort.emitMessage({
+      type: NativeMessageType.SERVER_STARTED,
+      payload: { port: 12306 },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+
+    const connectResponse = await connectPromise;
+    expect(connectResponse).toMatchObject({
+      success: true,
+      connected: true,
+    });
+
+    const statusAfterFailedConnect = await harness.sendRuntimeMessage({
+      type: BACKGROUND_MESSAGE_TYPES.GET_SERVER_STATUS,
+    });
+    expect(statusAfterFailedConnect.connected).toBe(true);
+    expect(statusAfterFailedConnect.lastError).toBe(null);
+    expect(statusAfterFailedConnect.serverStatus.isRunning).toBe(true);
+  });
+
+  it('ignores stale disconnect cleanup after a newer connection has already started', async () => {
+    const firstPort = createMockPort();
+    const secondPort = createMockPort();
+    const clearErrorDeferred = createDeferred();
+    let holdNextClearError = false;
+    const harness = createChromeHarness([firstPort, secondPort], {
+      onStorageSet(value) {
+        if (holdNextClearError && value[STORAGE_KEYS.LAST_NATIVE_ERROR] === null) {
+          holdNextClearError = false;
+          return clearErrorDeferred.promise;
+        }
+      },
+    });
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    const firstConnectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+    await flushMicrotasks();
+    await firstPort.emitMessage({
+      type: NativeMessageType.SERVER_STARTED,
+      payload: { port: 12306 },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    await firstConnectPromise;
+
+    holdNextClearError = true;
+    const disconnectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.DISCONNECT_NATIVE,
+    });
+    await flushMicrotasks();
+
+    const reconnectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+    await flushMicrotasks();
+    await flushMicrotasks();
+    await secondPort.emitMessage({
+      type: NativeMessageType.SERVER_STARTED,
+      payload: { port: 12306 },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    const reconnectResponse = await reconnectPromise;
+    expect(reconnectResponse).toMatchObject({ success: true, connected: true });
+
+    clearErrorDeferred.resolve();
+    await disconnectPromise;
+    await flushMicrotasks();
+
+    const finalStatus = await harness.sendRuntimeMessage({
+      type: BACKGROUND_MESSAGE_TYPES.GET_SERVER_STATUS,
+    });
+    expect(finalStatus.connected).toBe(true);
+    expect(finalStatus.lastError).toBe(null);
+    expect(finalStatus.serverStatus.isRunning).toBe(true);
+    expect(finalStatus.serverStatus.port).toBe(12306);
+  });
+
+  it('keeps auto-reconnect working after manual disconnect callback arrives late', async () => {
+    const firstPort = createMockPort();
+    const secondPort = createMockPort();
+    const thirdPort = createMockPort();
+    const harness = createChromeHarness([firstPort, secondPort, thirdPort]);
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    const firstConnectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+    await flushMicrotasks();
+    await firstPort.emitMessage({
+      type: NativeMessageType.SERVER_STARTED,
+      payload: { port: 12306 },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    await firstConnectPromise;
+
+    firstPort.disconnect.mockImplementation(() => {
+      setTimeout(() => {
+        firstPort.emitDisconnect();
+      }, 0);
+    });
+
+    const manualDisconnectResponse = await harness.sendRuntimeMessage({
+      type: NativeMessageType.DISCONNECT_NATIVE,
+    });
+    expect(manualDisconnectResponse).toMatchObject({ success: true });
+
+    const reconnectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+    await flushMicrotasks();
+    await secondPort.emitMessage({
+      type: NativeMessageType.SERVER_STARTED,
+      payload: { port: 12306 },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    await reconnectPromise;
+
+    await vi.advanceTimersByTimeAsync(1);
+    await flushMicrotasks();
+
+    harness.chromeMock.runtime.lastError = { message: 'Second connection dropped unexpectedly' };
+    secondPort.emitDisconnect();
+    await flushMicrotasks();
+
+    await vi.advanceTimersByTimeAsync(400);
+    await flushMicrotasks();
+
+    expect(harness.connectNative).toHaveBeenCalledTimes(3);
+    expect(thirdPort.postMessage).toHaveBeenCalledWith({
+      type: NativeMessageType.START,
+      payload: { port: 12306 },
+    });
+  });
+
+  it('posts bridge heartbeat after server start', async () => {
+    const firstPort = createMockPort();
+    const harness = createChromeHarness([firstPort]);
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    const connectPromise = harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+    await flushMicrotasks();
+    await firstPort.emitMessage({
+      type: NativeMessageType.SERVER_STARTED,
+      payload: { port: 12306, host: '127.0.0.1' },
+    });
+    await vi.advanceTimersByTimeAsync(300);
+    await connectPromise;
+    await flushMicrotasks();
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'http://127.0.0.1:12306/bridge/heartbeat',
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+  });
+
+  it('reports recovery failure when the native host cannot be connected', async () => {
+    const harness = createChromeHarness([]);
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    const connectResponse = await harness.sendRuntimeMessage({
+      type: NativeMessageType.CONNECT_NATIVE,
+      port: 12306,
+    });
+    await flushMicrotasks();
+    expect(connectResponse).toMatchObject({ success: true, connected: false });
+
+    const fetchCalls = vi.mocked(globalThis.fetch).mock.calls;
+    expect(
+      fetchCalls.some(
+        ([url, init]) =>
+          url === 'http://127.0.0.1:12306/bridge/recovery/start' &&
+          (init as RequestInit)?.body === JSON.stringify({ action: 'ui_connect' }),
+      ),
+    ).toBe(true);
+    expect(
+      fetchCalls.some(
+        ([url, init]) =>
+          url === 'http://127.0.0.1:12306/bridge/recovery/finish' &&
+          (init as RequestInit)?.body ===
+            JSON.stringify({
+              success: false,
+              errorCode: 'TABRIX_NATIVE_CONNECT_FAILED',
+              errorMessage: 'Failed to connect native host (ui_connect)',
+            }),
+      ),
+    ).toBe(true);
+  });
+
+  it('registers the reload callback before reloading the runtime', async () => {
+    const harness = createChromeHarness([]);
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    const response = await harness.sendRuntimeMessage({
+      type: NativeMessageType.RELOAD_EXTENSION,
+      callbackUrl: 'http://127.0.0.1:40123/',
+    });
+
+    expect(response).toMatchObject({ success: true, reloading: true, callbackRegistered: true });
+    expect(harness.storageState[STORAGE_KEYS.PENDING_EXTENSION_RELOAD_CALLBACK]).toMatchObject({
+      callbackUrl: 'http://127.0.0.1:40123/',
+    });
+    expect(harness.chromeMock.runtime.reload).not.toHaveBeenCalled();
+
+    await vi.advanceTimersByTimeAsync(50);
+
+    expect(harness.chromeMock.runtime.reload).toHaveBeenCalledTimes(1);
+  });
+
+  it('flushes the pending reload callback after the reloaded worker starts', async () => {
+    const harness = createChromeHarness([]);
+    harness.storageState[STORAGE_KEYS.PENDING_EXTENSION_RELOAD_CALLBACK] = {
+      callbackUrl: 'http://127.0.0.1:40123/',
+      requestedAt: Date.now(),
+    };
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    (globalThis as any).fetch = fetchMock;
+    (globalThis as any).chrome = harness.chromeMock;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:40123/',
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+      }),
+    );
+    expect(harness.storageState[STORAGE_KEYS.PENDING_EXTENSION_RELOAD_CALLBACK]).toBeUndefined();
+  });
+
+  it('opens websocket bridge and sends hello plus heartbeat', async () => {
+    const firstPort = createMockPort();
+    const harness = createChromeHarness([firstPort]);
+    const wsHarness = createMockWebSocketHarness();
+    (globalThis as any).chrome = harness.chromeMock;
+    (globalThis as any).WebSocket = wsHarness.MockWebSocket as any;
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    expect(wsHarness.instances).toHaveLength(1);
+    expect(wsHarness.instances[0].url).toBe('ws://127.0.0.1:12306/bridge/ws');
+
+    wsHarness.instances[0].emitOpen();
+    await flushMicrotasks();
+
+    const hello = JSON.parse(wsHarness.instances[0].sent[0]);
+    expect(hello).toMatchObject({
+      type: 'hello',
+      extensionId: 'test-extension-id',
+    });
+
+    await vi.advanceTimersByTimeAsync(5000);
+    await flushMicrotasks();
+
+    expect(
+      wsHarness.instances[0].sent.some((entry) => JSON.parse(entry).type === 'heartbeat'),
+    ).toBe(true);
+  });
+
+  it('executes websocket bridge commands and posts results back', async () => {
+    const firstPort = createMockPort();
+    const harness = createChromeHarness([firstPort]);
+    const wsHarness = createMockWebSocketHarness();
+    (globalThis as any).chrome = harness.chromeMock;
+    (globalThis as any).WebSocket = wsHarness.MockWebSocket as any;
+
+    const toolsModule = await import('@/entrypoints/background/tools');
+    vi.mocked(toolsModule.handleCallTool).mockResolvedValue({
+      content: [{ type: 'text', text: 'ok' }],
+      isError: false,
+    } as any);
+
+    const nativeHostModule = await import('@/entrypoints/background/native-host');
+    nativeHostModule.initNativeHostListener();
+    await flushMicrotasks();
+
+    wsHarness.instances[0].emitOpen();
+    await flushMicrotasks();
+    wsHarness.instances[0].sent.length = 0;
+
+    wsHarness.instances[0].emitMessage({
+      type: 'command',
+      requestId: 'req-1',
+      connectionId: 'bridge-1',
+      sentAt: Date.now(),
+      command: {
+        action: 'call_tool',
+        payload: { name: 'chrome_read_page', args: { tabId: 1 } },
+      },
+    });
+    await flushMicrotasks();
+    await flushMicrotasks();
+
+    expect(toolsModule.handleCallTool).toHaveBeenCalledWith({
+      name: 'chrome_read_page',
+      args: { tabId: 1 },
+    });
+    expect(wsHarness.instances[0].sent).toHaveLength(1);
+    expect(JSON.parse(wsHarness.instances[0].sent[0])).toMatchObject({
+      type: 'result',
+      requestId: 'req-1',
+      success: true,
+    });
+  });
+});

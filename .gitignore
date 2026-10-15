@@ -1,0 +1,19 @@
+result
+result-*
+.direnv/
+__pycache__/
+*.pyc
+validation-results.json
+
+# Local operator artifacts
+/VALIDATION.json
+/PROVENANCE.json
+/provenance.json
+/FORK.json
+/UPSTREAM.json
+/.codex/
+/.cursor/
+/.claude/
+/chat-history/
+/chat-histories/
+/*.jsonl

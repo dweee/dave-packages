@@ -1,0 +1,8 @@
+Package licenses and attribution
+
+Recipes and patches retain existing author, adaptation and upstream-PR comments.
+Application forks retain their upstream licenses and Git ancestry. Software and
+its dependencies keep their respective licenses; this collection does not
+relicense them. Corresponding-source obligations apply to distributed GPL/AGPL
+outputs. No blanket license grant is made for previously unlicensed recipe
+modifications.

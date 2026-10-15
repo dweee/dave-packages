@@ -1,0 +1,12 @@
+--- a/cursor_saves/paths.py
++++ b/cursor_saves/paths.py
+@@ -424,6 +424,9 @@
+ 
+     This is the git repo that holds snapshots and is synced between machines.
+     """
++    env = os.environ.get("CURSAVES_DIR") or os.environ.get("CURSOR_ARCHIVE_ROOT")
++    if env:
++        return Path(env)
+     return Path.home() / ".cursaves"
+ 
+ 
