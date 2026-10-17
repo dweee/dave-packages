@@ -1,44 +1,44 @@
 {
   "paneru": {
-    "repository": "https://git.monke.fail/d/paneru",
-    "revision": "ca4f2edc20fe132cf2976f65d8061620ee3175ed",
+    "repository": "https://github.com/dweee/paneru",
+    "revision": "d18dc91edef6789edb3ea47eae239f9030b2ed31",
     "branch": "flakey",
     "packages": [
       "paneru",
       "paneru-lua"
     ],
     "ci_owner": "application fork",
-    "private": true
+    "private": false
   },
   "tabrix": {
-    "repository": "https://git.monke.fail/d/tabrix",
-    "revision": "d9df0425bfdd452305fd360951bdd226f14626de",
+    "repository": "https://github.com/dweee/tabrix",
+    "revision": "8e7b5049cb65667b06e79678966d6932508a9b5c",
     "branch": "flakey",
     "packages": [
       "tabrix",
       "tabrix-extension"
     ],
     "ci_owner": "application fork",
-    "private": true
+    "private": false
   },
   "rekordbox-mcp": {
-    "repository": "https://git.monke.fail/d/rekordbox-mcp",
-    "revision": "c5e208e10743b6720b280578c77429ca1fdaba32",
+    "repository": "https://github.com/dweee/rekordbox-mcp",
+    "revision": "eb0fc75597ac60f8a0ae6aab02ca5a441e80a341",
     "branch": "flakey",
     "packages": [
       "rekordbox-mcp"
     ],
     "ci_owner": "application fork",
-    "private": true
+    "private": false
   },
   "schildi-revenge": {
-    "repository": "https://git.monke.fail/d/schildi-revenge",
-    "revision": "31d9f23a5b89fcf3b5e29ea6dd488ded07d7b436",
+    "repository": "https://github.com/dweee/schildi-revenge",
+    "revision": "aab50dc5d1eb84bc9032ed726cd0a988b5665ce5",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"
     ],
     "ci_owner": "application fork",
-    "private": true
+    "private": false
   }
 }

@@ -21,15 +21,14 @@ The catalog owns portable recipes and small patches. Application source and
 larger changes live in the Paneru, Tabrix, Rekordbox MCP and SchildiChat Revenge
 forks. `nix/forks.json` and `flake.lock` record their exact source revisions.
 Each application fork owns its build workflows; the catalog excludes those
-packages from its CI matrix. Fork inputs currently require access to their
-configured Git remotes.
+packages from its CI matrix. Fork inputs use public GitHub sources.
 
 ## CI and binary cache
 
-`ci/disabled/darwin-actions.yml` builds native Apple Silicon packages;
-`ci/disabled/others-actions.yml` builds native x86 and ARM Linux packages.
-The drafts are inactive in that directory. After installing them as workflows,
-manual builds require `DAVE_PACKAGES_CI_ENABLED=true`.
+`.github/workflows/darwin-actions.yml` builds native Apple Silicon packages;
+`.github/workflows/others-actions.yml` builds native x86 and ARM Linux packages.
+Pushes, pull requests and manual dispatch build the selected native packages.
+The repository gate is `DAVE_PACKAGES_CI_ENABLED=true`.
 
 Select one package or `all`. `ci/matrix.py` reads `nix/platforms.json` and excludes
 fork-owned outputs. Builders use the pinned Nix Quick Install action. Optional
@@ -80,3 +79,6 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 
 See [NOTICE](NOTICE). Recipes retain upstream source locations and license
 metadata; application forks retain their own licenses and author history.
+
+Every successful build retains a downloadable Nix closure archive for one day,
+independently of Attic publication.

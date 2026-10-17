@@ -146,18 +146,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1792201574,
-        "narHash": "sha256-0ylUwPrjzTQXcAsf1tSYBV0wblioT3648APEjF1g+ZI=",
+        "lastModified": 1792207550,
+        "narHash": "sha256-z3NWuXWnB29wuibom47UuazeaO0poIHFfy+lH0y8nKA=",
         "ref": "flakey",
-        "rev": "ca4f2edc20fe132cf2976f65d8061620ee3175ed",
-        "revCount": 909,
+        "rev": "d18dc91edef6789edb3ea47eae239f9030b2ed31",
+        "revCount": 910,
         "type": "git",
-        "url": "https://git.monke.fail/d/paneru"
+        "url": "https://github.com/dweee/paneru"
       },
       "original": {
         "ref": "flakey",
         "type": "git",
-        "url": "https://git.monke.fail/d/paneru"
+        "url": "https://github.com/dweee/paneru"
       }
     },
     "prowlarr-mcp": {
@@ -183,18 +183,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1792201576,
-        "narHash": "sha256-YLFZbD0V7o2wrOPZ+QHGbIQQTchHSxEL7CBrRxzX8HY=",
+        "lastModified": 1792207561,
+        "narHash": "sha256-WkTPm/F8aVNea8Nf715zjP3c9mRxuuaqEikTjFwlid8=",
         "ref": "flakey",
-        "rev": "c5e208e10743b6720b280578c77429ca1fdaba32",
-        "revCount": 33,
+        "rev": "eb0fc75597ac60f8a0ae6aab02ca5a441e80a341",
+        "revCount": 34,
         "type": "git",
-        "url": "https://git.monke.fail/d/rekordbox-mcp"
+        "url": "https://github.com/dweee/rekordbox-mcp"
       },
       "original": {
         "ref": "flakey",
         "type": "git",
-        "url": "https://git.monke.fail/d/rekordbox-mcp"
+        "url": "https://github.com/dweee/rekordbox-mcp"
       }
     },
     "root": {
@@ -218,20 +218,20 @@
         ]
       },
       "locked": {
-        "lastModified": 1792201577,
-        "narHash": "sha256-fhFYND664LQWviAwGBE6cV9F7KzyJVkf2vcn9flZMXY=",
+        "lastModified": 1792207566,
+        "narHash": "sha256-kqjibktCrbey4trSG2Op+GJVbjLumBPM4xcvz+qCjAs=",
         "ref": "flakey",
-        "rev": "31d9f23a5b89fcf3b5e29ea6dd488ded07d7b436",
-        "revCount": 3396,
+        "rev": "aab50dc5d1eb84bc9032ed726cd0a988b5665ce5",
+        "revCount": 3397,
         "submodules": true,
         "type": "git",
-        "url": "https://git.monke.fail/d/schildi-revenge"
+        "url": "https://github.com/dweee/schildi-revenge"
       },
       "original": {
         "ref": "flakey",
         "submodules": true,
         "type": "git",
-        "url": "https://git.monke.fail/d/schildi-revenge"
+        "url": "https://github.com/dweee/schildi-revenge"
       }
     },
     "slskd-mcp": {
@@ -257,18 +257,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1792201575,
-        "narHash": "sha256-0C5fEUTjddmdawclIrw6BraSr7Oo074KUfvR5w2fxFw=",
+        "lastModified": 1792207556,
+        "narHash": "sha256-Khvvf0bQAh0GtPgGpU0OCgp+jwJ0MyUVLiPhqfgPS0I=",
         "ref": "flakey",
-        "rev": "d9df0425bfdd452305fd360951bdd226f14626de",
-        "revCount": 991,
+        "rev": "8e7b5049cb65667b06e79678966d6932508a9b5c",
+        "revCount": 992,
         "type": "git",
-        "url": "https://git.monke.fail/d/tabrix"
+        "url": "https://github.com/dweee/tabrix"
       },
       "original": {
         "ref": "flakey",
         "type": "git",
-        "url": "https://git.monke.fail/d/tabrix"
+        "url": "https://github.com/dweee/tabrix"
       }
     }
   },
