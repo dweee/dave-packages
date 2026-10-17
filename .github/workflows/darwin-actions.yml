@@ -13,7 +13,7 @@ name: Dave packages darwin
 permissions:
   contents: read
 concurrency:
-  group: dave-packages-darwin-${{ github.ref }}
+  group: dave-packages-darwin-${{ github.ref }}-${{ inputs.package || 'all' }}
   cancel-in-progress: false
 jobs:
   plan:
