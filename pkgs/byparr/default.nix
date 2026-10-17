@@ -17,8 +17,8 @@
   stealthFirefox = callPackage ./stealth-firefox.nix {};
 
   geoipMmdbZip = fetchurl {
-    url = "https://github.com/daijro/geoip-all-in-one/releases/download/2026.09.30/geoip-aio-all.mmdb.zip";
-    hash = "sha256-Ca9EjlHi8BLIfkreGzn5P5mcMrpiBec+JbmOMDPPle4=";
+    url = "https://github.com/daijro/geoip-all-in-one/releases/download/2026.10.14/geoip-aio-all.mmdb.zip";
+    hash = "sha256-GFV9DeJV/v7AB5HjkdnPU+BE9LrKQ4a2Ou3mnqLJfbg=";
   };
 
   invisible-core = python313Packages.callPackage ./invisible-core.nix {};

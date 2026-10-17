@@ -63,8 +63,8 @@
 
   geoip = fetchurl {
     name = "GeoLite2-City.mmdb";
-    url = "https://github.com/P3TERX/GeoLite.mmdb/releases/download/2026.09.19/GeoLite2-City.mmdb";
-    hash = "sha256-mkT8OiHwE6INMJgDiva41t5F2K4iOFyUzXcj7hoOAOU=";
+    url = "https://github.com/P3TERX/GeoLite.mmdb/releases/download/2026.10.16/GeoLite2-City.mmdb";
+    hash = "sha256-eYcyhpqIv9qYuaFfhwVk6opaaWl1R2cXWXgZX9+HOC0=";
   };
 
   ublockOrigin = fetchurl {
@@ -172,7 +172,7 @@ in
 
     # CAMOUFOX_INSTALL_DIR is this output; camoufox-js execs $out/camoufox-bin (ELF, not a wrapper).
     passthru = {
-      geoipRelease = "2026.09.19";
+      geoipRelease = "2026.10.16";
       ublockVersion = "1.73.0";
     };
 

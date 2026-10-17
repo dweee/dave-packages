@@ -34,11 +34,11 @@
   linuxSources = {
     x86_64-linux = {
       url = "https://github.com/TeamWheelWizard/WheelWizard/releases/download/v${version}/WheelWizard_Linux";
-      hash = "sha256-KhbH1JRee/r5PP8+E+Xsg5X6aVcTQVdMnY/ZrAqIPpw=";
+      hash = "sha256-FAPl0ZcFYgk4VR6EUROQlc6ZcJNCH+K4xYPzvhI3k2E=";
     };
     aarch64-linux = {
       url = "https://github.com/TeamWheelWizard/WheelWizard/releases/download/v${version}/WheelWizard_arm64_Linux";
-      hash = "sha256-Z8QWMm2eOVCba+FImihYEQJ4C14BPFfu0Umr4yd//F0=";
+      hash = "sha256-6+uK/ul8QhLA+ptVqnWSLzvknr7xMalfU2gMU0TytRM=";
     };
   };
 
@@ -49,7 +49,7 @@
     };
     x86_64-darwin = {
       url = "https://github.com/TeamWheelWizard/WheelWizard/releases/download/v${version}/WheelWizard-macOSintel.dmg";
-      hash = "sha256-z2Bw8aDO8rudvF/36Vyx6u4+jyaatbq7xOMnKA1SV+Y=";
+      hash = "sha256-YGPfR/knr75LQr+7edUD9/27AA/UroMEblV07S2ULvE=";
     };
   };
 
