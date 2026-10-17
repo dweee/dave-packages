@@ -45,12 +45,12 @@
   # source needs their pinned CEF + fenix toolchain; the web UI is nixpkgs#sable.
   sources = {
     x86_64-linux = {
-      url = "https://github.com/SableClient/Sable/releases/download/v${version}/Sable-${version}-linux-x86_64.tar.gz";
+      url = "https://github.com/SableClient/Sable-Legacy/releases/download/v${version}/Sable-${version}-linux-x86_64.tar.gz";
       hash = "sha256-gnre7hNvfeB25jgZGLHuBDxq8YS6qHzw/RW7bi90B6w=";
     };
     aarch64-linux = {
-      url = "https://github.com/SableClient/Sable/releases/download/v${version}/Sable-${version}-linux-aarch64.tar.gz";
-      hash = "sha256-3M5MULzYH2OHKtbq9U9fFf492rwTj5bOD+0zyXNu3y4=";
+      url = "https://github.com/SableClient/Sable-Legacy/releases/download/v${version}/Sable-${version}-linux-aarch64.tar.gz";
+      hash = "sha256-9otKrQGDY/eVSoYvpWb5/zTRfTu40frT+pfyczZAQ24=";
     };
   };
 
@@ -147,7 +147,7 @@ in
     meta = {
       description = "Matrix client forked from Cinny (Tauri desktop build)";
       homepage = "https://sable.moe";
-      changelog = "https://github.com/SableClient/Sable/releases/tag/v${version}";
+      changelog = "https://github.com/SableClient/Sable-Legacy/releases/tag/v${version}";
       license = lib.licenses.agpl3Only;
       sourceProvenance = [lib.sourceTypes.binaryNativeCode];
       platforms = builtins.attrNames sources;
