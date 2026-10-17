@@ -146,11 +146,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792213312,
-        "narHash": "sha256-fm6ftTtUOkN37NKcMvM5MFt7V9IMIyOBurDkUQ5uSj4=",
+        "lastModified": 1792230816,
+        "narHash": "sha256-H7FDXZ/8V/bHZ/vs2MFUcrAEW5p0gMdPdKN/9vLtEN4=",
         "ref": "flakey",
-        "rev": "c8c827102440eefee5f2067779ed2d210afe8275",
-        "revCount": 914,
+        "rev": "fd14784816d241f8cae7a6c12be2630959d2fc93",
+        "revCount": 952,
         "type": "git",
         "url": "https://github.com/dweee/paneru"
       },
@@ -183,11 +183,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792213319,
-        "narHash": "sha256-dS1f8VumVSrlQyud64kuoZ+QfI+EKog0KySrWgj8qks=",
+        "lastModified": 1792230638,
+        "narHash": "sha256-esGzA9xF3phUYp0a3jpX8MtK1+BOYKW4QdxMdp9ypms=",
         "ref": "flakey",
-        "rev": "013b655eaa58e86bec635bfbe7b4f16db8a945a7",
-        "revCount": 38,
+        "rev": "6974d1075251e59047861c2909808fb51812b490",
+        "revCount": 40,
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp"
       },
@@ -218,11 +218,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792213322,
-        "narHash": "sha256-c+8T5LPc18M6qhNdMS7/+mZx5eCUDSSJw7FDYxn8TKQ=",
+        "lastModified": 1792231777,
+        "narHash": "sha256-TeNn0s4TTH2DsHzhrfEpXb4wZWnabwQfU8nPy5vhM8c=",
         "ref": "flakey",
-        "rev": "fd5df2fe8835e4ec6806848be71e33333e1806b5",
-        "revCount": 3401,
+        "rev": "d244b12f93ee74344c47e36ae8610be9474b2a5a",
+        "revCount": 3423,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge"
@@ -257,11 +257,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792213315,
-        "narHash": "sha256-oaQkwVFapnPAj9j/9aORxeGa3Yu+0ohGftHTDMS4mBk=",
+        "lastModified": 1792230127,
+        "narHash": "sha256-V1oPM9wAc7mKMJ3ZpFupIY4upvgCjd1PLHzpQZW7w6U=",
         "ref": "flakey",
-        "rev": "9f4f30600a7f64fd06020cc667d7ac025b119f20",
-        "revCount": 996,
+        "rev": "b721759692111894e873413c10d322f98de2a8a7",
+        "revCount": 1751,
         "type": "git",
         "url": "https://github.com/dweee/tabrix"
       },
