@@ -2,6 +2,8 @@
   description = "Dave's portable third-party Nix packages";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
+    t3-code.url = "github:LisaScheers/t3-code-nix/011eac1b931b0f02a8b37a72a65750611c889e7f";
     darwin = {
       url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -7,7 +7,9 @@ let
   inherit (prev) lib;
   system = prev.stdenv.hostPlatform.system;
   platforms = builtins.fromJSON (builtins.readFile ./platforms.json);
+  t3code = import ../pkgs/t3code { inherit inputs system; };
   definitions = {
+    inherit (t3code) t3code-nightly t3code-server-nightly;
     applesauce = final.callPackage ../pkgs/applesauce { };
     apfs-dedupe = final.callPackage ../pkgs/apfs-dedupe { };
     spank = final.callPackage ../pkgs/spank { };

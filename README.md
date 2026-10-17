@@ -15,6 +15,13 @@ Use `overlays.default` with the pinned nixpkgs to consume the packages from
 NixOS, nix-darwin or Home Manager. The current pin supports Apple Silicon Darwin
 and both Linux architectures; Intel Darwin is not exposed.
 
+## T3 Code
+
+`t3code-nightly` and `t3code-server-nightly` share a source-build override with
+the Cursor Max Mode backport. Both are built by the native catalog runners.
+See [the package notes](pkgs/t3code/README.md) for the upstream fix, version,
+context-tier behavior and NixOS/nix-darwin/Home Manager consumption.
+
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and
@@ -70,6 +77,8 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | spank | yes | - | - |
 | tabrix | yes | yes | yes |
 | tabrix-extension | yes | yes | yes |
+| t3code-nightly | yes | yes | yes |
+| t3code-server-nightly | yes | yes | yes |
 | trawl | - | yes | - |
 | waywall | - | yes | yes |
 | wheelwizard | yes | yes | yes |
