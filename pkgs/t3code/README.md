@@ -1,7 +1,7 @@
 # T3 Code Cursor Max Mode backport
 
 `t3code-nightly` and `t3code-server-nightly` override the source packages from
-LisaScheers/t3-code-nix, pinned to T3 Code `0.0.46-nightly.20261015.3176`.
+LisaScheers/t3-code-nix, pinned to T3 Code `0.1.1-nightly.20261017.3272`.
 The desktop and headless launchers share one patched server build. Linux x86,
 Linux ARM and Apple Silicon macOS use their native catalog runners.
 

@@ -921,11 +921,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1792103037,
-        "narHash": "sha256-KDNBMG6D7VUdL7PuPjiB4rz9jhrFD3j7FJrxIQF9p8I=",
+        "lastModified": 1792265292,
+        "narHash": "sha256-m1YMABckTeQc26+ru18psV9PjHSZMC28nMR6fOtE7J4=",
         "owner": "LisaScheers",
         "repo": "t3-code-nix",
-        "rev": "011eac1b931b0f02a8b37a72a65750611c889e7f",
+        "rev": "41caf597ed5d2dcfe7bb398fb38dfae290bb34ba",
         "type": "github"
       },
       "original": {
