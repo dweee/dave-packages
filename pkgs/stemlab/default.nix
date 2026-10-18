@@ -11,7 +11,7 @@
   copyDesktopItems,
   qt6,
 }: let
-  # Lapwolf enables ROCm globally. Keep this CPU-first app on the cached CPU
+  # Keep this CPU-first app on the cached CPU
   # Python closure instead of rebuilding torch/ONNX with the host's GPU policy.
   python =
     if stdenv.hostPlatform.isLinux && ((pkgs.config.rocmSupport or false) || (pkgs.config.cudaSupport or false))

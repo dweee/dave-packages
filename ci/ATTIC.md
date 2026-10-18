@@ -83,7 +83,7 @@ variables and the repository's scoped `ATTIC_TOKEN` apply.
 
 `nix/cache-only-platforms.json` is a separate allowlist, exposed as
 `cacheOnlyPackages`, never as `packages` or `checks`. It covers VeraCrypt,
-ffmpeg-full (including Lapwolf's ROCm variant), NVIDIA 580 for the catalog's
+ffmpeg-full (including the ROCm variant), NVIDIA 580 for the catalog's
 CachyOS server kernel, Keyguard/JNI and StemLab's noncommercial dependency
 closure on their supported native platforms. All derivation outputs and runtime
 closures are pushed directly to private `flakey`. No binaries or closure archives
@@ -133,7 +133,13 @@ python3 ci/test-push-attic.py
 python3 ci/test-transfer-attic.py
 python3 ci/test-public-closure.py
 python3 ci/test-configure-attic-read.py
+python3 ci/test-public-source.py
 ```
+
+The source boundary check covers first-party package metadata and documentation,
+rejecting operator paths, encrypted secrets and private report material. It
+complements independent history and credential scans; vendored upstream code
+and localization fixtures need their own provenance review.
 
 To recover a permitted archive, download its `packages-RUN_ID` release assets,
 join any numbered ZIP parts, verify the supplied checksums, and import its NAR

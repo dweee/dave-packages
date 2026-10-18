@@ -109,7 +109,7 @@
           definitions = import ./nix/cache-only-packages.nix { inherit pkgs; };
         in nixpkgs.lib.genAttrs (cacheOnlyPlatforms.${system} or [ ]) (name: definitions.${name})
       );
-      nixosModules.eri-kernel-patches = import ./nix/eri/kernel-patches.nix;
+      nixosModules.android-avf-kernel-patches = import ./nix/android-avf/kernel-patches.nix;
 
       packages = nixpkgs.lib.genAttrs systems (
         system:

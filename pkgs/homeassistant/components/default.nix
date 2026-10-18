@@ -1,7 +1,7 @@
 {pkgs}: let
   mkGithubComponent = pkgs.callPackage ./mk-component.nix {};
 in {
-  # Local package set for terra Home Assistant custom integrations.
+  # Package set for Home Assistant custom integrations.
   # Add new custom integrations/modules here to avoid flake overlay churn.
   bilresaScrollwheelBlueprint =
     pkgs.callPackage ./bilresa-scrollwheel-blueprint.nix {};

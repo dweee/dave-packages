@@ -33,6 +33,7 @@ jobs:
           python3 ci/test-public-closure.py
           python3 ci/test-configure-attic-read.py
           python3 ci/test-cache-only.py
+          python3 ci/test-public-source.py
       - id: matrix
         env:
           SELECTED_PACKAGE: ${{ inputs.package || 'all' }}

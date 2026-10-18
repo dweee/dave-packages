@@ -33,7 +33,7 @@ in
     ];
     nativeCheckInputs = [python.pkgs.pytestCheckHook];
     # Offline CLI/catalog/cache checks; real Metal inference is checked on
-    # Rotna outside the Nix build sandbox with a preconverted MLX model.
+    # supported hardware outside the build sandbox with a preconverted MLX model.
     enabledTestPaths = [
       "tests/test_core.py"
       "tests/test_cli_exit_status.py"

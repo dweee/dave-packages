@@ -14,7 +14,7 @@ let
     system = "aarch64-linux";
     modules = [
       inputs.nixos-avf.nixosModules.avf
-      ./eri/kernel-patches.nix
+      ./android-avf/kernel-patches.nix
     ];
   };
   cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
@@ -70,7 +70,7 @@ let
     pumpkin-voice = final.callPackage ../pkgs/pumpkin-voice/nix/package.nix { };
     pumpkin-tpsbar = final.callPackage ../pkgs/pumpkin-tpsbar/nix/package.nix { };
     pumpkin-java-multiversion = final.callPackage ../pkgs/pumpkin-java-multiversion/nix/package.nix { };
-    linux-eri-avf = avfSystem.config.boot.kernelPackages.kernel;
+    linux-android-avf = avfSystem.config.boot.kernelPackages.kernel;
     linux-cachyos-server = cachyos.linuxPackages-cachyos-server.kernel;
     inherit (wii) wiicompiled-native-prebuilt wiicompiled-translator wiicompiled-setup;
     wiicompiled-nodtool = wii.wiicompiled-nodtool;
