@@ -10,7 +10,9 @@ An Attic administrator issues a dedicated token with only pull and push on
 `flakey`, valid for at most 90 days:
 
 ```sh
-atticadm make-token --sub github-packages --validity 90d --pull flakey --push flakey
+umask 077
+token_file=/absolute/path/to/github-flakey-token
+atticadm make-token --sub github-packages --validity 90d --pull flakey --push flakey > "$token_file"
 ```
 
 Save the token privately to a file; do not paste it into commands, logs or Git.
@@ -41,12 +43,47 @@ Rotate the secret before its token expires. No host credential is reused.
 
 ## Trusted reads and writes
 
-Only a push or manual dispatch on the repository's default branch receives the
-secret. The read helper creates `$RUNNER_TEMP/flakey-attic.netrc` with mode 0600
-and configures Nix's `netrc-file`; the token does not enter Nix expressions,
+Only a push or manual dispatch on the repository's default branch receives
+`ATTIC_TOKEN`. The read helper creates `$RUNNER_TEMP/flakey-attic.netrc` with mode
+0600 and configures Nix's `netrc-file`; the token does not enter Nix expressions,
 derivations, the store or artifacts. The netrc authenticates to `attic.monke.fail`.
-Pull request and other-branch builds read the official upstream cache and receive
-no Attic token. They cannot publish. CI enable switches remain respected.
+Native catalog jobs remove this credential and its managed Nix configuration
+before exporting build data, including when an earlier build step fails.
+
+The catalog optionally permits a separate **pull-only** `ATTIC_PULL_TOKEN` for
+one explicitly reviewed owner PR head. All three conditions must hold: the PR
+head belongs to this repository, the workflow actor is the repository owner, and
+its exact head commit equals the nonempty `ATTIC_APPROVED_PR_SHA` variable.
+The helper independently checks the GitHub event metadata and requires JWT
+claims granting exactly `flakey: {r: 1}`, with expiry within 90 days. It rejects
+write/admin permissions, other caches and future validity dates before creating
+any credential file. Attic verifies the JWT signature on authentication.
+
+This is an operational opt-in under the existing trust in same-repository
+writers and owner-reviewed source. A PR workflow can itself be edited by a
+repository writer; the SHA condition is not a secret access boundary against
+such a writer. Fork PRs, unapproved heads, changed heads and other actors do not
+run the pull-secret step. They use the official upstream cache. No PR can enter
+the separate default-branch publisher, and the push credential is never supplied
+to a PR build. Existing CI enable switches remain respected.
+
+To opt in after reviewing the complete PR commit, mint a distinct pull-only
+credential valid for at most 90 days and save it privately:
+
+```sh
+umask 077
+pull_token_file=/absolute/path/to/github-flakey-pull-token
+atticadm make-token --sub github-packages-reviewed-read --validity 90d --pull flakey > "$pull_token_file"
+gh secret set ATTIC_PULL_TOKEN --repo dweee/dave-packages < "$pull_token_file"
+# Replace PR_NUMBER with the reviewed owner PR number.
+approved_sha=$(gh pr view PR_NUMBER --repo dweee/dave-packages --json headRefOid --jq .headRefOid)
+gh variable set ATTIC_APPROVED_PR_SHA --repo dweee/dave-packages --body "$approved_sha"
+```
+
+A new PR commit requires a new review and variable update. Remove the variable
+to disable the opt-in: `gh variable delete ATTIC_APPROVED_PR_SHA --repo dweee/dave-packages`.
+This reuses normal signature-checked Nix substitution; all ordinary package
+builds, recursive public closure guards and composed decompiler checks still run.
 
 Native builders use the pinned Nix quick installer with Nix 2.34.7 on
 `ubuntu-24.04`, `ubuntu-24.04-arm`, and `macos-15`. Linux kernel builders reclaim

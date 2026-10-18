@@ -74,6 +74,12 @@ jobs:
         env:
           ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
         run: python3 ci/configure-attic-read.py
+      - name: Configure pull-only cache reads for the reviewed owner PR head
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor == github.repository_owner && vars.ATTIC_APPROVED_PR_SHA != '' && github.event.pull_request.head.sha == vars.ATTIC_APPROVED_PR_SHA }}
+        env:
+          ATTIC_PULL_TOKEN: ${{ secrets.ATTIC_PULL_TOKEN }}
+          ATTIC_APPROVED_PR_SHA: ${{ vars.ATTIC_APPROVED_PR_SHA }}
+        run: python3 ci/configure-attic-read.py --pr-read
       - name: Evaluate and build the selected native package
         env:
           TARGET_SYSTEM: ${{ matrix.system }}
@@ -97,6 +103,9 @@ jobs:
         run: |
           python3 ci/public-closure.py ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless"
           nix build ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless" --no-update-lock-file --no-write-lock-file --no-link -L
+      - name: Remove private read credentials before exporting build data
+        if: ${{ always() }}
+        run: python3 ci/configure-attic-read.py --cleanup
       - name: Save selected runtime closures independently of cache publication
         timeout-minutes: 15
         env:
