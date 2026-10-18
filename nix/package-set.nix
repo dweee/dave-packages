@@ -7,6 +7,7 @@ let
   inherit (prev) lib;
   system = prev.stdenv.hostPlatform.system;
   platforms = builtins.fromJSON (builtins.readFile ./platforms.json);
+  t3code = import ../pkgs/t3code { inherit inputs system; };
   fixes = import ./host-fixes.nix final prev;
   mopidy = import ./mopidy-4.nix final prev;
   wii = import ../pkgs/wiicompiled/source/nix/overlay.nix ../pkgs/wiicompiled/source final prev;
@@ -19,6 +20,7 @@ let
   };
   cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
   definitions = {
+    inherit (t3code) t3code-nightly t3code-server-nightly;
     chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
     chow-kick = (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { }).overrideAttrs (old: {
@@ -74,7 +76,7 @@ let
     tauon = final.callPackage ../pkgs/tauon-darwin.nix { };
     splayer-next = final.callPackage ../pkgs/splayer-next-darwin { };
     spotatui = final.callPackage ../pkgs/spotatui { };
-    t3code = inputs.t3-code.packages.${system}.t3code-nightly;
+    t3code = t3code.t3code-nightly;
     jellyfin-web = inputs.nixos-jellyfin.packages.${system}.jellyfin-web.override {
       forceEnableBackdrops = true;
       forceDisablePreferFmp4 = true;

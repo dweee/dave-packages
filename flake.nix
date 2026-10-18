@@ -32,7 +32,8 @@
       url = "git+https://git.monke.fail/d/sable.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    t3-code.url = "github:LisaScheers/t3-code-nix";
+    # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
+    t3-code.url = "github:LisaScheers/t3-code-nix/011eac1b931b0f02a8b37a72a65750611c889e7f";
     nixos-jellyfin = {
       url = "github:matt1432/nixos-jellyfin";
       inputs.nixpkgs.follows = "nixpkgs";
