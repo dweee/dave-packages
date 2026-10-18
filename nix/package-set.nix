@@ -21,9 +21,16 @@ let
   definitions = {
     chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
-    chow-kick = final.callPackage "${inputs.audio}/chow/chow-kick.nix" { };
+    chow-kick = (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { }).overrideAttrs (old: {
+      # The pinned chowdsp_wdf subproject still declares CMake 3.1 policies.
+      cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
+    });
     chow-tape-model = final.callPackage "${inputs.audio}/chow/chow-tape-model.nix" { };
-    chow-multitool = final.callPackage "${inputs.audio}/chow/chow-multitool.nix" { };
+    chow-multitool =
+      (final.callPackage "${inputs.audio}/chow/chow-multitool.nix" { }).overrideAttrs
+        (old: {
+          cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
+        });
     papu = final.callPackage "${inputs.audio}/vst/papu.nix" { };
     paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { };
 
@@ -95,6 +102,7 @@ let
     yaas = final.callPackage ../pkgs/yaas { };
     trawl = final.callPackage ../pkgs/trawl { };
     sable-desktop = final.callPackage ../pkgs/sable-desktop { };
+    sable-desktop-legacy = final.callPackage ../pkgs/sable-desktop-legacy { };
     codexbar-cli = final.callPackage ../pkgs/codexbar/cli.nix { };
     codexbar-plasmoid = final.callPackage ../pkgs/codexbar/plasmoid.nix { };
     photogimp = final.callPackage ../pkgs/photogimp { };

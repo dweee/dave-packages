@@ -61,6 +61,9 @@ jobs:
           nix_conf: |
             experimental-features = nix-command flakes
             accept-flake-config = false
+            http2 = false
+            connect-timeout = 15
+            download-attempts = 3
             substituters = https://cache.nixos.org/
             extra-substituters =
             extra-trusted-public-keys = flakey:mDx4DiNpH5w1Pl8OAKFFWq1ZsypA9lbaFKNiRWhqYE8=
