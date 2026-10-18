@@ -6,6 +6,10 @@
       url = "github:nix-darwin/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    kopuz = {
+      url = "git+https://github.com/dweee/kopuz?ref=flakey";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     paneru = {
       url = "git+https://github.com/dweee/paneru?ref=flakey";
       inputs.nixpkgs.follows = "nixpkgs";

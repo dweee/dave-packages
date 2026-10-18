@@ -8,6 +8,7 @@ let
   system = prev.stdenv.hostPlatform.system;
   platforms = builtins.fromJSON (builtins.readFile ./platforms.json);
   definitions = {
+    kopuz = inputs.kopuz.packages.${system}.kopuz;
     applesauce = final.callPackage ../pkgs/applesauce { };
     apfs-dedupe = final.callPackage ../pkgs/apfs-dedupe { };
     spank = final.callPackage ../pkgs/spank { };

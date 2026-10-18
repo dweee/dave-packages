@@ -40,5 +40,15 @@
     ],
     "ci_owner": "application fork",
     "private": false
+  },
+  "kopuz": {
+    "repository": "https://github.com/dweee/kopuz",
+    "revision": "88a943b3d69d53ea397c73ec319b65a36bb7aeb5",
+    "branch": "flakey",
+    "packages": [
+      "kopuz"
+    ],
+    "ci_owner": "application fork",
+    "private": false
   }
 }

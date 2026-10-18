@@ -18,7 +18,7 @@ and both Linux architectures; Intel Darwin is not exposed.
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and
-larger changes live in the Paneru, Tabrix, Rekordbox MCP and SchildiChat Revenge
+larger changes live in the Kopuz, Paneru, Tabrix, Rekordbox MCP and SchildiChat Revenge
 forks. `nix/forks.json` and `flake.lock` record their exact source revisions.
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
@@ -51,6 +51,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | gdb-mcp | yes | yes | yes |
 | ghidra-mcp | yes | yes | yes |
 | infrared | yes | yes | yes |
+| kopuz | yes | yes | yes |
 | lg-webos-dashboard | yes | yes | yes |
 | matter-linux-ota-provider | - | yes | yes |
 | mermaid-filter | yes | yes | yes |
