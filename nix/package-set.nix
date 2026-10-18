@@ -22,13 +22,25 @@ let
     chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
     chow-kick = (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { }).overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
       # The pinned chowdsp_wdf subproject still declares CMake 3.1 policies.
       cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
     });
-    chow-tape-model = final.callPackage "${inputs.audio}/chow/chow-tape-model.nix" { };
+    chow-tape-model =
+      (final.callPackage "${inputs.audio}/chow/chow-tape-model.nix" { }).overrideAttrs
+        (old: {
+          # The bundled RTNeural still declares CMake 3.1 policies.
+          cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
+          # Backport JUCE ce8aff22c31c4d932a8414bc6f6185381dc970db for std::exchange.
+          postPatch = (old.postPatch or "") + ''
+            substituteInPlace modules/JUCE/modules/juce_core/system/juce_StandardHeader.h \
+              --replace-fail '#include <unordered_set>' $'#include <unordered_set>\n#include <utility>'
+          '';
+        });
     chow-multitool =
       (final.callPackage "${inputs.audio}/chow/chow-multitool.nix" { }).overrideAttrs
         (old: {
+          patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
           cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
         });
     papu = final.callPackage "${inputs.audio}/vst/papu.nix" { };
