@@ -10,13 +10,13 @@
 # deploy.sh for workstations; it does not run on NixOS.
 stdenvNoCC.mkDerivation rec {
   pname = "lg-webos-dashboard";
-  version = "0.93.0";
+  version = "0.105.2";
 
   src = fetchFromGitHub {
     owner = "rorygallagher2024";
     repo = "lg-webos-dashboard";
     rev = "v${version}";
-    hash = "sha256-ZxAmDrWmxMfmN2DbvHhAvq8hcsNNUWaXTQznpjp73+g=";
+    hash = "sha256-cV7Xnr0rV8QnH/MNxs7kqKdq7kw9ZU9AWGSgufCiJpc=";
   };
 
   nativeBuildInputs = [makeWrapper];

@@ -23,7 +23,7 @@
   },
   "rekordbox-mcp": {
     "repository": "https://github.com/dweee/rekordbox-mcp",
-    "revision": "4bdf94f6750e892d28ae238f645b6cb23df860ae",
+    "revision": "ff2839f014547d7e6b64080e4a69866ea4c5d6c2",
     "branch": "flakey",
     "packages": [
       "rekordbox-mcp"

@@ -183,11 +183,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792253327,
-        "narHash": "sha256-QiaX92vXEtobMW0jz0zqa2O54V9W5PAANrRpKxLm2Xo=",
+        "lastModified": 1792329670,
+        "narHash": "sha256-pk5skKy+bilw6ZbqtJBi3OtCXXScnEObihivhDCsR3s=",
         "ref": "flakey",
-        "rev": "4bdf94f6750e892d28ae238f645b6cb23df860ae",
-        "revCount": 41,
+        "rev": "ff2839f014547d7e6b64080e4a69866ea4c5d6c2",
+        "revCount": 42,
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp"
       },
