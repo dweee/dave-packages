@@ -80,6 +80,7 @@
     let
       platforms = builtins.fromJSON (builtins.readFile ./nix/platforms.json);
       systems = builtins.attrNames platforms;
+      cacheOnlyPlatforms = builtins.fromJSON (builtins.readFile ./nix/cache-only-platforms.json);
       packageOverlay = final: prev: import ./nix/package-set.nix { inherit inputs final prev; };
       overlay = nixpkgs.lib.composeManyExtensions [
         inputs.rust-overlay.overlays.default
@@ -96,6 +97,18 @@
     in
     {
       overlays.default = overlay;
+      # Deliberately excluded from packages/checks and every public artifact matrix.
+      # Only the trusted cache-only workflow evaluates these unfree closures.
+      cacheOnlyPackages = nixpkgs.lib.genAttrs systems (system:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+            overlays = [ overlay ];
+          };
+          definitions = import ./nix/cache-only-packages.nix { inherit pkgs; };
+        in nixpkgs.lib.genAttrs (cacheOnlyPlatforms.${system} or [ ]) (name: definitions.${name})
+      );
       nixosModules.eri-kernel-patches = import ./nix/eri/kernel-patches.nix;
 
       packages = nixpkgs.lib.genAttrs systems (

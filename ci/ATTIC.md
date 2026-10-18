@@ -1,7 +1,6 @@
 # Private Flakey cache publication
 
-The catalog and five application forks publish free, disc-independent package
-closures to **https://attic.monke.fail/flakey**, a private Attic cache. Its signing
+The catalog and five application forks publish package closures to **https://attic.monke.fail/flakey**, a private Attic cache. Its signing
 key is `flakey:mDx4DiNpH5w1Pl8OAKFFWq1ZsypA9lbaFKNiRWhqYE8=`.
 There is one destination. Publisher helpers reject any other endpoint or cache.
 
@@ -74,6 +73,30 @@ publication disabled. Resume them only after the shared controller applies the
 same pre-build and export checks. Native PR/push/dispatch builds remain enabled;
 a merge to the default branch triggers the guarded native publisher.
 
+## Cache-only unfree builds
+
+`cache-only.yml` builds and pushes in the same native job. It has no PR trigger,
+no closure archive export, no artifact upload/download, and no release/backup
+job. Its name is excluded from the backup workflow triggers. Both planning and
+execution require a default-branch push or dispatch; existing CI/cache enable
+variables and the repository's scoped `ATTIC_TOKEN` apply.
+
+`nix/cache-only-platforms.json` is a separate allowlist, exposed as
+`cacheOnlyPackages`, never as `packages` or `checks`. It covers VeraCrypt,
+ffmpeg-full (including Lapwolf's ROCm variant), NVIDIA 580 for the catalog's
+CachyOS server kernel, Keyguard/JNI and StemLab's noncommercial dependency
+closure on their supported native platforms. All derivation outputs and runtime
+closures are pushed directly to private `flakey`. No binaries or closure archives
+leave the job except via authenticated Attic. Build/upload diagnostics and output
+paths are captured locally and deleted, including on failure; public logs show
+only generic success/failure. A recursive pre-build check and a runtime check
+still reject all Wii/disc and subnetter references.
+
+The public artifact workflows remain free-only. Their restrictive Nixpkgs import
+and closure guards do not change. Cache-only outputs cannot be selected by their
+matrices. The existing per-repository token files and owner secret commands
+require no additional GitHub secret or private repository.
+
 ## Public build and backup policy
 
 These repositories and their closure artifacts/releases are public. Before any
@@ -86,8 +109,9 @@ Nixpkgs is imported with `allowUnfree = false` as an independent evaluation gate
 Only these Wii attributes are approved, and each still requires the recursive
 derivation check: `wiicompiled-native-prebuilt`, `wiicompiled-translator`,
 `wiicompiled-setup`, and `wiicompiled-setup-unwrapped`. Final/translated/disc
-attributes are rejected before evaluation. Disc-dependent and unfree outputs
-remain on premises and may be stored only in the private cache.
+attributes are rejected before evaluation. Disc-dependent outputs remain on premises. Unfree outputs use only the separate
+cache-only workflow above, or on-prem builders, and may be stored only in the
+private cache.
 
 Immediately before any NAR archive is created, the export helper checks the
 selected outputs' complete runtime closure again. The publisher checks imported
