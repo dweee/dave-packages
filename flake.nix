@@ -6,6 +6,28 @@
       url = "github:SwornSystems/nix-zed-extensions/5bf9d7730cda9bedc88c309b47f8d0e93b426b05";
       flake = false;
     };
+    mcp-nix = {
+      url = "github:felixdorn/mcp-nix/01302a8ea726c59d521c194937ea9bb5c803d25a";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.uv2nix.follows = "uv2nix";
+      inputs.pyproject-build-systems.follows = "pyproject-build-systems";
+    };
+    pyproject-nix = {
+      url = "github:pyproject-nix/pyproject.nix/ddc400a6883b042646d0940e65971bb7f7e96107";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix/37462fae7b37be45d78f754d1c39e8813ede0f80";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+    };
+    pyproject-build-systems = {
+      url = "github:pyproject-nix/build-system-pkgs/953d35d03a51dbecaf3feb3fb679eb63e90ebeb4";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.uv2nix.follows = "uv2nix";
+    };
     sable = {
       url = "git+https://git.monke.fail/d/sable.git";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -99,7 +121,8 @@
       overlays.default = overlay;
       # Deliberately excluded from packages/checks and every public artifact matrix.
       # Only the trusted cache-only workflow evaluates these unfree closures.
-      cacheOnlyPackages = nixpkgs.lib.genAttrs systems (system:
+      cacheOnlyPackages = nixpkgs.lib.genAttrs systems (
+        system:
         let
           pkgs = import nixpkgs {
             inherit system;
@@ -107,7 +130,8 @@
             overlays = [ overlay ];
           };
           definitions = import ./nix/cache-only-packages.nix { inherit pkgs; };
-        in nixpkgs.lib.genAttrs (cacheOnlyPlatforms.${system} or [ ]) (name: definitions.${name})
+        in
+        nixpkgs.lib.genAttrs (cacheOnlyPlatforms.${system} or [ ]) (name: definitions.${name})
       );
       nixosModules.android-avf-kernel-patches = import ./nix/android-avf/kernel-patches.nix;
 

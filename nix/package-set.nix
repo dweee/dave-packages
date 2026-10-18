@@ -47,6 +47,14 @@ let
       doInstallCheck = false;
     });
     homeassistant = import ../pkgs/homeassistant/package.nix { pkgs = prev; };
+    # Publish build tools separately from the extensions that use them.
+    zed-rust-toolchain = final.cargo-auditable-cargo-wrapper.override {
+      cargo = final.rust-bin.stable.latest.minimal.override {
+        targets = [ "wasm32-wasip2" ];
+      };
+    };
+    wasi-sdk = prev.callPackage "${inputs.nix-zed-extensions}/pkgs/wasi-sdk" { };
+    mcp-nix = inputs.mcp-nix.packages.${system}.default;
     zed-nix-extension = import ../pkgs/zed-nix-extension {
       pkgs = final;
       inherit inputs;

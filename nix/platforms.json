@@ -8,11 +8,11 @@
     "gdb-mcp",
     "ghidra-kuna",
     "ghidra-mcp",
-    "gradle",
     "infrared",
     "kopuz",
     "kuna",
     "lg-webos-dashboard",
+    "mcp-nix",
     "mermaid-filter",
     "mlx-audio-separator",
     "mopidy",
@@ -50,12 +50,13 @@
     "tabrix",
     "tabrix-extension",
     "tauon",
-    "wasmtime",
+    "wasi-sdk",
     "wheelwizard",
     "wiicompiled-native-prebuilt",
     "wiicompiled-setup",
     "wiicompiled-translator",
-    "zed-nix-extension"
+    "zed-nix-extension",
+    "zed-rust-toolchain"
   ],
   "x86_64-linux": [
     "bitwig-theme-editor",
