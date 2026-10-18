@@ -1,0 +1,479 @@
+diff --git a/corpus/basic.txt b/corpus/basic.txt
+--- a/corpus/basic.txt
++++ b/corpus/basic.txt
+@@ -157,12 +157,15 @@ let
+ 
+ (source_code
+     (let_expression
+-        (comment)
++        (injection_comment
++            (injection_language))
+         (binding_set
+             (binding (attrpath (identifier)) (variable_expression (identifier)))
+-            (comment)
++            (injection_comment
++                (injection_language))
+             (binding (attrpath (identifier)) (variable_expression (identifier))))
+-        (comment)
++        (injection_comment
++            (injection_language))
+         (variable_expression (identifier))))
+ 
+ ====================
+@@ -542,3 +545,118 @@ parens
+ 
+ (source_code
+     (parenthesized_expression (integer_expression)))
++
++====================
++injection comment (line)
++====================
++
++# bash
++''
++  echo "hello"
++''
++
++---
++
++(source_code
++    (injection_comment
++        (injection_language))
++    (indented_string_expression
++        (string_fragment)))
++
++====================
++injection comment (block)
++====================
++
++/* python */
++''
++  print("hello")
++''
++
++---
++
++(source_code
++    (injection_comment
++        (injection_language))
++    (indented_string_expression
++        (string_fragment)))
++
++====================
++regular comment (multi-word, not injection)
++====================
++
++# this is a comment
++''
++  hello
++''
++
++---
++
++(source_code
++    (comment)
++    (indented_string_expression
++        (string_fragment)))
++
++====================
++regular block comment (multi-word, not injection)
++====================
++
++/* this is a comment */
++''
++  hello
++''
++
++---
++
++(source_code
++    (comment)
++    (indented_string_expression
++        (string_fragment)))
++
++====================
++comment without space after hash (not injection)
++====================
++
++#nope
++"hello"
++
++---
++
++(source_code
++    (comment)
++    (string_expression (string_fragment)))
++
++====================
++comment with digit after hash space (not injection)
++====================
++
++# 123
++"hello"
++
++---
++
++(source_code
++    (comment)
++    (string_expression (string_fragment)))
++
++====================
++injection comment in binding context
++====================
++
++{
++  # bash
++  buildPhase = ''
++    make
++  '';
++}
++
++---
++
++(source_code
++    (attrset_expression
++        (injection_comment
++            (injection_language))
++        (binding_set
++            (binding
++                (attrpath (identifier))
++                (indented_string_expression
++                    (string_fragment))))))
+diff --git a/grammar.js b/grammar.js
+--- a/grammar.js
++++ b/grammar.js
+@@ -22,7 +22,7 @@ const PREC = {
+ module.exports = grammar({
+   name: "nix",
+ 
+-  extras: ($) => [/\s/, $.comment],
++  extras: ($) => [/\s/, $.comment, $.injection_comment],
+ 
+   supertypes: ($) => [$._expression],
+ 
+@@ -35,6 +35,9 @@ module.exports = grammar({
+     $.path_fragment,
+     $.dollar_escape,
+     $._indented_dollar_escape,
++    $._injection_comment_prefix,
++    $.injection_language,
++    $._injection_comment_suffix,
+   ],
+ 
+   word: ($) => $.keyword,
+@@ -390,6 +393,15 @@ module.exports = grammar({
+ 
+     comment: ($) =>
+       token(choice(seq("#", /.*/), seq("/*", /[^*]*\*+([^/*][^*]*\*+)*/, "/"))),
++
++    // Line: # bash (suffix is zero-width)
++    // Block: /* bash */ (suffix consumes whitespace + */)
++    injection_comment: ($) =>
++      seq(
++        $._injection_comment_prefix,
++        field("language", $.injection_language),
++        $._injection_comment_suffix,
++      ),
+   },
+ });
+ 
+diff --git a/queries/highlights.scm b/queries/highlights.scm
+--- a/queries/highlights.scm
++++ b/queries/highlights.scm
+@@ -1,4 +1,5 @@
+ (comment) @comment
++(injection_comment) @comment
+ 
+ [
+   "if"
+diff --git a/queries/injections.scm b/queries/injections.scm
+--- a/queries/injections.scm
++++ b/queries/injections.scm
+@@ -1,6 +1,8 @@
+-; mark arbitary languages with a comment
+-((((comment) @injection.language) .
+-  (indented_string_expression (string_fragment) @injection.content))
++; mark arbitrary languages with an injection comment
++((injection_comment
++  language: (injection_language) @injection.language) .
++  [(indented_string_expression (string_fragment) @injection.content)
++   (string_expression (string_fragment) @injection.content)]
+   (#set! injection.combined))
+ 
+ ((binding
+diff --git a/src/scanner.c b/src/scanner.c
+--- a/src/scanner.c
++++ b/src/scanner.c
+@@ -7,6 +7,9 @@ enum TokenType {
+   PATH_FRAGMENT,
+   DOLLAR_ESCAPE,
+   INDENTED_DOLLAR_ESCAPE,
++  INJECTION_COMMENT_PREFIX,
++  INJECTION_LANGUAGE,
++  INJECTION_COMMENT_SUFFIX,
+ };
+ 
+ static void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
+@@ -171,6 +174,130 @@ static bool scan_path_fragment(TSLexer *lexer) {
+   }
+ }
+ 
++static bool is_language_char(int32_t c) {
++  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
++         (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '+';
++}
++
++// Scan the prefix of a line injection comment: "# "
++// or block injection comment: "/* "
++// Peeks ahead to verify this is a single-word comment before returning true.
++static bool scan_injection_comment_prefix(TSLexer *lexer) {
++  lexer->result_symbol = INJECTION_COMMENT_PREFIX;
++
++  if (lexer->lookahead == '#') {
++    advance(lexer);
++    // Must have at least one space after #
++    if (lexer->lookahead != ' ' && lexer->lookahead != '\t') {
++      return false;
++    }
++    // Consume spaces/tabs after #
++    while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
++      advance(lexer);
++    }
++    // Mark end here — the prefix is "# " (with trailing whitespace)
++    lexer->mark_end(lexer);
++
++    // Peek ahead: must start with a letter
++    if (!((lexer->lookahead >= 'a' && lexer->lookahead <= 'z') ||
++          (lexer->lookahead >= 'A' && lexer->lookahead <= 'Z'))) {
++      return false;
++    }
++    // Read the word
++    while (is_language_char(lexer->lookahead)) {
++      advance(lexer);
++    }
++    // After the word, must be only whitespace until EOL or EOF
++    while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
++      advance(lexer);
++    }
++    if (lexer->lookahead != '\n' && lexer->lookahead != '\r' &&
++        lexer->lookahead != '\0') {
++      return false;
++    }
++    return true;
++  }
++
++  if (lexer->lookahead == '/') {
++    advance(lexer);
++    if (lexer->lookahead != '*') {
++      return false;
++    }
++    advance(lexer);
++    // Consume optional whitespace after /*
++    while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
++      advance(lexer);
++    }
++    // Mark end here — the prefix is "/* " (with trailing whitespace)
++    lexer->mark_end(lexer);
++
++    // Peek ahead: must start with a letter
++    if (!((lexer->lookahead >= 'a' && lexer->lookahead <= 'z') ||
++          (lexer->lookahead >= 'A' && lexer->lookahead <= 'Z'))) {
++      return false;
++    }
++    // Read the word
++    while (is_language_char(lexer->lookahead)) {
++      advance(lexer);
++    }
++    // After the word, optional whitespace then must be */
++    while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
++      advance(lexer);
++    }
++    if (lexer->lookahead != '*') {
++      return false;
++    }
++    advance(lexer);
++    if (lexer->lookahead != '/') {
++      return false;
++    }
++    return true;
++  }
++
++  return false;
++}
++
++// Scan the language word (e.g., "bash", "python").
++// Called after the prefix has been consumed.
++static bool scan_injection_language(TSLexer *lexer) {
++  lexer->result_symbol = INJECTION_LANGUAGE;
++
++  if (!((lexer->lookahead >= 'a' && lexer->lookahead <= 'z') ||
++        (lexer->lookahead >= 'A' && lexer->lookahead <= 'Z'))) {
++    return false;
++  }
++
++  while (is_language_char(lexer->lookahead)) {
++    advance(lexer);
++  }
++  lexer->mark_end(lexer);
++  return true;
++}
++
++// Scan the suffix of an injection comment.
++// For block comments: consumes trailing whitespace + "*/"
++// For line comments: returns a zero-width token
++static bool scan_injection_comment_suffix(TSLexer *lexer) {
++  lexer->result_symbol = INJECTION_COMMENT_SUFFIX;
++  lexer->mark_end(lexer); // zero-width fallback position
++
++  // Try to consume whitespace + */
++  while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
++    advance(lexer);
++  }
++  if (lexer->lookahead == '*') {
++    advance(lexer);
++    if (lexer->lookahead == '/') {
++      advance(lexer);
++      lexer->mark_end(lexer);
++      return true;
++    }
++    // No '/' after '*' — cursor resets to initial mark_end (zero-width)
++  }
++  // Line comment case: return zero-width token
++  return true;
++}
++
+ void *tree_sitter_nix_external_scanner_create() { return NULL; }
+ 
+ bool tree_sitter_nix_external_scanner_scan(void *payload, TSLexer *lexer,
+@@ -184,9 +311,27 @@ bool tree_sitter_nix_external_scanner_scan(void *payload, TSLexer *lexer,
+   if (valid_symbols[STRING_FRAGMENT] &&
+       valid_symbols[INDENTED_STRING_FRAGMENT] && valid_symbols[PATH_START] &&
+       valid_symbols[PATH_FRAGMENT] && valid_symbols[DOLLAR_ESCAPE] &&
+-      valid_symbols[INDENTED_DOLLAR_ESCAPE]) {
++      valid_symbols[INDENTED_DOLLAR_ESCAPE] &&
++      valid_symbols[INJECTION_COMMENT_PREFIX] &&
++      valid_symbols[INJECTION_LANGUAGE] &&
++      valid_symbols[INJECTION_COMMENT_SUFFIX]) {
+     return false;
+-  } else if (valid_symbols[STRING_FRAGMENT]) {
++  }
++
++  // Handle injection language (only valid immediately after prefix)
++  if (valid_symbols[INJECTION_LANGUAGE] && !valid_symbols[STRING_FRAGMENT]) {
++    return scan_injection_language(lexer);
++  }
++
++  // Handle injection comment suffix (only valid after language in block
++  // comment)
++  if (valid_symbols[INJECTION_COMMENT_SUFFIX] &&
++      !valid_symbols[STRING_FRAGMENT]) {
++    return scan_injection_comment_suffix(lexer);
++  }
++
++  // String fragments — always handle first when inside a string.
++  if (valid_symbols[STRING_FRAGMENT]) {
+     if (lexer->lookahead == '\\') {
+       return scan_dollar_escape(lexer);
+     }
+@@ -200,7 +345,11 @@ bool tree_sitter_nix_external_scanner_scan(void *payload, TSLexer *lexer,
+       }
+     }
+     return scan_indented_string_fragment(lexer);
+-  } else if (valid_symbols[PATH_FRAGMENT] && is_path_char(lexer->lookahead)) {
++  }
++
++  // Path fragments must be immediate (no whitespace before). Check before
++  // skipping whitespace.
++  if (valid_symbols[PATH_FRAGMENT] && is_path_char(lexer->lookahead)) {
+     // path_fragments should be scanned as immediate tokens, with no preceding
+     // extras. so we assert that the very first token is a path character, and
+     // otherwise we fall through to the case below. example:
+@@ -219,7 +368,87 @@ bool tree_sitter_nix_external_scanner_scan(void *payload, TSLexer *lexer,
+     // following function application:
+     //   (a/b${c}) (d/e${f})
+     return scan_path_fragment(lexer);
+-  } else if (valid_symbols[PATH_START]) {
++  }
++
++  // Skip whitespace for remaining dispatch (path_start, injection comments).
++  while (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
++         lexer->lookahead == '\r' || lexer->lookahead == '\t') {
++    skip(lexer);
++  }
++
++  // '#' can only start a comment, never a path. Try injection first;
++  // if it fails tree-sitter resets the lexer and the internal `comment`
++  // token matches instead.
++  if (lexer->lookahead == '#') {
++    if (valid_symbols[INJECTION_COMMENT_PREFIX]) {
++      return scan_injection_comment_prefix(lexer);
++    }
++    return false;
++  }
++
++  // '/' could be: /* block comment, /path, or / division operator.
++  // Peek one character ahead to disambiguate.
++  if (lexer->lookahead == '/') {
++    advance(lexer);
++    if (lexer->lookahead == '*') {
++      // Block comment: /* ... */. Never a path.
++      // Try block injection; if it fails the internal `comment` token matches.
++      if (valid_symbols[INJECTION_COMMENT_PREFIX]) {
++        advance(lexer); // consume '*'
++        while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
++          advance(lexer);
++        }
++        lexer->mark_end(lexer); // prefix ends after "/* "
++
++        // Peek ahead: must be a single word then */
++        if (!((lexer->lookahead >= 'a' && lexer->lookahead <= 'z') ||
++              (lexer->lookahead >= 'A' && lexer->lookahead <= 'Z'))) {
++          return false;
++        }
++        while (is_language_char(lexer->lookahead)) {
++          advance(lexer);
++        }
++        while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
++          advance(lexer);
++        }
++        if (lexer->lookahead != '*') {
++          return false;
++        }
++        advance(lexer);
++        if (lexer->lookahead != '/') {
++          return false;
++        }
++        lexer->result_symbol = INJECTION_COMMENT_PREFIX;
++        return true;
++      }
++      return false;
++    }
++
++    // Not /* — could be /path or / operator. We already consumed '/'.
++    // Continue with inline path scanning (have_sep = true).
++    if (valid_symbols[PATH_START]) {
++      lexer->result_symbol = PATH_START;
++      bool have_after_sep = false;
++      while (true) {
++        lexer->mark_end(lexer);
++        int32_t c = lexer->lookahead;
++        if (c == '/') {
++          // additional separator
++        } else if (is_path_char(c)) {
++          have_after_sep = true;
++        } else if (c == '$') {
++          return true; // have separator (consumed above)
++        } else {
++          return have_after_sep;
++        }
++        advance(lexer);
++      }
++    }
++    return false;
++  }
++
++  // All other first characters — try path_start (whitespace already skipped).
++  if (valid_symbols[PATH_START]) {
+     return scan_path_start(lexer);
+   }
+ 

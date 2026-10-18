@@ -7,7 +7,75 @@ let
   inherit (prev) lib;
   system = prev.stdenv.hostPlatform.system;
   platforms = builtins.fromJSON (builtins.readFile ./platforms.json);
+  fixes = import ./host-fixes.nix final prev;
+  mopidy = import ./mopidy-4.nix final prev;
+  wii = import ../pkgs/wiicompiled/source/nix/overlay.nix ../pkgs/wiicompiled/source final prev;
+  avfSystem = inputs.nixpkgs.lib.nixosSystem {
+    system = "aarch64-linux";
+    modules = [
+      inputs.nixos-avf.nixosModules.avf
+      ./eri/kernel-patches.nix
+    ];
+  };
+  cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
   definitions = {
+    chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { };
+    chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
+    chow-kick = final.callPackage "${inputs.audio}/chow/chow-kick.nix" { };
+    chow-tape-model = final.callPackage "${inputs.audio}/chow/chow-tape-model.nix" { };
+    chow-multitool = final.callPackage "${inputs.audio}/chow/chow-multitool.nix" { };
+    papu = final.callPackage "${inputs.audio}/vst/papu.nix" { };
+    paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { };
+
+    inherit (fixes) redlib dorion;
+    jetbrains-jdk-patched = prev.jetbrains.jdk-no-jcef-21.overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ../pkgs/keyguard/jdk-8312488-jpackage-exit-crash.patch ];
+      preBuild = (old.preBuild or "") + ''
+        configureFlags+=("--with-jobs=''${NIX_BUILD_CORES}")
+      '';
+    });
+    sable = inputs.sable.packages.${system}.sable;
+    sable-web = inputs.sable.packages.${system}.sable-web;
+    homeassistant-base = prev.home-assistant.overrideAttrs (_: {
+      doInstallCheck = false;
+    });
+    homeassistant = import ../pkgs/homeassistant/package.nix { pkgs = prev; };
+    zed-nix-extension = import ../pkgs/zed-nix-extension {
+      pkgs = final;
+      inherit inputs;
+    };
+    tauon = final.callPackage ../pkgs/tauon-darwin.nix { };
+    splayer-next = final.callPackage ../pkgs/splayer-next-darwin { };
+    spotatui = final.callPackage ../pkgs/spotatui { };
+    t3code = inputs.t3-code.packages.${system}.t3code-nightly;
+    jellyfin-web = inputs.nixos-jellyfin.packages.${system}.jellyfin-web.override {
+      forceEnableBackdrops = true;
+      forceDisablePreferFmp4 = true;
+    };
+    caddy-custom = prev.caddy.withPlugins {
+      plugins = [
+        "github.com/caddyserver/transform-encoder@v0.0.0-20260417205707-a6a89df4bc65"
+        "github.com/caddy-dns/porkbun@v0.3.1"
+        "github.com/mholt/caddy-webdav@v0.0.0-20260127042217-fa2f366b0d75"
+        "github.com/caddy-dns/njalla@v0.0.0-20250823094507-f709141f1fe6"
+        "github.com/tailscale/caddy-tailscale@v0.0.0-20260106222316-bb080c4414ac"
+        "github.com/caddyserver/cache-handler@v0.16.0"
+        "github.com/darkweak/storages/simplefs/caddy@v0.0.19"
+      ];
+      hash = "sha256-8e0cAIe8TWc1xLPzt02gXIC/xTPAs9jMeLMG62z4aUc=";
+    };
+    matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel { inherit (prev) matrix-tuwunel; };
+    mlx-audio-separator = final.callPackage ../pkgs/mlx-audio-separator { };
+    pumpkin = inputs.pumpkin-nixpkgs.legacyPackages.${system}.pumpkin;
+    pumpkin-voice = final.callPackage ../pkgs/pumpkin-voice/nix/package.nix { };
+    pumpkin-tpsbar = final.callPackage ../pkgs/pumpkin-tpsbar/nix/package.nix { };
+    pumpkin-java-multiversion = final.callPackage ../pkgs/pumpkin-java-multiversion/nix/package.nix { };
+    linux-eri-avf = avfSystem.config.boot.kernelPackages.kernel;
+    linux-cachyos-server = cachyos.linuxPackages-cachyos-server.kernel;
+    inherit (wii) wiicompiled-native-prebuilt wiicompiled-translator wiicompiled-setup;
+    wiicompiled-nodtool = wii.wiicompiled-nodtool;
+    wiicompiled-setup-unwrapped = wii.wiicompiled-setup.setupUnwrapped;
+
     kopuz = inputs.kopuz.packages.${system}.kopuz;
     applesauce = final.callPackage ../pkgs/applesauce { };
     apfs-dedupe = final.callPackage ../pkgs/apfs-dedupe { };
@@ -53,4 +121,16 @@ let
     tabrix-extension = inputs.tabrix.packages.${system}.tabrix-extension;
   };
 in
-lib.genAttrs (platforms.${system} or [ ]) (name: definitions.${name})
+lib.genAttrs (platforms.${system} or [ ]) (
+  name:
+  if builtins.hasAttr name definitions then
+    definitions.${name}
+  else if builtins.hasAttr name mopidy then
+    mopidy.${name}
+  else
+    prev.${name}
+)
+
+// {
+  wiicompiled-nodtool = wii.wiicompiled-nodtool;
+}
