@@ -41,6 +41,10 @@ let
     slskd-mcp = final.callPackage ../pkgs/slskd-mcp { src = inputs.slskd-mcp; };
     prowlarr-mcp = final.callPackage ../pkgs/prowlarr-mcp { src = inputs.prowlarr-mcp; };
     ghidra-mcp = final.callPackage ../pkgs/ghidra-mcp { src = inputs.ghidra-mcp; };
+    kuna = inputs.kuna.packages.${system}.kuna;
+    rea = final.callPackage ../pkgs/rea { };
+    ghidra-kuna = final.callPackage ../pkgs/ghidra-kuna { };
+    rea-kuna = final.callPackage ../pkgs/rea-kuna { };
     gdb-mcp = final.callPackage ../pkgs/gdb-mcp { src = inputs.gdb-mcp; };
     rekordbox-mcp = inputs.rekordbox-mcp.packages.${system}.rekordbox-mcp;
     paneru = inputs.paneru.packages.${system}.paneru;

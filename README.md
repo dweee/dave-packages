@@ -15,11 +15,30 @@ Use `overlays.default` with the pinned nixpkgs to consume the packages from
 NixOS, nix-darwin or Home Manager. The current pin supports Apple Silicon Darwin
 and both Linux architectures; Intel Darwin is not exposed.
 
+## Reverse engineering
+
+`kuna` supplies the standalone source-built CLI and agent skill. `rea` supplies
+plain REA 6.7.0 and its generated skill; `ghidra-kuna` supplies a separate Ghidra
+installation with Kuna's native core. `rea-kuna` combines these for stdio MCP
+use and supports both headless Ghidra and the direct Kuna provider.
+
+```sh
+nix shell .#kuna .#rea-kuna
+nix build .#checks.x86_64-linux.kuna-ghidra-headless
+```
+
+Install `kuna` and `rea-kuna` for agent use; the wrapper retains Ghidra without
+changing an ordinary GUI command. See [the launcher notes](pkgs/rea-kuna/README.md)
+for client registration, complete skill directories, environment overrides and
+backend limitations. Package installation does not edit client configuration.
+Raw REA's install check covers MCP initialization, tool discovery and native PTY
+creation. The composed headless check also compiles and executes recovered C.
+
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and
 larger changes live in the Kopuz, Paneru, Tabrix, Rekordbox MCP and SchildiChat Revenge
-forks. `nix/forks.json` and `flake.lock` record their exact source revisions.
+forks, including the Kuna packaging fork. `nix/forks.json` and `flake.lock` record their exact source revisions.
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
 
@@ -50,7 +69,9 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | eel-extension | yes | yes | yes |
 | gdb-mcp | yes | yes | yes |
 | ghidra-mcp | yes | yes | yes |
+| ghidra-kuna | yes | yes | yes |
 | infrared | yes | yes | yes |
+| kuna | yes | yes | yes |
 | kopuz | yes | yes | yes |
 | lg-webos-dashboard | yes | yes | yes |
 | matter-linux-ota-provider | - | yes | yes |
@@ -63,6 +84,8 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | photogimp | - | yes | yes |
 | prowlarr-mcp | yes | yes | yes |
 | pyrekordbox | yes | yes | yes |
+| rea | yes | yes | yes |
+| rea-kuna | yes | yes | yes |
 | rekordbox-mcp | yes | - | - |
 | sable-desktop | - | yes | yes |
 | schildi-revenge | yes | yes | yes |

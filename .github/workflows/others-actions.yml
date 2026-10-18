@@ -77,6 +77,12 @@ jobs:
             echo "Package build: ${SECONDS}s"
             cat outputs.txt
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify the composed headless decompiler
+        if: ${{ matrix.package == 'ghidra-kuna' || matrix.package == 'rea-kuna' }}
+        env:
+          TARGET_SYSTEM: ${{ matrix.system }}
+        run: |
+          nix build ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless" --no-update-lock-file --no-write-lock-file --no-link -L
       - name: Save selected runtime closures independently of cache publication
         timeout-minutes: 15
         env:

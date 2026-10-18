@@ -123,6 +123,27 @@
         "url": "https://github.com/dweee/kopuz"
       }
     },
+    "kuna": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792346657,
+        "narHash": "sha256-PvVs/yGxjaY7sNFlDJgF+umWZFJs59/pAfEqc+hSdKw=",
+        "owner": "dweee",
+        "repo": "kuna",
+        "rev": "e51a439b2d2dbd2bb5b7aab30ce7f6a419ffd774",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dweee",
+        "ref": "flakey",
+        "repo": "kuna",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1791734076,
@@ -224,6 +245,7 @@
         "gdb-mcp": "gdb-mcp",
         "ghidra-mcp": "ghidra-mcp",
         "kopuz": "kopuz",
+        "kuna": "kuna",
         "nixpkgs": "nixpkgs",
         "paneru": "paneru",
         "prowlarr-mcp": "prowlarr-mcp",

@@ -23,6 +23,10 @@
       url = "git+https://github.com/dweee/rekordbox-mcp?ref=flakey";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    kuna = {
+      url = "github:dweee/kuna/flakey";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     schildi-revenge = {
       url = "git+https://github.com/dweee/schildi-revenge?ref=flakey&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -66,7 +70,13 @@
         in
         nixpkgs.lib.genAttrs platforms.${system} (name: pkgs.${name})
       );
-      checks = self.packages;
+      checks = nixpkgs.lib.genAttrs systems (
+        system:
+        self.packages.${system}
+        // {
+          kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
+        }
+      );
       formatter = nixpkgs.lib.genAttrs systems (system: (pkgsFor system).nixfmt);
     };
 }
