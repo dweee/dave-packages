@@ -14,6 +14,36 @@ spec.loader.exec_module(module)
 
 
 class TransferSafetyTests(unittest.TestCase):
+    def test_closure_size_uses_registered_sizes_and_rejects_incomplete_metadata(self):
+        paths = ['/nix/store/' + 'a' * 32 + '-one', '/nix/store/' + 'b' * 32 + '-two']
+        with patch.object(module.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, '17\n25\n', '')):
+            self.assertEqual(module.closure_size(paths), 42)
+        for data in ['17\n', '17\n-1\n', '17\nprivate-path\n']:
+            with self.subTest(data=data), patch.object(module.subprocess, 'run',
+                    return_value=subprocess.CompletedProcess([], 0, data, '')):
+                with self.assertRaises(ValueError): module.closure_size(paths)
+
+    def test_oversize_registered_closure_is_rejected_before_archive_export(self):
+        with tempfile.TemporaryDirectory() as temporary, patch.dict(os.environ, {}, clear=True), \
+                patch.object(module, 'roots', return_value=['/nix/store/' + 'a' * 32 + '-public']), \
+                patch.object(module.policy, 'runtime', return_value=['/nix/store/' + 'a' * 32 + '-public']), \
+                patch.object(module, 'closure_size', return_value=1025), \
+                patch.object(module.subprocess, 'Popen') as process:
+            directory = Path(temporary) / 'artifact'
+            with self.assertRaises(module.TransferLimitExceeded): module.transfer('export', directory, 1024)
+            process.assert_not_called()
+            self.assertFalse((directory / 'closure.nar.gz').exists())
+
+    def test_failure_categories_never_include_sensitive_exception_details(self):
+        secret = 'private-path-and-credential-fixture'
+        cases = [(module.TransferLimitExceeded(secret), 'closure-limit-exceeded'),
+                 (OSError(28, secret), 'io-error-28'),
+                 (subprocess.CalledProcessError(1, secret, stderr=secret), 'subprocess-failed'),
+                 (ValueError(secret), 'invalid-transfer-or-policy-rejected')]
+        for error, expected in cases:
+            self.assertEqual(module.failure_category(error), expected)
+            self.assertNotIn(secret, module.failure_category(error))
+
     def test_oversize_stream_is_rejected_before_excess_is_written(self):
         target = io.BytesIO()
         with self.assertRaises(ValueError): module.copy_bounded(io.BytesIO(b'x' * 1025), target, 1024)
