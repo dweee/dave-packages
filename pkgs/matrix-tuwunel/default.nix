@@ -5,6 +5,9 @@
   symlinkJoin,
 }: let
   unwrapped = matrix-tuwunel.overrideAttrs (old: {
+    # Each database test creates its own CPU-scaled worker pool. Concurrent
+    # pools exhaust container task limits; keep all tests, running one at a time.
+    dontUseCargoParallelTests = true;
     patches =
       (old.patches or [])
       ++ [./authenticated-media-redirects.patch];

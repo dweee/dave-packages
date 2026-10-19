@@ -26,6 +26,10 @@ with synthetic credentials. The fixture checks authentication, signed URLs,
 headers, route aliases, thumbnails, multipart writes and fallback behavior.
 The exported package depends on that validation.
 
+Rust tests run serially because each database test starts a CPU-scaled worker
+pool, and simultaneous pools can exhaust a container's task limit. Compilation
+remains parallel and no tests are skipped.
+
 Configure the existing Matrix service to use this package. Supply S3 credentials
 through its runtime secret mechanism, with a private bucket and the correct
 regional endpoint. Enable redirects only after the patched runtime is active.
