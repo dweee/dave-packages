@@ -18,6 +18,12 @@ runs the upstream offline SDK request/serialization tests; these verify the
 real SDK request path without credentials or model calls. An authenticated
 turn and effective context-window measurement are separate runtime checks.
 
+On Linux the build also compiles node-pty from source and removes its
+prebuilt binaries. node-pty's install script skips `node-gyp` whenever a
+matching prebuild exists, and the upstream `pty.node` has no RUNPATH for
+`libstdc++.so.6` on NixOS, so the server failed with `NodePtyModuleLoadError`.
+`postInstall` loads the installed module to catch a regression at build time.
+
 Consume the catalog's exact outputs rather than rebuilding against a host's
 different nixpkgs pin:
 
