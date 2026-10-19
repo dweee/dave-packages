@@ -158,8 +158,13 @@ artifacts for one day; the existing `Preserve package backups` workflow may
 copy those archives to public prereleases. These are public redistribution,
 which is why the closure policy runs before the archive exists.
 
-Transfers default to a maximum of 4 GiB uncompressed; `ATTIC_MAX_CLOSURE_MIB`
-accepts 1–4096 MiB. An oversize closure fails rather than silently dropping data.
+Transfers default to a maximum of 4 GiB uncompressed. The T3 package family uses
+8 GiB: its measured native Darwin runtime closure is 5,418,932,840 bytes. Export
+and import use the same bound, preserving the complete recovery archive.
+`ATTIC_MAX_CLOSURE_MIB` configures other packages; `ATTIC_T3_MAX_CLOSURE_MIB`
+configures T3. Both accept 1–8192 MiB. An oversize closure still fails before
+publication rather than silently dropping data. Runtime policy checks precede
+size reporting, and failure diagnostics never print arbitrary exception details.
 Build summaries show build and upload duration. Cache success still requires
 checking the consumer's exact output store path and authenticated narinfo URL.
 

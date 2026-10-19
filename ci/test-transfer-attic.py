@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from contextlib import redirect_stderr
 from unittest.mock import patch, MagicMock
 
 spec = importlib.util.spec_from_file_location('transfer', Path(__file__).with_name('transfer-attic.py'))
@@ -14,6 +15,17 @@ spec.loader.exec_module(module)
 
 
 class TransferSafetyTests(unittest.TestCase):
+    def test_cli_allows_bounded_large_closure_and_rejects_excess_before_transfer(self):
+        for mib, expected in [('8192', 0), ('8193', 1), ('0', 1)]:
+            with self.subTest(mib=mib), patch.dict(os.environ, {'ATTIC_MAX_CLOSURE_MIB': mib}, clear=True), \
+                    patch.object(module.sys, 'argv', ['transfer-attic.py', 'export', '--directory', 'artifact']), \
+                    patch.object(module, 'transfer') as transfer, redirect_stderr(io.StringIO()):
+                self.assertEqual(module.main(), expected)
+                if expected:
+                    transfer.assert_not_called()
+                else:
+                    transfer.assert_called_once_with('export', Path('artifact'), 8192 * 1024 * 1024)
+
     def test_closure_size_uses_registered_sizes_and_rejects_incomplete_metadata(self):
         paths = ['/nix/store/' + 'a' * 32 + '-one', '/nix/store/' + 'b' * 32 + '-two']
         with patch.object(module.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0, '17\n25\n', '')):
