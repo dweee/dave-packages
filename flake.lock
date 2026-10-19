@@ -244,11 +244,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792358564,
-        "narHash": "sha256-9vg8LQDr+pU0egYRtVjxme+dTkwrNw9J+ZhznAyyE0s=",
+        "lastModified": 1792376186,
+        "narHash": "sha256-vZsCtFawjqCPF14o7oGUU2IZYEaSTIXKdTJC+UDaUFg=",
         "ref": "flakey",
-        "rev": "a04bd96e23750dbb2076319a1ef938208a64fce1",
-        "revCount": 1402,
+        "rev": "823bd190138bfcfaa3727e82d799393c5cb9be73",
+        "revCount": 1404,
         "type": "git",
         "url": "https://github.com/dweee/kopuz"
       },
