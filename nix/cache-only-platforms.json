@@ -1,0 +1,20 @@
+{
+  "x86_64-linux": [
+    "veracrypt",
+    "ffmpeg-full",
+    "ffmpeg-full-rocm",
+    "nvidia-580",
+    "keyguard",
+    "stemlab"
+  ],
+  "aarch64-linux": [
+    "veracrypt",
+    "ffmpeg-full",
+    "keyguard"
+  ],
+  "aarch64-darwin": [
+    "ffmpeg-full",
+    "keyguard",
+    "stemlab"
+  ]
+}

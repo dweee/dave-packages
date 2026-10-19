@@ -2,6 +2,7 @@
 """Transfer selected Nix outputs between disposable jobs without running them."""
 import argparse
 import gzip
+import importlib.util
 import hashlib
 import json
 import os
@@ -10,6 +11,34 @@ import re
 import subprocess
 import sys
 
+
+spec = importlib.util.spec_from_file_location("public_closure", Path(__file__).with_name("public-closure.py"))
+policy = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(policy)
+
+class TransferLimitExceeded(ValueError):
+    pass
+
+
+def closure_size(paths):
+    result = subprocess.run(["nix-store", "--query", "--size", *paths],
+                            capture_output=True, text=True, check=True)
+    sizes = result.stdout.splitlines()
+    if len(sizes) != len(paths) or any(not size.isascii() or not size.isdecimal()
+                                       for size in sizes):
+        raise ValueError("Invalid runtime closure sizes")
+    return sum(map(int, sizes))
+
+
+def failure_category(error):
+    # Never print evaluator output, denied paths, command arguments or secrets.
+    if isinstance(error, TransferLimitExceeded):
+        return "closure-limit-exceeded"
+    if isinstance(error, OSError):
+        return "io-error-" + str(error.errno)
+    if isinstance(error, subprocess.SubprocessError):
+        return "subprocess-failed"
+    return "invalid-transfer-or-policy-rejected"
 
 def roots(manifest):
     if manifest.stat().st_size > 1024 * 1024:
@@ -26,7 +55,7 @@ def copy_bounded(source, target, limit):
     while chunk := source.read(1024 * 1024):
         total += len(chunk)
         if total > limit:
-            raise ValueError("Closure transfer exceeds ATTIC_MAX_CLOSURE_MIB")
+            raise TransferLimitExceeded("Closure transfer exceeds ATTIC_MAX_CLOSURE_MIB")
         target.write(chunk)
     return total
 
@@ -38,10 +67,15 @@ def transfer(mode, directory, limit):
     manifest = directory / "outputs.txt"
     if mode == "export":
         paths = roots(Path("outputs.txt"))
-        requisites = subprocess.run(["nix-store", "--query", "--requisites", *paths],
-                                   capture_output=True, text=True, check=True).stdout.splitlines()
-        if not requisites or any(not re.fullmatch(r"/nix/store/[a-z0-9]{32}-[^/\s]+", p) for p in requisites):
+        # This must run before an archive or public artifact is created.
+        requisites = policy.runtime(paths)
+        if any(not re.fullmatch(r"/nix/store/[a-z0-9]{32}-[^/\s]+", p) for p in requisites):
             raise ValueError("Invalid closure paths")
+        size = closure_size(requisites)
+        print(f"Selected runtime closure: paths={len(requisites)}; nar_bytes={size}; "
+              f"transfer_limit_bytes={limit}", flush=True)
+        if size > limit:
+            raise TransferLimitExceeded("Runtime closure exceeds transfer limit")
         process = subprocess.Popen(["nix-store", "--export", *requisites], stdout=subprocess.PIPE)
         try:
             with gzip.open(directory / "closure.nar.gz", "wb", compresslevel=1) as archive:
@@ -75,6 +109,7 @@ def transfer(mode, directory, limit):
             if process.wait():
                 raise ValueError("Closure import failed")
             subprocess.run(["nix-store", "--check-validity", *paths], check=True)
+            policy.runtime(paths)
             # The export/import format drops signatures. Restore them only
             # from the official cache so Attic can skip its existing outputs.
             # Builder-supplied metadata never decides which paths to skip.
@@ -94,11 +129,12 @@ def main():
     args = parser.parse_args()
     try:
         mib = int(os.environ.get("ATTIC_MAX_CLOSURE_MIB") or "2048")
-        if not 1 <= mib <= 4096:
-            raise ValueError("Closure transfer limit must be between 1 and 4096 MiB")
+        if not 1 <= mib <= 8192:
+            raise ValueError("Closure transfer limit must be between 1 and 8192 MiB")
         transfer(args.mode, args.directory, mib * 1024 * 1024)
-    except (OSError, ValueError, subprocess.SubprocessError):
-        print("Nix closure transfer failed; no cache publication is authorized.", file=sys.stderr)
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        print("Nix closure transfer failed [" + failure_category(error)
+              + "]; no cache publication is authorized.", file=sys.stderr)
         return 1
     return 0
 

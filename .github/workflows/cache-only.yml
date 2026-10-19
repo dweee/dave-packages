@@ -1,0 +1,76 @@
+name: Dave packages cache only
+"on":
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Approved cache-only package, or all
+        required: true
+        default: all
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: dave-cache-only-${{ github.ref }}-${{ inputs.package || 'all' }}
+  cancel-in-progress: false
+jobs:
+  plan:
+    if: ${{ vars.DAVE_PACKAGES_CI_ENABLED == 'true' && vars.ATTIC_PUSH_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Check portable publication metadata
+        run: python3 ci/test-public-source.py
+      - id: matrix
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package || 'all' }}
+        run: |
+          matrix=$(python3 ci/cache-only-matrix.py --package "$SELECTED_PACKAGE")
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+  build-and-publish:
+    needs: plan
+    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    name: Cache only ${{ matrix.package }} (${{ matrix.system }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Reclaim unused Linux SDK space
+        if: runner.os == 'Linux'
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+      - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+        with:
+          nix_version: "2.34.7"
+          enable_kvm: false
+          nix_conf: |
+            experimental-features = nix-command flakes
+            accept-flake-config = false
+            substituters = https://cache.nixos.org/
+            extra-substituters =
+            max-jobs = 1
+            cores = 3
+      - name: Configure authenticated private reads
+        env:
+          ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
+        run: python3 ci/configure-attic-read.py
+      - name: Build and publish directly to private flakey
+        env:
+          TARGET_SYSTEM: ${{ matrix.system }}
+          TARGET_PACKAGE: ${{ matrix.package }}
+          ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
+        run: python3 ci/build-cache-only.py
+      - name: Remove runtime read credential
+        if: always()
+        run: rm -f "$RUNNER_TEMP/flakey-attic.netrc"

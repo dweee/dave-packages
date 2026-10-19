@@ -1,0 +1,148 @@
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -7,7 +7,7 @@
+ mod runtime;
+ mod state;
+ 
+-use std::path::PathBuf;
++use std::{path::PathBuf, sync::Mutex};
+ 
+ use pumpkin_plugin_api::{
+     Context, Plugin, PluginMetadata,
+@@ -29,14 +29,14 @@
+ 
+ struct TpsBarPlugin {
+     runtime: SharedRuntime,
+-    refresh_task_id: Option<u32>,
++    refresh_task_id: Mutex<Option<u32>>,
+ }
+ 
+ impl Plugin for TpsBarPlugin {
+     fn new() -> Self {
+         Self {
+             runtime: new_shared_runtime(),
+-            refresh_task_id: None,
++            refresh_task_id: Mutex::new(None),
+         }
+     }
+ 
+@@ -54,7 +54,7 @@
+         }
+     }
+ 
+-    fn on_load(&mut self, context: Context) -> pumpkin_plugin_api::Result<()> {
++    fn on_load(&self, context: Context) -> pumpkin_plugin_api::Result<()> {
+         let data_folder = PathBuf::from(context.get_data_folder());
+         let loaded_config = load_or_create(&data_folder)?;
+         if let Some(warning) = &loaded_config.warning {
+@@ -94,7 +94,7 @@
+         )?;
+ 
+         let runtime = self.runtime.clone();
+-        self.refresh_task_id = Some(scheduler::schedule_repeating_task(
++        *self.refresh_task_id.lock().unwrap_or_else(std::sync::PoisonError::into_inner) = Some(scheduler::schedule_repeating_task(
+             1,
+             refresh_interval_ticks,
+             move |server| refresh_all(&server, &runtime),
+@@ -109,8 +109,8 @@
+         Ok(())
+     }
+ 
+-    fn on_unload(&mut self, _context: Context) -> pumpkin_plugin_api::Result<()> {
+-        if let Some(task_id) = self.refresh_task_id.take() {
++    fn on_unload(&self, _context: Context) -> pumpkin_plugin_api::Result<()> {
++        if let Some(task_id) = self.refresh_task_id.lock().unwrap_or_else(std::sync::PoisonError::into_inner).take() {
+             scheduler::cancel_task(task_id);
+         }
+         let result = shutdown(&self.runtime);
+--- a/src/commands.rs
++++ b/src/commands.rs
+@@ -12,7 +12,7 @@
+ };
+ 
+ pub fn build(runtime: SharedRuntime) -> Command {
+-    let command = Command::new(
++    let mut command = Command::new(
+         &["tpsbar".into()],
+         "切换个人 TPS BossBar，或设置血条进度指标 / Toggle your TPSBar or set its progress metric",
+     )
+@@ -20,20 +20,20 @@
+         runtime: runtime.clone(),
+     });
+ 
+-    let by = CommandNode::literal("by");
+-    by.then(CommandNode::literal("mspt").execute(SetMetricHandler {
++    let mut by = CommandNode::literal("by");
++    by = by.then(CommandNode::literal("mspt").execute(SetMetricHandler {
+         runtime: runtime.clone(),
+         metric: BarMetric::Mspt,
+     }));
+-    by.then(CommandNode::literal("tps").execute(SetMetricHandler {
++    by = by.then(CommandNode::literal("tps").execute(SetMetricHandler {
+         runtime: runtime.clone(),
+         metric: BarMetric::Tps,
+     }));
+-    by.then(CommandNode::literal("ping").execute(SetMetricHandler {
++    by = by.then(CommandNode::literal("ping").execute(SetMetricHandler {
+         runtime,
+         metric: BarMetric::Ping,
+     }));
+-    command.then(by);
++    command = command.then(by);
+     command
+ }
+ 
+@@ -168,7 +168,5 @@
+ }
+ 
+ fn colored_message(message: &str, color: NamedColor) -> TextComponent {
+-    let component = TextComponent::text(message);
+-    component.color_named(color);
+-    component
++    TextComponent::text(message).color_named(color)
+ }
+--- a/src/display.rs
++++ b/src/display.rs
+@@ -44,30 +44,30 @@
+     }
+ 
+     pub fn title(&self) -> TextComponent {
+-        let title = gray_text("TPS: ");
+-        title.add_child(colored_text(&format!("{:.2}", self.tps), self.tps_severity));
+-        title.add_child(gray_text("  MSPT: "));
+-        title.add_child(colored_text(
++        let mut title = gray_text("TPS: ");
++        title = title.add_child(colored_text(&format!("{:.2}", self.tps), self.tps_severity));
++        title = title.add_child(gray_text("  MSPT: "));
++        title = title.add_child(colored_text(
+             &format!("{:.2}", self.mspt),
+             self.mspt_severity,
+         ));
+-        title.add_child(gray_text(" ms"));
+-        title.add_child(gray_text("  PING: "));
+-        title.add_child(colored_text(&self.ping.to_string(), self.ping_severity));
+-        title.add_child(gray_text(" ms"));
++        title = title.add_child(gray_text(" ms"));
++        title = title.add_child(gray_text("  PING: "));
++        title = title.add_child(colored_text(&self.ping.to_string(), self.ping_severity));
++        title = title.add_child(gray_text(" ms"));
+         title
+     }
+ }
+ 
+ fn gray_text(text: &str) -> TextComponent {
+-    let component = TextComponent::text(text);
+-    component.color_named(NamedColor::Gray);
++    let mut component = TextComponent::text(text);
++    component = component.color_named(NamedColor::Gray);
+     component
+ }
+ 
+ fn colored_text(text: &str, severity: Severity) -> TextComponent {
+-    let component = TextComponent::text(text);
+-    component.color_named(match severity {
++    let mut component = TextComponent::text(text);
++    component = component.color_named(match severity {
+         Severity::Green => NamedColor::Green,
+         Severity::Yellow => NamedColor::Yellow,
+         Severity::Gold => NamedColor::Gold,

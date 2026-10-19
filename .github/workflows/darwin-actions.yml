@@ -30,6 +30,10 @@ jobs:
         run: |
           python3 ci/test-push-attic.py
           python3 ci/test-transfer-attic.py
+          python3 ci/test-public-closure.py
+          python3 ci/test-configure-attic-read.py
+          python3 ci/test-cache-only.py
+          python3 ci/test-public-source.py
       - id: matrix
         env:
           SELECTED_PACKAGE: ${{ inputs.package || 'all' }}
@@ -43,7 +47,7 @@ jobs:
     timeout-minutes: 180
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 3
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -57,11 +61,25 @@ jobs:
           nix_conf: |
             experimental-features = nix-command flakes
             accept-flake-config = false
+            http2 = false
+            connect-timeout = 15
+            download-attempts = 3
             substituters = https://cache.nixos.org/
-            extra-substituters = ${{ vars.ATTIC_SUBSTITUTER }}
-            extra-trusted-public-keys = ${{ vars.ATTIC_PUBLIC_KEY }}
+            extra-substituters =
+            extra-trusted-public-keys = flakey:mDx4DiNpH5w1Pl8OAKFFWq1ZsypA9lbaFKNiRWhqYE8=
             max-jobs = 1
             cores = 3
+      - name: Configure authenticated private cache reads for trusted builds
+        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+        env:
+          ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
+        run: python3 ci/configure-attic-read.py
+      - name: Configure pull-only cache reads for the reviewed owner PR head
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor == github.repository_owner && vars.ATTIC_APPROVED_PR_SHA != '' && github.event.pull_request.head.sha == vars.ATTIC_APPROVED_PR_SHA }}
+        env:
+          ATTIC_PULL_TOKEN: ${{ secrets.ATTIC_PULL_TOKEN }}
+          ATTIC_APPROVED_PR_SHA: ${{ vars.ATTIC_APPROVED_PR_SHA }}
+        run: python3 ci/configure-attic-read.py --pr-read
       - name: Evaluate and build the selected native package
         env:
           TARGET_SYSTEM: ${{ matrix.system }}
@@ -70,6 +88,7 @@ jobs:
           set -euo pipefail
           test "$(nix eval --impure --raw --expr builtins.currentSystem)" = "$TARGET_SYSTEM"
           target=".#packages.$TARGET_SYSTEM.$TARGET_PACKAGE"
+          python3 ci/public-closure.py "$target"
           SECONDS=0
           nix build "$target" --no-update-lock-file --no-write-lock-file --no-link --print-out-paths -L > outputs.txt
           {
@@ -82,11 +101,15 @@ jobs:
         env:
           TARGET_SYSTEM: ${{ matrix.system }}
         run: |
+          python3 ci/public-closure.py ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless"
           nix build ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless" --no-update-lock-file --no-write-lock-file --no-link -L
+      - name: Remove private read credentials before exporting build data
+        if: ${{ always() }}
+        run: python3 ci/configure-attic-read.py --cleanup
       - name: Save selected runtime closures independently of cache publication
         timeout-minutes: 15
         env:
-          ATTIC_MAX_CLOSURE_MIB: ${{ vars.ATTIC_MAX_CLOSURE_MIB || '4096' }}
+          ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
         run: python3 ci/transfer-attic.py export --directory attic-transfer
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -134,13 +157,13 @@ jobs:
       - name: Import data without running any package programs
         timeout-minutes: 15
         env:
-          ATTIC_MAX_CLOSURE_MIB: ${{ vars.ATTIC_MAX_CLOSURE_MIB || '4096' }}
+          ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
         run: python3 ci/transfer-attic.py import --directory attic-transfer
       - name: Publish imported package outputs to Attic
         timeout-minutes: 30
         env:
           ATTIC_BIN: ${{ steps.attic.outputs.binary }}
-          ATTIC_ENDPOINT: ${{ vars.ATTIC_ENDPOINT }}
-          ATTIC_CACHE: ${{ vars.ATTIC_CACHE }}
+          ATTIC_ENDPOINT: https://attic.monke.fail
+          ATTIC_CACHE: flakey
           ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
         run: python3 ci/push-attic.py --outputs attic-transfer/outputs.txt

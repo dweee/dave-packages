@@ -1,0 +1,543 @@
+--- a/src/api/client/media.rs
++++ b/src/api/client/media.rs
+@@ -1,6 +1,10 @@
+ use std::time::Duration;
+ 
+-use axum::extract::State;
++use axum::{
++	extract::State,
++	response::{IntoResponse, Redirect, Response},
++};
++use http::{HeaderValue, header};
+ use reqwest::Url;
+ use ruma::{
+ 	MilliSecondsSinceUnixEpoch, Mxc, UserId,
+@@ -24,7 +28,7 @@
+ 	media::{Animate, CACHE_CONTROL_IMMUTABLE, CORP_CROSS_ORIGIN, Dim, MXC_LENGTH, Media},
+ };
+ 
+-use crate::{ClientIp, Ruma};
++use crate::{ClientIp, Ruma, RumaResponse};
+ 
+ /// # `GET /_matrix/client/v1/media/config`
+ pub(crate) async fn get_media_config_route(
+@@ -159,7 +163,7 @@
+ 	State(services): State<crate::State>,
+ 	ClientIp(client): ClientIp,
+ 	body: Ruma<get_content_thumbnail::v1::Request>,
+-) -> Result<get_content_thumbnail::v1::Response> {
++) -> Result<Response> {
+ 	let user = body.sender_user();
+ 
+ 	let dim = Dim::from_ruma(body.width, body.height, body.method.clone())?;
+@@ -169,19 +173,36 @@
+ 		media_id: &body.media_id,
+ 	};
+ 
++	if let Some(url) = services
++		.media
++		.client_redirect_url(&mxc, &dim.normalized(), animate, None)
++		.await?
++	{
++		return Ok(media_redirect(&url));
++	}
++
+ 	let Media {
+ 		content,
+ 		content_type,
+ 		content_disposition,
+ 	} = fetch_thumbnail(&services, &mxc, user, body.timeout_ms, &dim, animate).await?;
+ 
+-	Ok(get_content_thumbnail::v1::Response {
++	if let Some(url) = services
++		.media
++		.client_redirect_url(&mxc, &dim.normalized(), animate, None)
++		.await?
++	{
++		return Ok(media_redirect(&url));
++	}
++
++	Ok(RumaResponse(get_content_thumbnail::v1::Response {
+ 		file: content,
+ 		content_type: content_type.map(Into::into),
+ 		cross_origin_resource_policy: Some(CORP_CROSS_ORIGIN.into()),
+ 		cache_control: Some(CACHE_CONTROL_IMMUTABLE.into()),
+ 		content_disposition,
+ 	})
++	.into_response())
+ }
+ 
+ /// # `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}`
+@@ -197,25 +218,34 @@
+ 	State(services): State<crate::State>,
+ 	ClientIp(client): ClientIp,
+ 	body: Ruma<get_content::v1::Request>,
+-) -> Result<get_content::v1::Response> {
++) -> Result<Response> {
+ 	let mxc = Mxc {
+ 		server_name: &body.server_name,
+ 		media_id: &body.media_id,
+ 	};
+ 
++	if let Some(url) = services
++		.media
++		.client_redirect_url(&mxc, &Dim::default(), Animate::Allowed, None)
++		.await?
++	{
++		return Ok(media_redirect(&url));
++	}
++
+ 	let Media {
+ 		content,
+ 		content_type,
+ 		content_disposition,
+ 	} = fetch_file(&services, &mxc, body.timeout_ms, None).await?;
+ 
+-	Ok(get_content::v1::Response {
++	Ok(RumaResponse(get_content::v1::Response {
+ 		file: content,
+ 		content_type: content_type.map(Into::into),
+ 		cross_origin_resource_policy: Some(CORP_CROSS_ORIGIN.into()),
+ 		cache_control: Some(CACHE_CONTROL_IMMUTABLE.into()),
+ 		content_disposition,
+ 	})
++	.into_response())
+ }
+ 
+ /// # `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}/{fileName}`
+@@ -231,25 +261,34 @@
+ 	State(services): State<crate::State>,
+ 	ClientIp(client): ClientIp,
+ 	body: Ruma<get_content_as_filename::v1::Request>,
+-) -> Result<get_content_as_filename::v1::Response> {
++) -> Result<Response> {
+ 	let mxc = Mxc {
+ 		server_name: &body.server_name,
+ 		media_id: &body.media_id,
+ 	};
+ 
++	if let Some(url) = services
++		.media
++		.client_redirect_url(&mxc, &Dim::default(), Animate::Allowed, Some(&body.filename))
++		.await?
++	{
++		return Ok(media_redirect(&url));
++	}
++
+ 	let Media {
+ 		content,
+ 		content_type,
+ 		content_disposition,
+ 	} = fetch_file(&services, &mxc, body.timeout_ms, Some(&body.filename)).await?;
+ 
+-	Ok(get_content_as_filename::v1::Response {
++	Ok(RumaResponse(get_content_as_filename::v1::Response {
+ 		file: content,
+ 		content_type: content_type.map(Into::into),
+ 		cross_origin_resource_policy: Some(CORP_CROSS_ORIGIN.into()),
+ 		cache_control: Some(CACHE_CONTROL_IMMUTABLE.into()),
+ 		content_disposition,
+ 	})
++	.into_response())
+ }
+ 
+ /// # `GET /_matrix/client/v1/media/preview_url`
+@@ -357,3 +396,15 @@
+ 		content_disposition,
+ 	})
+ }
++
++/// A signed URL is a temporary capability; never cache the redirect itself.
++fn media_redirect(url: &Url) -> Response {
++	let mut response = Redirect::temporary(url.as_str()).into_response();
++	response
++		.headers_mut()
++		.insert(header::CACHE_CONTROL, HeaderValue::from_static("private, no-store"));
++	response
++		.headers_mut()
++		.insert(header::VARY, HeaderValue::from_static("Authorization"));
++	response
++}
+--- a/src/api/router.rs
++++ b/src/api/router.rs
+@@ -14,6 +14,11 @@
+ pub use client_ip::{ConfiguredIpSource, TrustedPeerSubnets};
+ use const_str::{concat, join, replace};
+ use http::{HeaderValue, header};
++use ruma::api::{
++	Metadata,
++	client::authenticated_media::{get_content, get_content_as_filename, get_content_thumbnail},
++	path_builder::PathBuilder,
++};
+ use tower_http::set_header::SetResponseHeaderLayer;
+ use tuwunel_core::{Server, err};
+ 
+@@ -404,10 +409,23 @@
+ 	media_deny_framing: bool,
+ 	media_deny_inline_styles: bool,
+ ) -> Router<State> {
+-	let media_content_router = Router::new()
+-		.ruma_route(&client::get_content_thumbnail_route)
+-		.ruma_route(&client::get_content_route)
+-		.ruma_route(&client::get_content_as_filename_route);
++	// Retain Ruma's complete route history and authenticated request extractor,
++	// while permitting either a typed file response or a raw HTTP redirect.
++	let media_content_router = get_content_thumbnail::v1::Request::PATH_BUILDER
++		.all_paths()
++		.fold(Router::new(), |router, path| {
++			router.route(path, get(client::get_content_thumbnail_route))
++		});
++	let media_content_router = get_content::v1::Request::PATH_BUILDER
++		.all_paths()
++		.fold(media_content_router, |router, path| {
++			router.route(path, get(client::get_content_route))
++		});
++	let media_content_router = get_content_as_filename::v1::Request::PATH_BUILDER
++		.all_paths()
++		.fold(media_content_router, |router, path| {
++			router.route(path, get(client::get_content_as_filename_route))
++		});
+ 
+ 	let media_content_router =
+ 		media_content_headers(media_content_router, media_deny_framing, media_deny_inline_styles);
+--- a/src/service/media/mod.rs
++++ b/src/service/media/mod.rs
+@@ -17,7 +17,7 @@
+ use base64::{Engine as _, engine::general_purpose};
+ use futures::{FutureExt, Stream, StreamExt, TryFutureExt, TryStreamExt, pin_mut};
+ use http::StatusCode;
+-use object_store::ObjectMeta;
++use object_store::{Attribute, Attributes, ObjectMeta};
+ use ruma::{
+ 	Mxc, OwnedMxcUri, OwnedUserId, UserId,
+ 	api::error::{ErrorKind, RetryAfter},
+@@ -301,7 +301,7 @@
+ 		)?;
+ 
+ 		//TODO: Dangling metadata in database if creation fails
+-		self.create_media_file(&key, file)
++		self.create_media_file(&key, file, content_disposition, walk.stored_type(content_type))
+ 			.map_ok(|()| walk.animates())
+ 			.await
+ 	}
+@@ -605,6 +605,54 @@
+ 		pin_mut!(urls);
+ 
+ 		Ok(urls.next().await)
++	}
++
++	/// Direct authenticated-client download, retaining Matrix content headers.
++	/// Old objects without those headers and unavailable providers fall back to
++	/// the ordinary media path. Never expose a URL for an unverified object.
++	pub async fn client_redirect_url(
++		&self,
++		mxc: &Mxc<'_>,
++		dim: &Dim,
++		animate: Animate,
++		filename: Option<&str>,
++	) -> Result<Option<Url>> {
++		let config = &self.services.config;
++		if !config.media_allow_redirect
++			|| config.media_deny_framing
++			|| config.media_deny_inline_styles
++		{
++			return Ok(None);
++		}
++
++		let Ok(Metadata { key, content_type, content_disposition }) = self
++			.db
++			.search_file_metadata(mxc, dim, animate)
++			.await
++		else {
++			return Ok(None);
++		};
++
++		if !animate.accepts_type(content_type.as_deref()) {
++			return Ok(None);
++		}
++
++		let attributes =
++			download_attributes(content_disposition.as_ref(), content_type.as_deref(), filename);
++		let path = self.get_media_name_sha256(&key);
++		for provider in self.storage_providers() {
++			if let Some(url) = provider
++				.signed_media_url(&path, REDIRECT_TTL, &attributes)
++				.await
++				.log_debug_err()
++				.ok()
++				.flatten()
++			{
++				return Ok(Some(url));
++			}
++		}
++
++		Ok(None)
+ 	}
+ 
+ 	/// Gets all the MXC URIs in our media database
+@@ -954,7 +1002,14 @@
+ 			.await
+ 	}
+ 
+-	async fn create_media_file(&self, key: &[u8], file: &[u8]) -> Result {
++	async fn create_media_file(
++		&self,
++		key: &[u8],
++		file: &[u8],
++		content_disposition: Option<&ContentDisposition>,
++		content_type: Option<&str>,
++	) -> Result {
++		let attributes = download_attributes(content_disposition, content_type, None);
+ 		self.storage_providers()
+ 			.try_stream()
+ 			.ready_try_filter(|provider| {
+@@ -973,7 +1028,7 @@
+ 				);
+ 
+ 				if let Err(e) = provider
+-					.put_one(path.as_str(), file.to_vec())
++					.put_one_with_attributes(path.as_str(), file.to_vec(), attributes.clone())
+ 					.await
+ 				{
+ 					return Err!(Database(error!(
+@@ -1053,8 +1108,31 @@
+ 
+ #[inline]
+ #[must_use]
+-pub fn encode_key(key: &[u8]) -> String { general_purpose::URL_SAFE_NO_PAD.encode(key) }
++pub fn encode_key(key: &[u8]) -> String {
++	general_purpose::URL_SAFE_NO_PAD.encode(key)
++}
+ 
+ fn mtime_millis(object: &ObjectMeta) -> u64 {
+ 	u64::try_from(object.last_modified.timestamp_millis()).unwrap_or(0)
+ }
++
++/// The headers are stored on the object because a redirect cannot supply them
++/// on the final response. The same policy sanitizes proxied Matrix downloads.
++fn download_attributes(
++	content_disposition: Option<&ContentDisposition>,
++	content_type: Option<&str>,
++	filename: Option<&str>,
++) -> Attributes {
++	let disposition = utils::content_disposition::make_content_disposition(
++		content_disposition,
++		content_type,
++		filename,
++	);
++	Attributes::from_iter([
++		(
++			Attribute::ContentType,
++			content_type.unwrap_or("application/octet-stream").to_owned(),
++		),
++		(Attribute::ContentDisposition, disposition.to_string()),
++	])
++}
+--- a/src/service/media/thumbnail/request.rs
++++ b/src/service/media/thumbnail/request.rs
+@@ -43,7 +43,8 @@
+ 				.create_file_metadata(mxc, None, dim, content_disposition, content_type)?;
+ 
+ 		// TODO: Remove dangling metadata when file creation fails.
+-		self.create_media_file(&key, file).await?;
++		self.create_media_file(&key, file, content_disposition, content_type)
++			.await?;
+ 
+ 		Ok(())
+ 	}
+--- a/src/service/media/thumbnail/generate.rs
++++ b/src/service/media/thumbnail/generate.rs
+@@ -281,7 +281,8 @@
+ 		Some(content_type),
+ 	)?;
+ 
+-	self.create_media_file(&key, &content).await?;
++	self.create_media_file(&key, &content, Some(&content_disposition), Some(content_type))
++		.await?;
+ 
+ 	let media = Media {
+ 		content,
+--- a/src/service/storage/provider.rs
++++ b/src/service/storage/provider.rs
+@@ -33,8 +33,9 @@
+ use futures::{FutureExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
+ use http::Method;
+ use object_store::{
+-	Attributes, CopyMode, DynObjectStore, GetResult, MultipartUpload, ObjectMeta, ObjectStore,
+-	ObjectStoreExt, PutPayload, PutResult, path::Path, signer::Signer,
++	Attributes, CopyMode, DynObjectStore, GetOptions, GetResult, MultipartUpload, ObjectMeta,
++	ObjectStore, ObjectStoreExt, PutMultipartOptions, PutOptions, PutPayload, PutResult,
++	path::Path, signer::Signer,
+ };
+ use tuwunel_core::{
+ 	Error, Result,
+@@ -146,7 +147,9 @@
+ 	PutPayload: From<T> + From<PutPayload>,
+ {
+ 	if size.is_none_or(|size| size >= self.multipart_threshold()) {
+-		return self.put_multi(path, input).await;
++		return self
++			.put_multi(path, input, Attributes::default())
++			.await;
+ 	}
+ 
+ 	debug!(
+@@ -163,7 +166,8 @@
+ 		.map(Bytes::from)
+ 		.collect();
+ 
+-	self.put_single(path, payload).await
++	self.put_single(path, payload, Attributes::default())
++		.await
+ }
+ 
+ /// Stores one contiguous object under `path`.
+@@ -184,10 +188,33 @@
+ where
+ 	PutPayload: From<T> + From<PutPayload>,
+ {
++	self.put_one_with_attributes(path, input, Attributes::default())
++		.await
++}
++
++/// Stores an object with the response headers a direct download must retain.
++#[implement(Provider)]
++pub async fn put_one_with_attributes<T>(
++	&self,
++	path: &str,
++	input: T,
++	attributes: Attributes,
++) -> Result<PutResult>
++where
++	PutPayload: From<T> + From<PutPayload>,
++{
++	// Filesystem providers do not support object attributes; Matrix retains
++	// their response metadata in its database as before.
++	let attributes = if matches!(&self.config, StorageProvider::local(_)) {
++		Attributes::default()
++	} else {
++		attributes
++	};
++
+ 	let payload: PutPayload = input.into();
+ 
+ 	if payload.content_length() < self.multipart_threshold() {
+-		return self.put_single(path, payload).await;
++		return self.put_single(path, payload, attributes).await;
+ 	}
+ 
+ 	let part_size = self.multipart_part_size();
+@@ -199,7 +226,7 @@
+ 		"Selecting multi-part upload..."
+ 	);
+ 
+-	self.put_multi(path, chunked(payload, part_size).try_stream())
++	self.put_multi(path, chunked(payload, part_size).try_stream(), attributes)
+ 		.await
+ }
+ 
+@@ -217,7 +244,7 @@
+ 		?path,
+ 	)
+ )]
+-async fn put_multi<S, T>(&self, path: &str, input: S) -> Result<PutResult>
++async fn put_multi<S, T>(&self, path: &str, input: S, attributes: Attributes) -> Result<PutResult>
+ where
+ 	S: Stream<Item = Result<T>> + Send,
+ 	PutPayload: From<T> + From<PutPayload>,
+@@ -225,7 +252,7 @@
+ 	let path = self.to_abs_path(path)?;
+ 	let mut handle = self
+ 		.provider
+-		.put_multipart(&path)
++		.put_multipart_opts(&path, PutMultipartOptions { attributes, ..Default::default() })
+ 		.map_err(Error::from)
+ 		.await?;
+ 
+@@ -234,7 +261,7 @@
+ 		.inspect_err(|e| error!(?path, chain = %error_chain(e), "Failed to store object"))
+ 		.await
+ 	{
+-		| Ok(()) =>
++		| Ok(()) => {
+ 			handle
+ 				.complete()
+ 				.map_err(Error::from)
+@@ -245,9 +272,10 @@
+ 						"Failed to store object during completion",
+ 					);
+ 				})
+-				.await,
+-
+-		| Err(e) =>
++				.await
++		},
++
++		| Err(e) => {
+ 			handle
+ 				.abort()
+ 				.map_ok(|()| Err(e))
+@@ -259,7 +287,8 @@
+ 						"Additional errors during error handling",
+ 					);
+ 				})
+-				.await?,
++				.await?
++		},
+ 	}
+ }
+ 
+@@ -277,11 +306,16 @@
+ 		?path,
+ 	)
+ )]
+-async fn put_single(&self, path: &str, input: PutPayload) -> Result<PutResult> {
++async fn put_single(
++	&self,
++	path: &str,
++	input: PutPayload,
++	attributes: Attributes,
++) -> Result<PutResult> {
+ 	let path = self.to_abs_path(path)?;
+ 
+ 	self.provider
+-		.put(&path, input)
++		.put_opts(&path, input, PutOptions { attributes, ..Default::default() })
+ 		.map_err(Error::from)
+ 		.await
+ }
+@@ -419,6 +453,34 @@
+ 		.map_err(Error::from)
+ 		.map_ok(Some)
+ 		.await
++}
++
++/// Signs only an existing object whose headers match the Matrix response.
++/// HEAD avoids downloading the body and makes mixed local/S3 migrations safe.
++#[implement(Provider)]
++pub async fn signed_media_url(
++	&self,
++	path: &str,
++	ttl: Duration,
++	attributes: &Attributes,
++) -> Result<Option<Url>> {
++	if self.signer.is_none() {
++		return Ok(None);
++	}
++
++	let object = self
++		.provider
++		.get_opts(&self.to_abs_path(path)?, GetOptions::new().with_head(true))
++		.await?;
++
++	if !attributes
++		.iter()
++		.all(|(key, value)| object.attributes.get(key) == Some(value))
++	{
++		return Ok(None);
++	}
++
++	self.signed_get_url(path, ttl).await
+ }
+ 
+ /// Deletes one object from this provider.

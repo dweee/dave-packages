@@ -1,0 +1,27 @@
+diff --git a/languages/nix/highlights.scm b/languages/nix/highlights.scm
+--- a/languages/nix/highlights.scm
++++ b/languages/nix/highlights.scm
+@@ -20,6 +20,7 @@
+ 
+ ; comments
+ (comment) @comment ; @spell
++(injection_comment) @comment
+ 
+ ; strings
+ (string_fragment) @string
+diff --git a/languages/nix/injections.scm b/languages/nix/injections.scm
+--- a/languages/nix/injections.scm
++++ b/languages/nix/injections.scm
+@@ -1,5 +1,12 @@
+ ((comment) @content
+   (#set! injection.language "comment"))
++
++; A language-name comment directly before a string selects its grammar.
++; Examples: /* bash */ ''echo hello''; or # zsh before a multiline string.
++((injection_comment (injection_language) @language) .
++  [(indented_string_expression (string_fragment) @content)
++   (string_expression (string_fragment) @content)]
++  (#set! combined))
+ 
+ (apply_expression
+   function: (_) @_func

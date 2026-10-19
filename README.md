@@ -34,6 +34,13 @@ backend limitations. Package installation does not edit client configuration.
 Raw REA's install check covers MCP initialization, tool discovery and native PTY
 creation. The composed headless check also compiles and executes recovered C.
 
+## T3 Code
+
+`t3code-nightly` and `t3code-server-nightly` share a source-build override with
+the Cursor Max Mode backport. Both are built by the native catalog runners.
+See [the package notes](pkgs/t3code/README.md) for the upstream fix, version,
+context-tier behavior and NixOS/nix-darwin/Home Manager consumption.
+
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and

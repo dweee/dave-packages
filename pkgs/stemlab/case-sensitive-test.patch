@@ -1,0 +1,12 @@
+diff --git a/tests/test_producer_queue.py b/tests/test_producer_queue.py
+--- a/tests/test_producer_queue.py
++++ b/tests/test_producer_queue.py
+@@ -909,6 +909,8 @@ class QueueTests(unittest.TestCase):
+     def test_uppercase_wav_has_its_own_destination(self):
+         paths = [self.audio(name) for name in
+                  ('song.wav', 'song.mp3', 'song.WAV', 'song.MP3', 'SONG.wav', 'SONG.mp3')]
++        if len({path.stat().st_ino for path in paths}) != len(paths):
++            self.skipTest('fixture requires a case-sensitive filesystem')
+         self.w.add_paths([str(path) for path in paths])
+         self.assertEqual(len({self.w.stem_output_dir(i).resolve() for i in range(len(paths))}), len(paths))
+         self.w.start_batch()
