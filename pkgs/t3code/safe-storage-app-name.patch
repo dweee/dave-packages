@@ -1,0 +1,29 @@
+--- a/apps/desktop/src/app/DesktopAppIdentity.ts
++++ b/apps/desktop/src/app/DesktopAppIdentity.ts
+@@ -96,0 +97,3 @@
++    // macOS safeStorage names its Keychain item "<app name> Safe Storage".
++    // Connection catalogs encrypted by the upstream app use "t3code". main.ts
++    // sets that name before Clerk touches safeStorage; keep it here too.
+@@ -98 +101,3 @@
+-      `${environment.branding.baseName} ${environment.branding.stageLabel}`,
++      environment.platform === "darwin"
++        ? "t3code"
++        : `${environment.branding.baseName} ${environment.branding.stageLabel}`,
+--- a/apps/desktop/src/app/DesktopAppIdentity.test.ts
++++ b/apps/desktop/src/app/DesktopAppIdentity.test.ts
+@@ -220 +220 @@
+-        assert.deepEqual(calls.setName, ["T3 Code Beta"]);
++        assert.deepEqual(calls.setName, ["t3code"]);
+@@ -262 +262 @@
+-        assert.equal(runtimeName, `T3 Code ${stage}`);
++        assert.equal(runtimeName, "t3code");
+--- a/apps/desktop/src/main.ts
++++ b/apps/desktop/src/main.ts
+@@ -88,0 +89,7 @@
++// macOS safeStorage freezes its Keychain service name ("<app name> Safe Storage")
++// on the first use. Clerk's bridge does that while its layer is built, before
++// DesktopAppIdentity.configure. Catalogs encrypted by the upstream app use "t3code".
++if (process.platform === "darwin") {
++  Electron.app.setName("t3code");
++}
++

@@ -2,6 +2,7 @@
 let
   inherit (inputs.nixpkgs) lib;
   upstream = inputs.t3-code.packages.${system};
+  client = upstream.t3code-nightly-source.override { inherit sourceUnwrapped; };
   isLinux = lib.hasSuffix "-linux" system;
   # node-pty's install script keeps the upstream prebuilt pty.node whenever
   # prebuilds/<platform>-<arch> exists, so `pnpm rebuild` never compiles it.
@@ -12,7 +13,12 @@ let
   # Backport https://github.com/pingdotgg/t3code/pull/18700 (f50aad2422).
   # Both launchers must share the patched server and disk-backed Cursor SDK.
   sourceUnwrapped = upstream.t3code-nightly-source.sourceUnwrapped.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [ ./cursor-max-mode.patch ];
+    patches = (old.patches or [ ]) ++ [
+      ./cursor-max-mode.patch
+      # macOS Keychain service for safeStorage follows app.setName. Upstream
+      # catalogs are encrypted as "t3code Safe Storage".
+      ./safe-storage-app-name.patch
+    ];
     preBuild =
       (old.preBuild or "")
       + lib.optionalString isLinux ''
@@ -45,6 +51,13 @@ let
   });
 in
 {
-  t3code-nightly = upstream.t3code-nightly-source.override { inherit sourceUnwrapped; };
+  t3code-nightly =
+    if lib.hasSuffix "-darwin" system then
+      import ./darwin.nix {
+        inherit client;
+        pkgs = inputs.t3-code.inputs.nixpkgs.legacyPackages.${system};
+      }
+    else
+      client;
   t3code-server-nightly = upstream.t3code-server-nightly-source.override { inherit sourceUnwrapped; };
 }
