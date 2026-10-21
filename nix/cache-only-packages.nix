@@ -1,6 +1,6 @@
 { pkgs }:
 {
-  inherit (pkgs) veracrypt ffmpeg-full;
+  inherit (pkgs) veracrypt ffmpeg-full spotify;
   ffmpeg-full-rocm = (import pkgs.path {
     system = pkgs.stdenv.hostPlatform.system;
     config = { allowUnfree = true; rocmSupport = true; };

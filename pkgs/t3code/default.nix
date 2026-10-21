@@ -2,6 +2,7 @@
 let
   inherit (inputs.nixpkgs) lib;
   upstream = inputs.t3-code.packages.${system};
+  client = upstream.t3code-nightly-source.override { inherit sourceUnwrapped; };
   isLinux = lib.hasSuffix "-linux" system;
   # node-pty's install script keeps the upstream prebuilt pty.node whenever
   # prebuilds/<platform>-<arch> exists, so `pnpm rebuild` never compiles it.
@@ -12,7 +13,12 @@ let
   # Backport https://github.com/pingdotgg/t3code/pull/18700 (f50aad2422).
   # Both launchers must share the patched server and disk-backed Cursor SDK.
   sourceUnwrapped = upstream.t3code-nightly-source.sourceUnwrapped.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [ ./cursor-max-mode.patch ];
+    patches = (old.patches or [ ]) ++ [
+      ./cursor-max-mode.patch
+      # macOS Keychain service for safeStorage follows app.setName. Upstream
+      # catalogs are encrypted as "t3code Safe Storage".
+      ./safe-storage-app-name.patch
+    ];
     preBuild =
       (old.preBuild or "")
       + lib.optionalString isLinux ''
@@ -26,6 +32,21 @@ let
           rm -rf "$pty"/node-addon-api@*
         done
       '';
+    # Upstream copies the entire workspace install, including build tools and
+    # test runners. The bundles only need their declared runtime externals and those packages' production closure.
+    installPhase =
+      builtins.replaceStrings
+        [
+          ''cp -r --no-preserve=mode node_modules "$out/libexec/t3code"''
+          "apps/server/{node_modules,dist}"
+          "apps/desktop/{package.json,node_modules,dist-electron}"
+        ]
+        [
+          ''node ${./stage-runtime.mjs} "$PWD" "$out/libexec/t3code"''
+          "apps/server/dist"
+          "apps/desktop/{package.json,dist-electron}"
+        ]
+        old.installPhase;
     postInstall =
       (old.postInstall or "")
       + lib.optionalString isLinux ''
@@ -36,6 +57,7 @@ let
     doCheck = true;
     checkPhase = ''
       runHook preCheck
+      T3CODE_STAGE_RUNTIME_SCRIPT=${./stage-runtime.mjs} node --test ${./stage-runtime.test.mjs}
       pnpm --dir packages/provider-cursor exec vp test run src/server/sdk.test.ts
       runHook postCheck
     '';
@@ -45,6 +67,13 @@ let
   });
 in
 {
-  t3code-nightly = upstream.t3code-nightly-source.override { inherit sourceUnwrapped; };
+  t3code-nightly =
+    if lib.hasSuffix "-darwin" system then
+      import ./darwin.nix {
+        inherit client;
+        pkgs = inputs.t3-code.inputs.nixpkgs.legacyPackages.${system};
+      }
+    else
+      client;
   t3code-server-nightly = upstream.t3code-server-nightly-source.override { inherit sourceUnwrapped; };
 }
