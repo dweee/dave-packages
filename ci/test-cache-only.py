@@ -127,9 +127,12 @@ class CacheOnlyBoundary(unittest.TestCase):
 
     def test_cache_only_selection_and_native_runners(self):
         jobs = matrix.matrix("all")["include"]
-        self.assertEqual(len(jobs), 12)
+        self.assertEqual(len(jobs), 13)
         self.assertEqual({j["runner"] for j in jobs}, {"ubuntu-24.04", "ubuntu-24.04-arm", "macos-15"})
         self.assertEqual(len(matrix.matrix("keyguard")["include"]), 3)
+        self.assertEqual(matrix.matrix("spotify")["include"], [
+            {"system": "aarch64-darwin", "runner": "macos-15", "package": "spotify"}
+        ])
         with self.assertRaises(ValueError): matrix.matrix("wiicompiled-disc-rmcp01")
 
 if __name__ == "__main__": unittest.main()

@@ -1,4 +1,12 @@
 final: prev: {
+  # LLVM's Darwin strip mistakes the ICO header for COFF and expands this
+  # 19 KiB resource to 771 MiB. Same exclusion as nixpkgs PR #299480.
+  # Spicetify inherits this attribute when overriding the base package.
+  spotify = prev.spotify.overrideAttrs (old: {
+    stripExclude =
+      (old.stripExclude or [ ]) ++ prev.lib.optionals prev.stdenv.hostPlatform.isDarwin [ "favicon.ico" ];
+  });
+
   # Vendored redlib (a4d36e95 + named MAIN FEEDS). See pkgs/redlib and
   # docs/superpowers/specs/2026-08-12-redlib-named-feeds-design.md.
   redlib = prev.callPackage ../pkgs/redlib { };

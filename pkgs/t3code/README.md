@@ -5,6 +5,14 @@ LisaScheers/t3-code-nix, pinned to T3 Code `0.1.1-nightly.20261017.3272`.
 The desktop and headless launchers share one patched server build. Linux x86,
 Linux ARM and Apple Silicon macOS use their native catalog runners.
 
+The installed tree contains the bundles and their runtime externals, selected
+by T3's own CLI/desktop packaging predicates. `stage-runtime.mjs` copies those
+packages and their production/peer dependencies from the offline pnpm install,
+keeping separate package versions and only host-compatible optional binaries.
+It rebuilds relative links and rejects missing dependencies or links outside
+the output. Build tools, test runners and workspace sources stay in the build
+directory. The native Node PTY rebuild and Cursor SDK patches are preserved.
+
 The patch is the unmodified diff from [T3 PR #18700](https://github.com/pingdotgg/t3code/pull/18700),
 head `f50aad2422`, credited there to Matthew Feroz and emcee6798. It fixes
 [issue #15788](https://github.com/pingdotgg/t3code/issues/15788): the Cursor SDK
