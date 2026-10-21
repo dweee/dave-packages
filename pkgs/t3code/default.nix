@@ -32,6 +32,21 @@ let
           rm -rf "$pty"/node-addon-api@*
         done
       '';
+    # Upstream copies the entire workspace install, including build tools and
+    # test runners. The bundles only need their declared runtime externals and those packages' production closure.
+    installPhase =
+      builtins.replaceStrings
+        [
+          ''cp -r --no-preserve=mode node_modules "$out/libexec/t3code"''
+          "apps/server/{node_modules,dist}"
+          "apps/desktop/{package.json,node_modules,dist-electron}"
+        ]
+        [
+          ''node ${./stage-runtime.mjs} "$PWD" "$out/libexec/t3code"''
+          "apps/server/dist"
+          "apps/desktop/{package.json,dist-electron}"
+        ]
+        old.installPhase;
     postInstall =
       (old.postInstall or "")
       + lib.optionalString isLinux ''
@@ -42,6 +57,7 @@ let
     doCheck = true;
     checkPhase = ''
       runHook preCheck
+      T3CODE_STAGE_RUNTIME_SCRIPT=${./stage-runtime.mjs} node --test ${./stage-runtime.test.mjs}
       pnpm --dir packages/provider-cursor exec vp test run src/server/sdk.test.ts
       runHook postCheck
     '';
