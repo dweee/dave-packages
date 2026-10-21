@@ -15,6 +15,7 @@
   "aarch64-darwin": [
     "ffmpeg-full",
     "keyguard",
+    "spotify",
     "stemlab"
   ]
 }

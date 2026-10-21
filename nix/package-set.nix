@@ -164,3 +164,6 @@ lib.genAttrs (platforms.${system} or [ ]) (
 // {
   wiicompiled-nodtool = wii.wiicompiled-nodtool;
 }
+// lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
+  inherit (fixes) spotify;
+}

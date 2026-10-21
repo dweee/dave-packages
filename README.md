@@ -41,6 +41,11 @@ the Cursor Max Mode backport. Both are built by the native catalog runners.
 See [the package notes](pkgs/t3code/README.md) for the upstream fix, version,
 context-tier behavior and NixOS/nix-darwin/Home Manager consumption.
 
+On Darwin the overlay's `spotify` excludes `favicon.ico` from LLVM stripping:
+the strip tool mistakes its ICO header for COFF and corrupts/expands the icon.
+Spicetify inherits the exclusion. This unfree package is exposed through
+`cacheOnlyPackages.aarch64-darwin.spotify`, outside public runtime exports.
+
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and
