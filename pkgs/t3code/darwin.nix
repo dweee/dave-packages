@@ -35,14 +35,17 @@ in pkgs.runCommand "t3code-darwin-${client.version}" {
   with path.open('wb') as f:
       plistlib.dump(info, f)
   PY
-  # Renaming Electron makes app.isPackaged true. Supply the monorepo root
-  # layout expected by DesktopEnvironment, including the backend and assets.
+  # Keep only the native shell in the bundle. copyApps dereferences external
+  # symlinks, which relocates apps/ without its parent pnpm dependency store.
   mkdir -p "$app/Contents/Resources/app"
-  ln -s ${client.sourceUnwrapped}/libexec/t3code/apps "$app/Contents/Resources/app/apps"
   cat > "$app/Contents/Resources/app/package.json" <<'JSON'
   {"name":"t3code","productName":"T3 Code","version":"${client.version}","main":"boot.cjs"}
   JSON
   cat > "$app/Contents/Resources/app/boot.cjs" <<'JS'
+  // DesktopEnvironment resolves the backend and client assets from getAppPath().
+  // Keep that root in the immutable store, even after Home Manager copies this
+  // native bundle. Relative pnpm links then retain their complete parent tree.
+  require('electron').app.setAppPath('${client.sourceUnwrapped}/libexec/t3code');
   process.env.T3CODE_DISABLE_AUTO_UPDATE = '1';
   process.env.T3CODE_RESOURCE_MONITOR_PATH ??= '${
     pkgs.lib.getExe client.resourceMonitor

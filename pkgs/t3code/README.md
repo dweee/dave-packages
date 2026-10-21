@@ -41,9 +41,17 @@ runtime, with executable name `T3 Code`, bundle ID `com.t3tools.t3code` and
 T3's icon. A script-only app that launches the shared `Electron.app` loses its
 system identity even when T3 sets its Dock icon. The native bundle is signed
 ad hoc and verified during the build; it is not upstream signed or notarized.
-Its packaged resource layout supplies the same patched desktop and backend,
-and its bootstrap disables self-updates and selects the resource monitor.
+Its bootstrap points Electron at the patched application root in the Nix store,
+so Home Manager `copyApps` cannot relocate the backend away from its pnpm
+dependency tree. It also disables self-updates and selects the resource monitor.
+The native bundle retains its name, icon and bundle ID after copying.
 The existing `t3code` safeStorage name remains independent of the bundle name.
+
+From an interactive macOS desktop, check the installed copy behavior with
+`python3 pkgs/t3code/test-darwin-launch.py /nix/store/...-t3code-darwin-...`.
+This reproduces Home Manager's rsync flags, verifies the copied signature, and
+requires a stable backend HTTP response and main window using a disposable T3
+home. It does not access the user's T3 database.
 
 Remove the Max Mode backport once T3 or the Cursor SDK supplies the fix,
 after checking long and standard context requests.
