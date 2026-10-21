@@ -18,24 +18,34 @@ jobs:
   plan:
     if: ${{ vars.DAVE_PACKAGES_CI_ENABLED == 'true' && vars.ATTIC_PUSH_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 20
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      has_jobs: ${{ steps.matrix.outputs.has_jobs }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Check portable publication metadata
         run: python3 ci/test-public-source.py
+      - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+        with:
+          nix_version: "2.34.7"
+          nix_conf: |
+            experimental-features = nix-command flakes
+            accept-flake-config = false
+      - name: Test derivation selection
+        run: python3 ci/test-changed-matrix.py
       - id: matrix
         env:
           SELECTED_PACKAGE: ${{ inputs.package || 'all' }}
         run: |
-          matrix=$(python3 ci/cache-only-matrix.py --package "$SELECTED_PACKAGE")
+          matrix=$(python3 ci/changed-matrix.py cache-only --package "$SELECTED_PACKAGE")
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
   build-and-publish:
     needs: plan
-    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    if: ${{ needs.plan.outputs.has_jobs == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     name: Cache only ${{ matrix.package }} (${{ matrix.system }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 360
