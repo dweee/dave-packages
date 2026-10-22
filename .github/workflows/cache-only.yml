@@ -64,11 +64,10 @@ jobs:
         if: matrix.package == 'keyguard' && runner.os == 'Linux'
         run: |
           set -euo pipefail
-          # The hosted image already swaps on /swapfile. fallocate of that path
-          # fails with "Text file busy" and must not block the build.
-          if swapon --show | grep -q .; then
-            echo "swap already enabled"
-          else
+          # The hosted image already swaps on /swapfile (3 GiB). fallocate of
+          # that path fails with "Text file busy". Keyguard still needs more
+          # headroom on the ARM runner, which was getting SIGTERM around 11 minutes.
+          if ! swapon --show | grep -q '/mnt/keyguard.swap'; then
             sudo dd if=/dev/zero of=/mnt/keyguard.swap bs=1M count=4096 status=none
             sudo chmod 600 /mnt/keyguard.swap
             sudo mkswap /mnt/keyguard.swap
@@ -86,7 +85,7 @@ jobs:
             substituters = https://cache.nixos.org/
             extra-substituters =
             max-jobs = 1
-            cores = 3
+            cores = ${{ matrix.package == 'keyguard' && '1' || '3' }}
       - name: Configure authenticated private reads
         env:
           ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
