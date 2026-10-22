@@ -64,11 +64,18 @@ jobs:
         if: matrix.package == 'keyguard' && runner.os == 'Linux'
         run: |
           set -euo pipefail
-          sudo fallocate -l 4G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
+          # The hosted image already swaps on /swapfile. fallocate of that path
+          # fails with "Text file busy" and must not block the build.
+          if swapon --show | grep -q .; then
+            echo "swap already enabled"
+          else
+            sudo dd if=/dev/zero of=/mnt/keyguard.swap bs=1M count=4096 status=none
+            sudo chmod 600 /mnt/keyguard.swap
+            sudo mkswap /mnt/keyguard.swap
+            sudo swapon /mnt/keyguard.swap
+          fi
           free -h
+          swapon --show
       - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
         with:
           nix_version: "2.34.7"
