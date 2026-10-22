@@ -235,4 +235,14 @@ in
         platforms = lib.platforms.linux ++ lib.platforms.darwin;
       };
     }
+    // lib.optionalAttrs stdenv.hostPlatform.isLinux {
+      # GitHub-hosted Linux runners have no swap. An uncapped Gradle/Kotlin
+      # compile gets the runner service SIGTERM (exit 143) before Nix reports
+      # the failure. Darwin already fits and must keep its existing output.
+      gradleFlags = [
+        "-Dorg.gradle.workers.max=1"
+        "-Dorg.gradle.jvmargs=-Xmx1536m -XX:MaxMetaspaceSize=384m -XX:+UseSerialGC"
+        "-Dkotlin.daemon.jvmargs=-Xmx1g"
+      ];
+    }
   )
