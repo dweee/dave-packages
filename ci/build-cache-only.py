@@ -23,12 +23,37 @@ def check(value):
         for item in value:
             check(item)
 
+def failure_class(blob):
+    # Classify without copying compiler output, store paths or server responses
+    # into the public log. The raw diagnostic is discarded with the temp file.
+    if isinstance(blob, bytes):
+        blob = blob.decode("utf-8", "replace")
+    text = blob.lower()
+    if "transferred a partial file" in text or "stream error in the http/2 framing layer" in text:
+        return "attic-partial-nar"
+    if "unable to download" in text:
+        return "substitute-download-failed"
+    if "cannot allocate memory" in text or "out of memory" in text:
+        return "out-of-memory"
+    if "hash mismatch" in text:
+        return "hash-mismatch"
+    if "builder for" in text and "failed" in text:
+        return "builder-failed"
+    return "build-or-publication-failed"
+
 def quiet(args, env, *, stdout=None):
     # Even on failure, neither compiler logs, server responses nor store paths
     # enter the public job log. Temporary output is deleted, never uploaded.
     with tempfile.TemporaryFile() as diagnostic:
-        return subprocess.run(args, env=env, stdout=stdout if stdout is not None else subprocess.PIPE,
-                              stderr=diagnostic, text=True, check=True)
+        result = subprocess.run(args, env=env, stdout=stdout if stdout is not None else subprocess.PIPE,
+                                stderr=diagnostic, text=True)
+        if result.returncode != 0:
+            diagnostic.seek(0)
+            kind = failure_class(diagnostic.read())
+            error = subprocess.CalledProcessError(result.returncode, args)
+            error.failure_class = kind
+            raise error
+        return result
 
 def build(system, package):
     root = Path(__file__).resolve().parents[1]
@@ -54,7 +79,7 @@ def build(system, package):
     with tempfile.TemporaryDirectory(prefix="flakey-cache-only-", dir=os.environ["RUNNER_TEMP"]) as directory:
         manifest = Path(directory) / "outputs.txt"
         with manifest.open("w") as outputs:
-            quiet(["nix", "build", target + "^*", *flags, "--no-link", "--print-out-paths"], env, stdout=outputs)
+            quiet(["nix", "build", "--fallback", target + "^*", *flags, "--no-link", "--print-out-paths"], env, stdout=outputs)
         paths = manifest.read_text().splitlines()
         if not paths or any(not STORE.fullmatch(p) or p.endswith(".drv") for p in paths):
             raise ValueError("Invalid built output")
@@ -73,7 +98,8 @@ def build(system, package):
 if __name__ == "__main__":
     try:
         build(os.environ["TARGET_SYSTEM"], os.environ["TARGET_PACKAGE"])
-    except (OSError, ValueError, KeyError, subprocess.SubprocessError):
-        print("Cache-only build/publication failed. No artifacts or diagnostic logs were published.", file=sys.stderr)
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
+        kind = getattr(error, "failure_class", None) or "build-or-publication-failed"
+        print("Cache-only build/publication failed [" + kind + "]. No artifacts or diagnostic logs were published.", file=sys.stderr)
         sys.exit(1)
     print("Cache-only build and private cache publication succeeded.")
