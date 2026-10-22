@@ -101,7 +101,7 @@ jobs:
           target=".#packages.$TARGET_SYSTEM.$TARGET_PACKAGE"
           python3 ci/public-closure.py "$target"
           SECONDS=0
-          nix build "$target" --no-update-lock-file --no-write-lock-file --no-link --print-out-paths -L > outputs.txt
+          nix build "$target" --fallback --no-update-lock-file --no-write-lock-file --no-link --print-out-paths -L > outputs.txt
           {
             echo "Built $TARGET_PACKAGE for $TARGET_SYSTEM"
             echo "Package build: ${SECONDS}s"
