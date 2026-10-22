@@ -7,9 +7,48 @@ import re
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 
 STORE = re.compile(r"/nix/store/[a-z0-9]{32}-[^/\s]+")
 DENIED = re.compile(r"wiicompiled|subnetter", re.I)
+
+def resource_heartbeat():
+    # Foreground stderr is what the job log keeps. A background shell's output
+    # never arrived before the runner was killed.
+    if os.environ.get("TARGET_PACKAGE") != "keyguard" or os.uname().sysname != "Linux":
+        return
+
+    def sample():
+        stamp = time.strftime("%H:%M:%S", time.gmtime())
+        lines = [f"--- keyguard-resource {stamp} ---"]
+        for args, limit in (
+            (["free", "-h"], None),
+            (["df", "-h", "/", "/mnt", "/nix", "/tmp"], None),
+            (["ps", "-eo", "rss,comm", "--sort=-rss"], 8),
+        ):
+            try:
+                result = subprocess.run(args, capture_output=True, text=True, timeout=5)
+            except (OSError, subprocess.SubprocessError):
+                continue
+            chunk = (result.stdout or "").splitlines()
+            lines.extend(chunk[:limit] if limit else chunk)
+        try:
+            result = subprocess.run(["sudo", "dmesg", "-T"], capture_output=True, text=True, timeout=5)
+        except (OSError, subprocess.SubprocessError):
+            result = None
+        if result is not None:
+            hits = [line for line in (result.stdout or "").splitlines()
+                    if any(token in line for token in ("Out of memory", "Killed process", "oom-kill", "invoked oom-killer"))]
+            lines.extend(hits[-8:])
+        print("\n".join(lines), file=sys.stderr, flush=True)
+
+    def loop():
+        while True:
+            sample()
+            time.sleep(15)
+
+    threading.Thread(target=loop, name="keyguard-resource", daemon=True).start()
 
 def check(value):
     if isinstance(value, str):
@@ -56,6 +95,7 @@ def quiet(args, env, *, stdout=None):
         return result
 
 def build(system, package):
+    resource_heartbeat()
     root = Path(__file__).resolve().parents[1]
     inventory = json.loads((root / "nix/cache-only-platforms.json").read_text())
     if package not in inventory.get(system, []):
