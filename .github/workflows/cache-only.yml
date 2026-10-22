@@ -95,32 +95,7 @@ jobs:
           TARGET_SYSTEM: ${{ matrix.system }}
           TARGET_PACKAGE: ${{ matrix.package }}
           ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
-        run: |
-          set -euo pipefail
-          # The build script discards Nix's log, and a runner shutdown kills
-          # the script before it can report a class. Record memory, disk, and
-          # kernel kill messages while Keyguard runs so the job log survives.
-          if [ "$TARGET_PACKAGE" = keyguard ] && [ "$(uname -s)" = Linux ]; then
-            (
-              while true; do
-                printf -- '--- keyguard-resource %s ---\n' "$(date -u +%H:%M:%S)"
-                free -h || true
-                df -h / /mnt /nix /tmp || true
-                ps -eo rss,comm --sort=-rss | head -n 8 || true
-                sudo dmesg -T 2>/dev/null | grep -E 'Out of memory|Killed process|oom-kill|invoked oom-killer' | tail -n 8 || true
-                sleep 15
-              done
-            ) &
-            echo $! > "$RUNNER_TEMP/keyguard-resource.pid"
-          fi
-          set +e
-          python3 ci/build-cache-only.py
-          status=$?
-          set -e
-          if [ -f "$RUNNER_TEMP/keyguard-resource.pid" ]; then
-            kill "$(cat "$RUNNER_TEMP/keyguard-resource.pid")" 2>/dev/null || true
-          fi
-          exit "$status"
+        run: python3 ci/build-cache-only.py
       - name: Remove runtime read credential
         if: always()
         run: rm -f "$RUNNER_TEMP/flakey-attic.netrc"
