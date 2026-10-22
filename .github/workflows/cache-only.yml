@@ -103,7 +103,7 @@ jobs:
           if [ "$TARGET_PACKAGE" = keyguard ] && [ "$(uname -s)" = Linux ]; then
             (
               while true; do
-                printf '--- keyguard-resource %s ---\n' "$(date -u +%H:%M:%S)"
+                printf -- '--- keyguard-resource %s ---\n' "$(date -u +%H:%M:%S)"
                 free -h || true
                 df -h / /mnt /nix /tmp || true
                 ps -eo rss,comm --sort=-rss | head -n 8 || true
