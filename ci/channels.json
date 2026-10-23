@@ -10,6 +10,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.atuin",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.bitwig-theme-editor",
         "visibility": "public"
       },
@@ -34,6 +38,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.ha-mcp",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.handy",
         "visibility": "public"
       },
@@ -55,6 +63,10 @@
       },
       {
         "attribute": "packages.aarch64-darwin.mcp-nix",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mcp-nixos",
         "visibility": "public"
       },
       {
@@ -206,6 +218,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.virby-vm-runner",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.wasi-sdk",
         "visibility": "public"
       },
@@ -251,6 +267,10 @@
       }
     ],
     "x86_64-linux": [
+      {
+        "attribute": "packages.x86_64-linux.atuin",
+        "visibility": "public"
+      },
       {
         "attribute": "packages.x86_64-linux.bitwig-theme-editor",
         "visibility": "public"
@@ -320,6 +340,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.ha-mcp",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.handy",
         "visibility": "public"
       },
@@ -365,6 +389,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.matter-linux-ota-provider",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mcp-nixos",
         "visibility": "public"
       },
       {
@@ -590,6 +618,10 @@
     ],
     "aarch64-linux": [
       {
+        "attribute": "packages.aarch64-linux.atuin",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-linux.bitwig-theme-editor",
         "visibility": "public"
       },
@@ -631,6 +663,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.ghidra-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.ha-mcp",
         "visibility": "public"
       },
       {
@@ -679,6 +715,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.matter-linux-ota-provider",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mcp-nixos",
         "visibility": "public"
       },
       {

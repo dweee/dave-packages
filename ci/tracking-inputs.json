@@ -13,6 +13,9 @@
     "ghidra-mcp": {
       "source": "github:bethington/ghidra-mcp/v6.0.0"
     },
+    "handy": {
+      "source": "github:dweee/Handy/tested"
+    },
     "kopuz": {
       "source": "git+https://github.com/dweee/kopuz.git?ref=tested"
     },
@@ -21,6 +24,9 @@
     },
     "mcp-nix": {
       "source": "github:felixdorn/mcp-nix"
+    },
+    "mcp-nixos": {
+      "source": "github:utensils/mcp-nixos"
     },
     "nix-cachyos-kernel": {
       "source": "github:xddxdd/nix-cachyos-kernel"
@@ -72,6 +78,9 @@
     },
     "uv2nix": {
       "source": "github:pyproject-nix/uv2nix"
+    },
+    "virby": {
+      "source": "github:quinneden/virby-nix-darwin"
     }
   }
 }

@@ -1,0 +1,29 @@
+--- a/mcp_nixos/utils.py
++++ b/mcp_nixos/utils.py
+@@ -354,2 +354,10 @@
+     try:
++        # Require an explicit store path before resolving aliases. NixOS may
++        # link /etc files into the store; those are still outside-store inputs.
++        if (
++            not path.startswith("/nix/store/")
++            or not os.path.normpath(path).startswith("/nix/store/")
++        ):
++            return False
++
+         # Resolve the path to handle symlinks and relative components
+--- a/tests/test_flake_inputs.py
++++ b/tests/test_flake_inputs.py
+@@ -154,1 +154,13 @@
+         assert _validate_store_path("/nix/store/../etc/passwd") is False
++
++    def test_outside_store_alias_is_rejected(self, monkeypatch):
++        # Model /etc/passwd resolving into the store in a Nix container.
++        monkeypatch.setattr(os.path, "realpath", lambda _: "/nix/store/etc/passwd")
++        assert _validate_store_path("/etc/passwd") is False
++        assert _validate_store_path("/nix/store/../../etc/passwd") is False
++        assert _validate_store_path("/tmp/../nix/store/etc/passwd") is False
++        assert _validate_store_path("/nix/store/etc/passwd") is True
++
++    def test_store_symlink_escape_is_rejected(self, monkeypatch):
++        monkeypatch.setattr(os.path, "realpath", lambda _: "/tmp/outside")
++        assert _validate_store_path("/nix/store/link") is False

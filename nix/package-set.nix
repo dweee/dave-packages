@@ -20,6 +20,14 @@ let
   };
   cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
   definitions = {
+    virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
+    ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
+    atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
+    handy = inputs.handy.packages.${system}.handy;
+    mcp-nixos = import ../pkgs/mcp-nixos {
+      pkgs = final;
+      upstream = inputs.mcp-nixos;
+    };
     inherit (t3code) t3code-nightly t3code-server-nightly;
     chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
@@ -91,7 +99,9 @@ let
       ];
       hash = "sha256-8e0cAIe8TWc1xLPzt02gXIC/xTPAs9jMeLMG62z4aUc=";
     };
-    matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel { inherit (prev) matrix-tuwunel; };
+    matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel {
+      inherit (prev) matrix-tuwunel;
+    };
     mlx-audio-separator = final.callPackage ../pkgs/mlx-audio-separator { };
     pumpkin = inputs.pumpkin-nixpkgs.legacyPackages.${system}.pumpkin;
     pumpkin-voice = final.callPackage ../pkgs/pumpkin-voice/nix/package.nix { };
@@ -99,7 +109,11 @@ let
     pumpkin-java-multiversion = final.callPackage ../pkgs/pumpkin-java-multiversion/nix/package.nix { };
     linux-android-avf = avfSystem.config.boot.kernelPackages.kernel;
     linux-cachyos-server = cachyos.linuxPackages-cachyos-server.kernel;
-    inherit (wii) wiicompiled-native-prebuilt wiicompiled-translator wiicompiled-setup;
+    inherit (wii)
+      wiicompiled-native-prebuilt
+      wiicompiled-translator
+      wiicompiled-setup
+      ;
     wiicompiled-nodtool = wii.wiicompiled-nodtool;
     wiicompiled-setup-unwrapped = wii.wiicompiled-setup.setupUnwrapped;
 

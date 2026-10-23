@@ -165,6 +165,8 @@ and import use the same bound, preserving the complete recovery archive.
 configures T3. Both accept 1–8192 MiB. An oversize closure still fails before
 publication rather than silently dropping data. Runtime policy checks precede
 size reporting, and failure diagnostics never print arbitrary exception details.
+Publication retries the observed transient server/database-lock and connection-timeout failures up to five times with exponential backoff. One two-hour deadline covers both root and closure uploads plus backoff. Permission and other permanent errors fail immediately; an exhausted retry budget still fails publication.
+
 Build summaries show build and upload duration. Cache success still requires
 checking the consumer's exact output store path and authenticated narinfo URL.
 

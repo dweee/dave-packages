@@ -28,6 +28,16 @@
       inputs.pyproject-nix.follows = "pyproject-nix";
       inputs.uv2nix.follows = "uv2nix";
     };
+    handy = {
+      url = "github:dweee/Handy/d588df2c637f325847534bdd06ece5dd75dc5b4b";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # Preserve the upstream runner toolchain for reproducible cache outputs.
+    virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
+    mcp-nixos = {
+      url = "github:utensils/mcp-nixos/6a517811658c21f97bd7703b35546085117fc310";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
     t3-code.url = "github:LisaScheers/t3-code-nix/41caf597ed5d2dcfe7bb398fb38dfae290bb34ba";
     nixos-jellyfin = {
