@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "inputs": {
+    "audio": {
+      "source": "github:polygon/audio.nix"
+    },
+    "darwin": {
+      "source": "github:nix-darwin/nix-darwin/master"
+    },
+    "gdb-mcp": {
+      "source": "github:birdeclipse/gdb-mcp"
+    },
+    "ghidra-mcp": {
+      "source": "github:bethington/ghidra-mcp/v6.0.0"
+    },
+    "handy": {
+      "source": "github:dweee/Handy/tested"
+    },
+    "kopuz": {
+      "source": "git+https://github.com/dweee/kopuz.git?ref=tested"
+    },
+    "kuna": {
+      "source": "github:dweee/kuna/tested"
+    },
+    "mcp-nix": {
+      "source": "github:felixdorn/mcp-nix"
+    },
+    "mcp-nixos": {
+      "source": "github:utensils/mcp-nixos"
+    },
+    "nix-cachyos-kernel": {
+      "source": "github:xddxdd/nix-cachyos-kernel"
+    },
+    "nix-zed-extensions": {
+      "source": "github:SwornSystems/nix-zed-extensions"
+    },
+    "nixos-avf": {
+      "source": "github:nix-community/nixos-avf"
+    },
+    "nixos-jellyfin": {
+      "source": "github:matt1432/nixos-jellyfin"
+    },
+    "nixpkgs": {
+      "source": "github:nixos/nixpkgs/nixos-unstable"
+    },
+    "paneru": {
+      "source": "git+https://github.com/dweee/paneru.git?ref=tested"
+    },
+    "prowlarr-mcp": {
+      "source": "github:arr-mcps/prowlarr-mcp"
+    },
+    "pumpkin-nixpkgs": {
+      "source": "github:NixOS/nixpkgs"
+    },
+    "pyproject-build-systems": {
+      "source": "github:pyproject-nix/build-system-pkgs"
+    },
+    "pyproject-nix": {
+      "source": "github:pyproject-nix/pyproject.nix"
+    },
+    "rekordbox-mcp": {
+      "source": "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested"
+    },
+    "rust-overlay": {
+      "source": "github:oxalica/rust-overlay"
+    },
+    "schildi-revenge": {
+      "source": "git+https://github.com/dweee/schildi-revenge.git?ref=tested&submodules=1"
+    },
+    "slskd-mcp": {
+      "source": "github:abl030/slskd-mcp"
+    },
+    "t3-code": {
+      "source": "github:LisaScheers/t3-code-nix"
+    },
+    "tabrix": {
+      "source": "git+https://github.com/dweee/tabrix.git?ref=tested"
+    },
+    "uv2nix": {
+      "source": "github:pyproject-nix/uv2nix"
+    },
+    "virby": {
+      "source": "github:quinneden/virby-nix-darwin"
+    }
+  }
+}
