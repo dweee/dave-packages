@@ -58,9 +58,6 @@
     "rust-overlay": {
       "source": "github:oxalica/rust-overlay"
     },
-    "sable": {
-      "source": "git+https://git.monke.fail/d/sable.git?ref=tested"
-    },
     "schildi-revenge": {
       "source": "git+https://github.com/dweee/schildi-revenge.git?ref=tested&submodules=1"
     },

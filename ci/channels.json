@@ -154,15 +154,7 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.aarch64-darwin.sable",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.aarch64-darwin.sable-desktop-legacy",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-darwin.sable-web",
         "visibility": "public"
       },
       {
@@ -496,15 +488,7 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.sable",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.x86_64-linux.sable-desktop",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.x86_64-linux.sable-web",
         "visibility": "public"
       },
       {
@@ -798,15 +782,7 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.aarch64-linux.sable",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.aarch64-linux.sable-desktop",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-linux.sable-web",
         "visibility": "public"
       },
       {

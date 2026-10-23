@@ -28,10 +28,6 @@
       inputs.pyproject-nix.follows = "pyproject-nix";
       inputs.uv2nix.follows = "uv2nix";
     };
-    sable = {
-      url = "git+https://git.monke.fail/d/sable.git";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
     t3-code.url = "github:LisaScheers/t3-code-nix/41caf597ed5d2dcfe7bb398fb38dfae290bb34ba";
     nixos-jellyfin = {
@@ -100,6 +96,10 @@
   };
   outputs =
     inputs@{ self, nixpkgs, ... }:
+    # GitHub builders must never need the private fleet's source credentials.
+    assert builtins.all (
+      node: builtins.match ".*git[.]monke[.]fail.*" (node.locked.url or "") == null
+    ) (builtins.attrValues (builtins.fromJSON (builtins.readFile ./flake.lock)).nodes);
     let
       platforms = builtins.fromJSON (builtins.readFile ./nix/platforms.json);
       systems = builtins.attrNames platforms;

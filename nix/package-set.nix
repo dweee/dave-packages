@@ -55,8 +55,6 @@ let
         configureFlags+=("--with-jobs=''${NIX_BUILD_CORES}")
       '';
     });
-    sable = inputs.sable.packages.${system}.sable;
-    sable-web = inputs.sable.packages.${system}.sable-web;
     homeassistant-base = prev.home-assistant.overrideAttrs (_: {
       doInstallCheck = false;
     });
