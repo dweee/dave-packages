@@ -36,9 +36,9 @@
       url = "git+https://git.monke.fail/d/sable.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Retain native fork toolchains so catalog updates reuse their CI outputs.
     handy = {
       url = "github:dweee/Handy/d588df2c637f325847534bdd06ece5dd75dc5b4b";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url =
@@ -84,9 +84,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
+    # Match the standalone native workflow instead of overriding its toolchain.
     tabrix = {
       url = "git+https://github.com/dweee/tabrix?ref=flakey";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     rekordbox-mcp = {
       url = "git+https://github.com/dweee/rekordbox-mcp?ref=flakey";
