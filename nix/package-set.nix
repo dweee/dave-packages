@@ -17,6 +17,7 @@ let
   cachyos =
     (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
   definitions = {
+    virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
     handy = inputs.handy.packages.${system}.handy;

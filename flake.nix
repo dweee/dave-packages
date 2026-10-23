@@ -40,6 +40,9 @@
       url = "github:dweee/Handy/d588df2c637f325847534bdd06ece5dd75dc5b4b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Preserve the upstream runner toolchain for reproducible cache outputs.
+    virby.url =
+      "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
     mcp-nixos = {
       url =
         "github:utensils/mcp-nixos/6a517811658c21f97bd7703b35546085117fc310";
