@@ -85,9 +85,7 @@
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
-    tabrix = {
-      url = "git+https://github.com/dweee/tabrix?ref=flakey";
-    };
+    tabrix = { url = "git+https://github.com/dweee/tabrix?ref=flakey"; };
     rekordbox-mcp = {
       url = "git+https://github.com/dweee/rekordbox-mcp?ref=flakey";
       inputs.nixpkgs.follows = "nixpkgs";
