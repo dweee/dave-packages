@@ -12,7 +12,7 @@
   },
   "tabrix": {
     "repository": "https://github.com/dweee/tabrix",
-    "revision": "81eb29797fadd441e85116191219d5a1f605e1bc",
+    "revision": "7597a7cfa3e0947d9fb952795e06b98fee017916",
     "branch": "flakey",
     "packages": [
       "tabrix",
@@ -60,5 +60,15 @@
     ],
     "ci_owner": "application fork",
     "private": false
+  },
+  "handy": {
+    "repository": "https://github.com/dweee/Handy",
+    "branch": "nix/darwin",
+    "packages": [
+      "handy"
+    ],
+    "ci_owner": "application fork",
+    "private": false,
+    "revision": "d588df2c637f325847534bdd06ece5dd75dc5b4b"
   }
 }
