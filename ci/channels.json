@@ -1,0 +1,890 @@
+{
+  "targets": {
+    "aarch64-darwin": [
+      {
+        "attribute": "packages.aarch64-darwin.apfs-dedupe",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.applesauce",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.bitwig-theme-editor",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.cursaves",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.eel-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.gdb-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.ghidra-kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.ghidra-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.handy",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.infrared",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.kopuz",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mcp-nix",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mermaid-filter",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mlx-audio-separator",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-bandcamp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-iris",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-jellyfin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-listenbrainz",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-local",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-mpd",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-podcast",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-scrobbler",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-somafm",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-soundcloud",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-spotify",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-tunein",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.mopidy-youtube",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.paneru",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.paneru-lua",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.prismlauncher",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.prowlarr-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.pyrekordbox",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.rea",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.rea-kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.rekordbox-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.sable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.sable-desktop-legacy",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.sable-web",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.schildi-revenge",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.slopbro",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.slskd-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.spank",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.splayer-next",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.spotatui",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.t3code",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.t3code-nightly",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.t3code-server-nightly",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.tabrix",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.tabrix-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.tauon",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.wasi-sdk",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.wheelwizard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.wiicompiled-native-prebuilt",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.wiicompiled-setup",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.wiicompiled-translator",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.zed-nix-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.zed-rust-toolchain",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-darwin.ffmpeg-full",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-darwin.keyguard",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-darwin.spotify",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-darwin.stemlab",
+        "visibility": "cache-only"
+      }
+    ],
+    "x86_64-linux": [
+      {
+        "attribute": "packages.x86_64-linux.bitwig-theme-editor",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.byparr",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.caddy-custom",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.cartographer",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.chow-centaur",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.chow-kick",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.chow-multitool",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.chow-phaser",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.chow-tape-model",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.codexbar-cli",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.codexbar-plasmoid",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.cursaves",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.dorion",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.eel-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.gdb-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.ghidra-kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.ghidra-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.handy",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.homeassistant",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.homeassistant-base",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.infrared",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.jellyfin-web",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.jetbrains-jdk-patched",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.kopuz",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.linux-cachyos-server",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.matrix-tuwunel",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.matter-linux-ota-provider",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mermaid-filter",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.modcheck",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-bandcamp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-iris",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-jellyfin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-listenbrainz",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-local",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-mpd",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-podcast",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-scrobbler",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-somafm",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-soundcloud",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-spotify",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-tunein",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mopidy-youtube",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.openghub",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.paceman-tracker",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.papu",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.paulxstretch",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.photogimp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.prowlarr-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.pumpkin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.pumpkin-java-multiversion",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.pumpkin-tpsbar",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.pumpkin-voice",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.pyrekordbox",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.rea",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.rea-kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.redlib",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.sable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.sable-desktop",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.sable-web",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.schildi-revenge",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.slopbro",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.slskd-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.spotatui",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.t3code",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.t3code-nightly",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.t3code-server-nightly",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.tabrix",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.tabrix-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.trawl",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.waywall",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.wheelwizard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.wiicompiled-native-prebuilt",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.wiicompiled-setup",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.wiicompiled-setup-unwrapped",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.wiicompiled-translator",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.yaas",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.zed-nix-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.veracrypt",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.ffmpeg-full",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.ffmpeg-full-rocm",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.nvidia-580",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.keyguard",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.stemlab",
+        "visibility": "cache-only"
+      }
+    ],
+    "aarch64-linux": [
+      {
+        "attribute": "packages.aarch64-linux.bitwig-theme-editor",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.byparr",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.caddy-custom",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.codexbar-cli",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.codexbar-plasmoid",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.cursaves",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.dorion",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.eel-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.gdb-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.ghidra-kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.ghidra-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.handy",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.homeassistant",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.homeassistant-base",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.infrared",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.jellyfin-web",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.jetbrains-jdk-patched",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.kopuz",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.linux-android-avf",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.matrix-tuwunel",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.matter-linux-ota-provider",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mermaid-filter",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.modcheck",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-bandcamp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-iris",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-jellyfin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-listenbrainz",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-local",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-mpd",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-podcast",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-scrobbler",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-somafm",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-soundcloud",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-spotify",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-tunein",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mopidy-youtube",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.openghub",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.paceman-tracker",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.photogimp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.prowlarr-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.pumpkin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.pyrekordbox",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.rea",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.rea-kuna",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.redlib",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.sable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.sable-desktop",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.sable-web",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.schildi-revenge",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.slopbro",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.slskd-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.t3code-nightly",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.t3code-server-nightly",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.tabrix",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.tabrix-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.waywall",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.wheelwizard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.wiicompiled-native-prebuilt",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.wiicompiled-setup",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.wiicompiled-setup-unwrapped",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.wiicompiled-translator",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.zed-nix-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-linux.veracrypt",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-linux.ffmpeg-full",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-linux.keyguard",
+        "visibility": "cache-only"
+      }
+    ]
+  },
+  "excludedSystems": [],
+  "submodules": false,
+  "integrationInventory": true,
+  "version": 1,
+  "forge": "github",
+  "repository": "dweee/dave-packages",
+  "branch": "main",
+  "remote": "https://github.com/dweee/dave-packages.git"
+}
