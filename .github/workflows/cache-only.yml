@@ -106,7 +106,13 @@ jobs:
                 printf -- '--- keyguard-resource %s ---\n' "$(date -u +%H:%M:%S)"
                 free -h || true
                 df -h / /mnt /nix /tmp || true
-                ps -eo rss,comm --sort=-rss | head -n 8 || true
+                # Command lines identify which nix subcommand holds memory;
+                # store paths are masked so none reach the public log.
+                ps -eo pid,ppid,etimes,rss,args --sort=-rss | head -n 8 |
+                  sed -E 's#/nix/store/[a-z0-9]{32}-[^ ]*#<store>#g' | cut -c1-180 || true
+                for pid in $(ps -eo pid --sort=-rss --no-headers | head -n 3); do
+                  printf 'pid %s swap %s\n' "$pid" "$(awk '/^VmSwap:/ {print $2 $3}' "/proc/$pid/status" 2>/dev/null)"
+                done || true
                 sudo dmesg -T 2>/dev/null | grep -E 'Out of memory|Killed process|oom-kill|invoked oom-killer' | tail -n 8 || true
                 sleep 15
               done
