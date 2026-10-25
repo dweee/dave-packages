@@ -129,6 +129,7 @@ let
     applesauce = final.callPackage ../pkgs/applesauce { };
     apfs-dedupe = final.callPackage ../pkgs/apfs-dedupe { };
     spank = final.callPackage ../pkgs/spank { };
+    tokscale = final.callPackage ../pkgs/tokscale { };
     wheelwizard = final.callPackage ../pkgs/wheelwizard { };
     cursaves = final.callPackage ../pkgs/cursaves { };
     bitwig-theme-editor = final.callPackage ../pkgs/bitwig-theme-editor { };

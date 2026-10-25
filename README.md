@@ -106,6 +106,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | spank | yes | - | - |
 | tabrix | yes | yes | yes |
 | tabrix-extension | yes | yes | yes |
+| tokscale | yes | yes | yes |
 | trawl | - | yes | - |
 | waywall | - | yes | yes |
 | wheelwizard | yes | yes | yes |
