@@ -85,7 +85,8 @@ jobs:
             substituters = https://cache.nixos.org/
             extra-substituters =
             max-jobs = 1
-            cores = ${{ matrix.package == 'keyguard' && '1' || '3' }}
+            # Keep Keyguard derivations serial, but let each build use every runner core.
+            cores = ${{ matrix.package == 'keyguard' && '0' || '3' }}
       - name: Configure authenticated private reads
         env:
           ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
