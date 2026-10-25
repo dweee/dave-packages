@@ -12,6 +12,7 @@ import time
 
 STORE = re.compile(r"/nix/store/[a-z0-9]{32}-[^/\s]+")
 DENIED = re.compile(r"wiicompiled|subnetter", re.I)
+KEYGUARD_DEPENDENCY_BATCH_SIZE = 64
 
 def resource_heartbeat():
     # Foreground stderr is what the job log keeps. A background shell's output
@@ -25,7 +26,7 @@ def resource_heartbeat():
         for args, limit in (
             (["free", "-h"], None),
             (["df", "-h", "/", "/mnt", "/nix", "/tmp"], None),
-            (["ps", "-eo", "rss,comm", "--sort=-rss"], 8),
+            (["ps", "-eo", "pid,ppid,rss,vsz,etimes,comm", "--sort=-rss"], 8),
         ):
             try:
                 result = subprocess.run(args, capture_output=True, text=True, timeout=5)
@@ -94,6 +95,56 @@ def quiet(args, env, *, stdout=None):
             raise error
         return result
 
+def build_keyguard_dependency_inputs(target, graph, flags, env):
+    cache_drv = quiet(
+        ["nix", "eval", "--raw", f"{target}.mitmCache.drvPath", *flags], env
+    ).stdout.strip()
+    if not STORE.fullmatch(cache_drv):
+        raise ValueError("Invalid Keyguard dependency-cache derivation")
+    cache = graph.get(Path(cache_drv).name)
+    if not isinstance(cache, dict):
+        raise ValueError("Missing Keyguard dependency-cache derivation")
+    inputs = cache.get("inputs", {})
+    dependencies = inputs.get("drvs", {}) if isinstance(inputs, dict) else {}
+    if not dependencies:
+        dependencies = cache.get("inputDrvs", {})
+    if not isinstance(dependencies, dict) or not dependencies:
+        raise ValueError("Missing Keyguard dependency inputs")
+
+    fixed_outputs = []
+    for name in sorted(dependencies):
+        derivation = graph.get(name)
+        if not isinstance(derivation, dict) or not isinstance(derivation.get("outputs"), dict):
+            raise ValueError("Invalid Keyguard dependency derivation")
+        if any(
+            isinstance(output, dict) and "hash" in output
+            for output in derivation["outputs"].values()
+        ):
+            path = "/nix/store/" + name
+            if not STORE.fullmatch(path):
+                raise ValueError("Invalid Keyguard fixed-output derivation")
+            fixed_outputs.append(path + "^*")
+    if not fixed_outputs:
+        raise ValueError("Missing Keyguard fixed-output dependencies")
+
+    batches = [
+        fixed_outputs[i : i + KEYGUARD_DEPENDENCY_BATCH_SIZE]
+        for i in range(0, len(fixed_outputs), KEYGUARD_DEPENDENCY_BATCH_SIZE)
+    ]
+    print(
+        f"Preparing {len(fixed_outputs)} Keyguard fixed-output dependencies "
+        f"in {len(batches)} bounded Nix batches.",
+        flush=True,
+    )
+    for index, batch in enumerate(batches, 1):
+        print(
+            f"Keyguard dependency batch {index}/{len(batches)} "
+            f"({len(batch)} derivations).",
+            flush=True,
+        )
+        quiet(["nix", "build", "--fallback", *batch, *flags, "--no-link"], env)
+    quiet(["nix", "build", "--fallback", cache_drv + "^*", *flags, "--no-link"], env)
+
 def build(system, package):
     resource_heartbeat()
     root = Path(__file__).resolve().parents[1]
@@ -112,6 +163,8 @@ def build(system, package):
                 for drv in graph.values())):
         raise ValueError("Missing derivation graph")
     check(graph)
+    if package == "keyguard" and system.endswith("-linux"):
+        build_keyguard_dependency_inputs(target, graph, flags, env)
     client = quiet(["nix", "build", "--inputs-from", ".", "nixpkgs#attic-client", *flags,
                     "--no-link", "--print-out-paths", "--max-jobs", "0", "--builders", ""], env).stdout.strip()
     if not STORE.fullmatch(client):
