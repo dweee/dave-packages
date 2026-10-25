@@ -10,6 +10,18 @@ import tempfile
 
 STORE = re.compile(r"/nix/store/[a-z0-9]{32}-[^/\s]+")
 DENIED = re.compile(r"wiicompiled|subnetter", re.I)
+# Keyguard's Gradle cache has thousands of fixed-output fetches. One long-lived
+# `nix build` held 10-14 GiB after realising them, so Linux runners ran out of
+# memory before Gradle started. Realise them in short-lived processes, publish
+# each stage so a later run can substitute it, then build only the package.
+STAGED = {
+    "keyguard": {
+        "fetches": "keyguard-deps",
+        "attributes": ["mitmCache", "jbr", "crypto", "gpgAgent", "instance", "io",
+                       "libNative", "sshAgent", "zxcvbn"],
+    },
+}
+FETCH_BATCH = 250
 
 def check(value):
     if isinstance(value, str):
@@ -55,6 +67,44 @@ def quiet(args, env, *, stdout=None):
             raise error
         return result
 
+def store_path(name):
+    return name if name.startswith("/nix/store/") else "/nix/store/" + name
+
+def fetch_batches(graph, parent):
+    nodes = {store_path(key): drv for key, drv in graph.items()}
+    matches = [drv for drv in nodes.values() if drv.get("name") == parent]
+    if len(matches) != 1:
+        raise ValueError("Missing staged dependency cache")
+    inputs = matches[0].get("inputDrvs") or matches[0].get("inputs", {}).get("drvs") or {}
+    fetches = sorted(path for path in map(store_path, inputs)
+                     if path in nodes and any("hash" in output for output in nodes[path]["outputs"].values()))
+    if not fetches or any(not STORE.fullmatch(p) or not p.endswith(".drv") for p in fetches):
+        raise ValueError("Missing staged fetches")
+    return [fetches[i:i + FETCH_BATCH] for i in range(0, len(fetches), FETCH_BATCH)]
+
+def realise(installables, env, directory, flags):
+    manifest = Path(directory) / "outputs.txt"
+    with manifest.open("w") as outputs:
+        quiet(["nix", "build", "--fallback", *installables, *flags, "--no-link", "--print-out-paths"],
+              env, stdout=outputs)
+    paths = manifest.read_text().splitlines()
+    if not paths or any(not STORE.fullmatch(p) or p.endswith(".drv") for p in paths):
+        raise ValueError("Invalid built output")
+    return manifest, paths
+
+def publish(root, client, manifest, paths, env):
+    closure = quiet(["nix-store", "--query", "--requisites", *paths], env).stdout.splitlines()
+    if not closure or any(not STORE.fullmatch(p) for p in closure):
+        raise ValueError("Missing runtime closure")
+    check(closure)
+    publish_env = dict(os.environ, ATTIC_BIN=client + "/bin/attic",
+                       ATTIC_ENDPOINT="https://attic.monke.fail", ATTIC_CACHE="flakey")
+    with tempfile.TemporaryFile() as log:
+        # The existing helper confines credentials to mode-0600 client
+        # configuration and uploads roots plus their runtime closures.
+        quiet([sys.executable, str(root / "ci/push-attic.py"), "--outputs", str(manifest)],
+              publish_env, stdout=log)
+
 def build(system, package):
     root = Path(__file__).resolve().parents[1]
     inventory = json.loads((root / "nix/cache-only-platforms.json").read_text())
@@ -76,24 +126,19 @@ def build(system, package):
                     "--no-link", "--print-out-paths", "--max-jobs", "0", "--builders", ""], env).stdout.strip()
     if not STORE.fullmatch(client):
         raise ValueError("Invalid client path")
+    stages = STAGED.get(package) if system.endswith("-linux") else None
     with tempfile.TemporaryDirectory(prefix="flakey-cache-only-", dir=os.environ["RUNNER_TEMP"]) as directory:
-        manifest = Path(directory) / "outputs.txt"
-        with manifest.open("w") as outputs:
-            quiet(["nix", "build", "--fallback", target + "^*", *flags, "--no-link", "--print-out-paths"], env, stdout=outputs)
-        paths = manifest.read_text().splitlines()
-        if not paths or any(not STORE.fullmatch(p) or p.endswith(".drv") for p in paths):
-            raise ValueError("Invalid built output")
-        closure = quiet(["nix-store", "--query", "--requisites", *paths], env).stdout.splitlines()
-        if not closure or any(not STORE.fullmatch(p) for p in closure):
-            raise ValueError("Missing runtime closure")
-        check(closure)
-        publish_env = dict(os.environ, ATTIC_BIN=client + "/bin/attic",
-                           ATTIC_ENDPOINT="https://attic.monke.fail", ATTIC_CACHE="flakey")
-        with tempfile.TemporaryFile() as log:
-            # The existing helper confines credentials to mode-0600 client
-            # configuration and uploads roots plus their runtime closures.
-            quiet([sys.executable, str(root / "ci/push-attic.py"), "--outputs", str(manifest)],
-                  publish_env, stdout=log)
+        if stages:
+            batches = fetch_batches(graph, stages["fetches"])
+            for number, batch in enumerate(batches, 1):
+                # Stage labels carry counts only, never store paths.
+                print(f"Stage fetch batch {number}/{len(batches)} ({len(batch)} fetches)", flush=True)
+                realise([drv + "^*" for drv in batch], env, directory, flags)
+            for attribute in stages["attributes"]:
+                print(f"Stage {attribute}", flush=True)
+                publish(root, client, *realise([f"{target}.{attribute}^*"], env, directory, flags), env)
+            print("Stage package", flush=True)
+        publish(root, client, *realise([target + "^*"], env, directory, flags), env)
 
 if __name__ == "__main__":
     try:

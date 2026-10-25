@@ -27,13 +27,14 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.graph = {PATH + ".drv": {"outputs": {"out": {}}, "env": {"license": "unfree"}}}
         self.runtime = PATH
         self.failure = None
+        self.system = "x86_64-linux"
 
     def run_quiet(self, args, env, *, stdout=None):
         self.calls.append((args, env.copy()))
         if self.failure and self.failure in args:
             raise subprocess.CalledProcessError(1, args)
         if args[0] == "nix" and args[1] == "eval":
-            value = "x86_64-linux"
+            value = self.system
         elif args[0] == "nix" and args[1] == "derivation":
             value = json.dumps(self.graph)
         elif "nixpkgs#attic-client" in args:
@@ -67,6 +68,48 @@ class CacheOnlyBoundary(unittest.TestCase):
             self.assertNotIn("synthetic-private-token", " ".join(args))
         self.assertTrue(any("cacheOnlyPackages.x86_64-linux.veracrypt" in " ".join(a) for a, _ in self.calls))
         self.assertFalse(any("export" in a or "--export" in a for a, _ in self.calls))
+
+    def staged_graph(self):
+        fetches = {f"{c * 32}-artifact-{c}.jar.drv": {"name": f"artifact-{c}.jar",
+                                                     "outputs": {"out": {"hash": "sha256-x", "method": "flat"}}}
+                   for c in "bcd"}
+        deps = {"name": "keyguard-deps", "outputs": {"out": {}},
+                "inputs": {"drvs": {**{k: {"outputs": ["out"]} for k in fetches},
+                                    "e" * 32 + "-builder.drv": {"outputs": ["out"]}}}}
+        return {"f" * 32 + "-keyguard-deps.drv": deps, "e" * 32 + "-builder.drv": {"outputs": {"out": {}}},
+                **fetches, PATH + ".drv": {"outputs": {"out": {}}}}
+
+    def test_linux_keyguard_realises_fetches_and_helpers_in_separate_processes(self):
+        self.graph = self.staged_graph()
+        with patch.object(module, "FETCH_BATCH", 2), patch.dict(os.environ, self.env, clear=True), \
+                patch.object(module, "quiet", side_effect=self.run_quiet):
+            module.build("x86_64-linux", "keyguard")
+        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"] and "nixpkgs#attic-client" not in a]
+        installables = [[x for x in a if x.endswith("^*")] for a in builds]
+        self.assertEqual(installables[0], ["/nix/store/" + "b" * 32 + "-artifact-b.jar.drv^*",
+                                           "/nix/store/" + "c" * 32 + "-artifact-c.jar.drv^*"])
+        self.assertEqual(installables[1], ["/nix/store/" + "d" * 32 + "-artifact-d.jar.drv^*"])
+        target = ".#cacheOnlyPackages.x86_64-linux.keyguard"
+        self.assertEqual(installables[2:], [[f"{target}.{a}^*"] for a in module.STAGED["keyguard"]["attributes"]]
+                         + [[target + "^*"]])
+        pushes = [a for a, _ in self.calls if a[0] == module.sys.executable]
+        self.assertEqual(len(pushes), len(module.STAGED["keyguard"]["attributes"]) + 1)
+        for args, env in self.calls:
+            if args[0] != module.sys.executable:
+                self.assertNotIn("ATTIC_TOKEN", env)
+
+    def test_darwin_keyguard_keeps_one_build(self):
+        self.graph = self.staged_graph()
+        self.system = "aarch64-darwin"
+        with patch.dict(os.environ, self.env, clear=True), patch.object(module, "quiet", side_effect=self.run_quiet):
+            module.build("aarch64-darwin", "keyguard")
+        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"] and "nixpkgs#attic-client" not in a]
+        self.assertEqual(len(builds), 1)
+
+    def test_staged_package_without_dependency_cache_fails_before_build(self):
+        with patch.dict(os.environ, self.env, clear=True), patch.object(module, "quiet", side_effect=self.run_quiet):
+            with self.assertRaises(ValueError): module.build("x86_64-linux", "keyguard")
+        self.assertFalse(any("--print-out-paths" in a and "--fallback" in a for a, _ in self.calls))
 
     def test_disc_and_subnetter_in_transitive_graph_stop_before_build(self):
         for name in ["wiicompiled-disc-rmcp01", "wiicompiled-translated", "subnetter"]:
