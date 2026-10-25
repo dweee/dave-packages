@@ -88,6 +88,18 @@ in
                 includeGroupByRegex "org[.]jetbrains[.]androidx([.].*)?"
               }
             }'
+      ''
+      + lib.optionalString stdenv.hostPlatform.isLinux ''
+        # GitHub-hosted Linux runners have no swap. An uncapped Gradle daemon gets
+        # the runner service SIGTERM (exit 143) before Nix reports the failure.
+        # Kotlin compiles inside this one bounded JVM (see gradleFlags): a separate
+        # 1 GiB Kotlin daemon cannot compile :common, and metadata compilation
+        # exhausts a 384 MiB metaspace. The gradle hook splits gradleFlags on
+        # whitespace, so a multi-option jvmargs value has to live here instead.
+        substituteInPlace gradle.properties \
+          --replace-fail \
+            'org.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8' \
+            'org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=1g -XX:+UseSerialGC -Dfile.encoding=UTF-8'
       '';
 
       preBuild = ''
@@ -236,13 +248,11 @@ in
       };
     }
     // lib.optionalAttrs stdenv.hostPlatform.isLinux {
-      # GitHub-hosted Linux runners have no swap. An uncapped Gradle/Kotlin
-      # compile gets the runner service SIGTERM (exit 143) before Nix reports
-      # the failure. Darwin already fits and must keep its existing output.
+      # Run one Gradle worker and compile Kotlin in the Gradle JVM, whose heap is
+      # capped in postPatch. Darwin already fits and must keep its existing output.
       gradleFlags = [
         "-Dorg.gradle.workers.max=1"
-        "-Dorg.gradle.jvmargs=-Xmx1536m -XX:MaxMetaspaceSize=384m -XX:+UseSerialGC"
-        "-Dkotlin.daemon.jvmargs=-Xmx1g"
+        "-Pkotlin.compiler.execution.strategy=in-process"
       ];
     }
   )
