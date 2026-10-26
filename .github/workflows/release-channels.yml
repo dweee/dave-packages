@@ -149,7 +149,7 @@ jobs:
           experimental-features = nix-command flakes
           accept-flake-config = false
           max-jobs = 1
-          cores = 1
+          cores = 0
     - name: Configure job-local private cache reader
       env:
         ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN || secrets.FLAKEY_ATTIC_TOKEN }}
