@@ -392,10 +392,6 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.matter-linux-ota-provider",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.x86_64-linux.mcp-nixos",
         "visibility": "public"
       },
@@ -719,10 +715,6 @@
       },
       {
         "attribute": "packages.aarch64-linux.matrix-tuwunel",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-linux.matter-linux-ota-provider",
         "visibility": "public"
       },
       {
