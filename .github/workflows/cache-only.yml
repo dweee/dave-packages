@@ -60,13 +60,13 @@ jobs:
       - name: Reclaim unused Linux SDK space
         if: runner.os == 'Linux'
         run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
-      - name: Add swap so Keyguard's Gradle compile cannot kill the runner
+      - name: Add swap for Keyguard's Linux build
         if: matrix.package == 'keyguard' && runner.os == 'Linux'
         run: |
           set -euo pipefail
           # The hosted image already swaps on /swapfile (3 GiB). fallocate of
-          # that path fails with "Text file busy". Keyguard still needs more
-          # headroom on the ARM runner, which was getting SIGTERM around 11 minutes.
+          # that path fails with "Text file busy". Keyguard's large dependency
+          # graph can exhaust available memory during Linux builds.
           if ! swapon --show | grep -q '/mnt/keyguard.swap'; then
             sudo dd if=/dev/zero of=/mnt/keyguard.swap bs=1M count=4096 status=none
             sudo chmod 600 /mnt/keyguard.swap
@@ -96,38 +96,9 @@ jobs:
           TARGET_SYSTEM: ${{ matrix.system }}
           TARGET_PACKAGE: ${{ matrix.package }}
           ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
-        run: |
-          set -euo pipefail
-          # The build script discards Nix's log, and a runner shutdown kills
-          # the script before it can report a class. Record memory, disk, and
-          # kernel kill messages while Keyguard runs so the job log survives.
-          if [ "$TARGET_PACKAGE" = keyguard ] && [ "$(uname -s)" = Linux ]; then
-            (
-              while true; do
-                printf -- '--- keyguard-resource %s ---\n' "$(date -u +%H:%M:%S)"
-                free -h || true
-                df -h / /mnt /nix /tmp || true
-                # Command lines identify which nix subcommand holds memory;
-                # store paths are masked so none reach the public log.
-                ps -eo pid,ppid,etimes,rss,args --sort=-rss | head -n 8 |
-                  sed -E 's#/nix/store/[a-z0-9]{32}-[^ ]*#<store>#g' | cut -c1-180 || true
-                for pid in $(ps -eo pid --sort=-rss --no-headers | head -n 3); do
-                  printf 'pid %s swap %s\n' "$pid" "$(awk '/^VmSwap:/ {print $2 $3}' "/proc/$pid/status" 2>/dev/null)"
-                done || true
-                sudo dmesg -T 2>/dev/null | grep -E 'Out of memory|Killed process|oom-kill|invoked oom-killer' | tail -n 8 || true
-                sleep 15
-              done
-            ) &
-            echo $! > "$RUNNER_TEMP/keyguard-resource.pid"
-          fi
-          set +e
-          python3 ci/build-cache-only.py
-          status=$?
-          set -e
-          if [ -f "$RUNNER_TEMP/keyguard-resource.pid" ]; then
-            kill "$(cat "$RUNNER_TEMP/keyguard-resource.pid")" 2>/dev/null || true
-          fi
-          exit "$status"
+        # Resource samples come from the foreground build process: a background
+        # shell's output never reached the job log before the runner was killed.
+        run: python3 ci/build-cache-only.py
       - name: Remove runtime read credential
         if: always()
         run: rm -f "$RUNNER_TEMP/flakey-attic.netrc"
