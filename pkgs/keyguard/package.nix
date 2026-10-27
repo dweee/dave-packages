@@ -224,6 +224,8 @@ in
       '';
 
       passthru = {
+        # CI realises and publishes the patched JBR in its own process.
+        inherit jbr;
         crypto = callPackage ./crypto.nix {inherit (finalAttrs) src version;};
         gpgAgent = callPackage ./gpg-agent.nix {inherit (finalAttrs) src version;};
         instance = callPackage ./instance.nix {inherit (finalAttrs) src version;};

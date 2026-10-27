@@ -64,6 +64,8 @@ jobs:
           max-jobs = 1
           cores = 1
     - name: Resolve every tracked input and validate the exact candidate
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: python3 ci/update-inputs.py
     - name: Open a review PR for changed pins
       env:

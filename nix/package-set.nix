@@ -121,6 +121,7 @@ let
     applesauce = final.callPackage ../pkgs/applesauce { };
     apfs-dedupe = final.callPackage ../pkgs/apfs-dedupe { };
     spank = final.callPackage ../pkgs/spank { };
+    tokscale = final.callPackage ../pkgs/tokscale { };
     wheelwizard = final.callPackage ../pkgs/wheelwizard { };
     cursaves = final.callPackage ../pkgs/cursaves { };
     bitwig-theme-editor = final.callPackage ../pkgs/bitwig-theme-editor { };
@@ -130,7 +131,6 @@ let
     eel-extension = final.callPackage ../pkgs/eel-extension { };
     slopbro = final.callPackage ../pkgs/slopbro { };
     lg-webos-dashboard = final.callPackage ../pkgs/lg-webos-mqtt { };
-    matter-linux-ota-provider = final.callPackage ../pkgs/matter-linux-ota-provider { };
     byparr = final.callPackage ../pkgs/byparr { };
     openghub = final.callPackage ../pkgs/openghub { };
     yaas = final.callPackage ../pkgs/yaas { };

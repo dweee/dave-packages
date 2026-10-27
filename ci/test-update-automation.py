@@ -26,6 +26,20 @@ a = load('automation-forge')
 
 
 class Updates(unittest.TestCase):
+    def test_updater_failure_detail_redacts_credentials(self):
+        text = 'noise\nerror: unable to download https://u:p@api.github.com/x: HTTP error 403 ghp_abcDEF123 secret-tok'
+        detail = u.safe_detail(text, 'secret-tok')
+        self.assertIn('HTTP error 403', detail)
+        for leaked in ['u:p', 'ghp_', 'secret-tok', 'noise']:
+            self.assertNotIn(leaked, detail)
+
+    def test_updater_gives_nix_the_github_token_through_the_environment_only(self):
+        done = subprocess.CompletedProcess([], 0, 'ok', '')
+        with patch.object(u.subprocess, 'run', return_value=done) as run, patch.dict(u.os.environ, {'GH_TOKEN': 'tok'}):
+            u.run('nix', 'flake', 'lock')
+        self.assertIn('access-tokens = github.com=tok', run.call_args.kwargs['env']['NIX_CONFIG'])
+        self.assertNotIn('tok', run.call_args.args)
+
     def test_renamed_repository_redirect_keeps_auth_on_the_same_api_host(self):
         source = 'https://api.github.com/repos/old/name/releases/latest'
         target = 'https://api.github.com/repositories/123/releases/latest'
@@ -139,6 +153,17 @@ class FailureDiagnostics(unittest.TestCase):
             self.assertEqual(u.main(), 1)
         self.assertIn('validate-candidate: command deadline exceeded', error.getvalue())
         self.assertNotIn(secret, output.getvalue()+error.getvalue())
+
+    def test_existing_input_branch_is_reused_and_other_errors_propagate(self):
+        rules = {'forge': 'forgejo'}
+        with patch.object(a, 'api', return_value={'name': 'b'}) as call:
+            self.assertTrue(a.branch_exists(rules, '/repos/o/r', 'automation/input-updates-ab'))
+        self.assertEqual(call.call_args.args[2], '/repos/o/r/branches/automation/input-updates-ab')
+        with patch.object(a, 'api', side_effect=HTTPError('u', 404, 'm', None, None)):
+            self.assertFalse(a.branch_exists(rules, '/repos/o/r', 'x'))
+        with patch.object(a, 'api', side_effect=HTTPError('u', 403, 'm', None, None)):
+            with self.assertRaises(HTTPError):
+                a.branch_exists(rules, '/repos/o/r', 'x')
 
     def test_publication_reports_http_permission_failure_without_credentialed_url(self):
         secret = 'fixture-sensitive-writer-value'

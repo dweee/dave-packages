@@ -86,7 +86,6 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | kuna | yes | yes | yes |
 | kopuz | yes | yes | yes |
 | lg-webos-dashboard | yes | yes | yes |
-| matter-linux-ota-provider | - | yes | yes |
 | mermaid-filter | yes | yes | yes |
 | modcheck | - | yes | yes |
 | openghub | - | yes | yes |
@@ -106,6 +105,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | spank | yes | - | - |
 | tabrix | yes | yes | yes |
 | tabrix-extension | yes | yes | yes |
+| tokscale | yes | yes | yes |
 | trawl | - | yes | - |
 | waywall | - | yes | yes |
 | wheelwizard | yes | yes | yes |
