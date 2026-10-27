@@ -131,7 +131,6 @@ let
     eel-extension = final.callPackage ../pkgs/eel-extension { };
     slopbro = final.callPackage ../pkgs/slopbro { };
     lg-webos-dashboard = final.callPackage ../pkgs/lg-webos-mqtt { };
-    matter-linux-ota-provider = final.callPackage ../pkgs/matter-linux-ota-provider { };
     byparr = final.callPackage ../pkgs/byparr { };
     openghub = final.callPackage ../pkgs/openghub { };
     yaas = final.callPackage ../pkgs/yaas { };
