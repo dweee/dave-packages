@@ -98,8 +98,13 @@ def instantiation_expression(system):
         raise ValueError('Unexpected builder system')
     # The same Git view `nix flake check .` evaluates, including any declared
     # self.submodules setting.
+    # Skip packages that nixpkgs marks unavailable/broken/insecure, and tolerate
+    # packages whose platform metadata still does not match this system. The
+    # goal is to realise IFD inputs, not to force every package to evaluate.
     return ('let f = builtins.getFlake ' + json.dumps('git+file://' + str(ROOT)) + '; '
-            'drvs = output: builtins.mapAttrs (_: p: p.drvPath) ((f.${output} or {}).' + system + ' or {}); '
+            'skip = [ "wiicompiled-vr-openxr" ]; '
+            'drvs = output: builtins.mapAttrs (_: p: let r = builtins.tryEval (builtins.deepSeq p.drvPath p.drvPath); in if r.success then r.value else null) '
+            '(builtins.removeAttrs ((f.${output} or {}).' + system + ' or {}) skip); '
             'in { packages = drvs "packages"; checks = drvs "checks"; }')
 
 
@@ -128,7 +133,9 @@ def update():
         catalog = json.loads(run('nix', 'flake', 'metadata', '--json', '--refresh',
                                  '--option', 'accept-flake-config', 'false',
                                  '--no-write-lock-file', overrides[alignment['input']]))
-        catalog_lock = json.loads((Path(catalog['path']) / 'flake.lock').read_text())
+        # Newer Nix may not materialise `path` in the store (lazy trees); the
+        # metadata always carries the catalog's own lock graph.
+        catalog_lock = catalog['locks']
         for name in alignment['inputs']:
             overrides[name] = pin_url(root_node(catalog_lock, name)['locked'])
             if not overrides[name]:

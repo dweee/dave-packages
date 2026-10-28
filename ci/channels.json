@@ -906,5 +906,10 @@
   "forge": "github",
   "repository": "dweee/dave-packages",
   "branch": "main",
-  "remote": "https://github.com/dweee/dave-packages.git"
+  "remote": "https://github.com/dweee/dave-packages.git",
+  "inputCheckWorkflows": [
+    "release-channels.yml",
+    "darwin-actions.yml",
+    "others-actions.yml"
+  ]
 }
