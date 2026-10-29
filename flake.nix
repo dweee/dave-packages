@@ -39,7 +39,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
-    t3-code.url = "github:LisaScheers/t3-code-nix/41caf597ed5d2dcfe7bb398fb38dfae290bb34ba";
+    t3-code.url = "github:LisaScheers/t3-code-nix/cdbe9aaab1f2c34bf35ccd2005e566a2f38afdf3";
     nixos-jellyfin = {
       url = "github:matt1432/nixos-jellyfin";
       inputs.nixpkgs.follows = "nixpkgs";
