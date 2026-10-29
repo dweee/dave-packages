@@ -78,12 +78,14 @@ jobs:
           fi
           free -h
           swapon --show
-      - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
+      - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3 # v3
         with:
-          nix_version: "2.34.7"
-          enable_kvm: false
-          nix_conf: |
-            experimental-features = nix-command flakes
+          source-tag: v3.24.1
+          summarize: false
+          kvm: false
+          extra-conf: |
+            experimental-features = nix-command flakes parallel-eval
+            eval-cores = 2
             accept-flake-config = false
             substituters = https://cache.nixos.org/
             extra-substituters =
