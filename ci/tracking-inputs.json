@@ -41,7 +41,8 @@
       "source": "github:matt1432/nixos-jellyfin"
     },
     "nixpkgs": {
-      "source": "github:nixos/nixpkgs/nixos-unstable"
+      "source": "github:nixos/nixpkgs/55bfb4d7437bd4e09ab7cba58a43bd68eb310044",
+      "note": "Held until nixpkgs ships fastmcp 4: current unstable marks fastmcp-slim broken when mcp >= 2, so slskd-mcp cannot evaluate. Resume nixos-unstable after upstream settles."
     },
     "paneru": {
       "source": "git+https://github.com/dweee/paneru.git?ref=tested"
