@@ -32,8 +32,9 @@ buildPythonPackage rec {
   ];
 
   # Since fetchFromGitHub does not include the .git directory,
-  # setuptools-scm needs the version to be explicitly provided.
-  SETUPTOOLS_SCM_PRETEND_VERSION = version;
+  # setuptools-scm needs the version to be explicitly provided (in `env`:
+  # Python builds use structured attrs, so only `env` reaches the backend).
+  env.SETUPTOOLS_SCM_PRETEND_VERSION = version;
 
   nativeBuildInputs = [
     setuptools
