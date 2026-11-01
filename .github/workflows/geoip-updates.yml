@@ -1,0 +1,75 @@
+name: GeoIP updates
+# scripts/update-geoip.py pins the newest GeoIP database release for byparr
+# and trawl's Camoufox. Upstream deletes older releases (P3TERX's daily ones
+# after two days), so this runs daily after P3TERX's release (about 07:10 UTC)
+# and opens (or replaces) one review PR, then dispatches the native package
+# workflows on it: a PR opened with the workflow token emits no pull_request
+# events of its own.
+"on":
+  schedule:
+    - cron: "23 8 * * *"
+  workflow_dispatch: {}
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+concurrency:
+  group: geoip-updates
+  cancel-in-progress: false
+jobs:
+  update:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3 # v3
+        with:
+          source-tag: v3.24.1
+          summarize: false
+          kvm: false
+          extra-conf: |
+            experimental-features = nix-command flakes parallel-eval
+            eval-cores = 2
+            accept-flake-config = false
+      - name: Pin the newest GeoIP releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/update-geoip.py | tee "$RUNNER_TEMP/geoip-update.txt"
+      - name: The GeoIP files download with their new hashes
+        # Both are fixed-output downloads, the same on every system; trawl is x86_64-linux only.
+        run: nix build --no-link .#packages.x86_64-linux.byparr.geoipMmdbZip .#packages.x86_64-linux.trawl.camoufox-bin.geoip
+      - name: Open a review PR for the new pins
+        env:
+          GH_TOKEN: ${{ secrets.UPDATE_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- pkgs/byparr/geoip.json pkgs/trawl/geoip.json; then
+            echo "GeoIP pins are current"
+            exit 0
+          fi
+          tree=$(cat pkgs/byparr/geoip.json pkgs/trawl/geoip.json | git hash-object --stdin)
+          branch="automation/geoip-${tree:0:16}"
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            echo "Already proposed on $branch"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add pkgs/byparr/geoip.json pkgs/trawl/geoip.json
+          git commit -q -m "geoip: update pins" -m "$(cat "$RUNNER_TEMP/geoip-update.txt")"
+          git -c credential.helper= -c "http.extraheader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" \
+            push origin "HEAD:refs/heads/$branch"
+          body=$(printf 'Automated by `.github/workflows/geoip-updates.yml`.\n\n```\n%s\n```\n' "$(cat "$RUNNER_TEMP/geoip-update.txt")")
+          gh pr create --base main --head "$branch" --title "geoip: update pins" --body "$body"
+          # Older GeoIP update PRs are superseded by this one.
+          gh pr list --state open --json number,headRefName \
+            --jq ".[] | select(.headRefName | startswith(\"automation/geoip-\")) | select(.headRefName != \"$branch\") | .number" |
+            while read -r number; do gh pr close "$number" --comment "Superseded by $branch." --delete-branch; done
+          for package in byparr trawl; do
+            gh workflow run others-actions.yml --ref "$branch" -f package="$package"
+          done
