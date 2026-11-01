@@ -1,5 +1,11 @@
 {
   "version": 1,
-  "checks": [],
+  "checks": [
+    [
+      "python3",
+      "pkgs/horizon/update.py",
+      "--check"
+    ]
+  ],
   "upstreams": []
 }
