@@ -706,11 +706,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1791956154,
-        "narHash": "sha256-jBYGPi4udQ9uo4KQp9m2J0546nJVQitG15gvZSaVVAs=",
+        "lastModified": 1793341285,
+        "narHash": "sha256-Y1CiZ4SoBUjLQyQM/pY+rS2dXD3CHLPstF0lmOc73D4=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "55bfb4d7437bd4e09ab7cba58a43bd68eb310044",
+        "rev": "1c89083e451e891152365b799595cf7790a43325",
         "type": "github"
       },
       "original": {
@@ -917,11 +917,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792353949,
-        "narHash": "sha256-fZzXbHP+7d5pY7qhGgJJnw56IxkNzl/pgtgaa3aWKuc=",
+        "lastModified": 1793311869,
+        "narHash": "sha256-XX84Q/FeNBIeCwtlE97VAX6GrRb1oD/R/6lrMSS2J6A=",
         "ref": "flakey",
-        "rev": "292daff4ceb90284f294e9630aab845c3cadca10",
-        "revCount": 45,
+        "rev": "c478ff3ff13d6b849639843a8bad9c79260a2f3c",
+        "revCount": 71,
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp"
       },

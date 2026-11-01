@@ -30,15 +30,18 @@ let
       upstream = inputs.mcp-nixos;
     };
     inherit (t3code) t3code-nightly t3code-server-nightly;
-    chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { };
+    # nixpkgs removed `pcre`; the audio.nix recipes still take it as an argument.
+    chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { pcre = final.pcre2; };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
-    chow-kick = (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { }).overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
-      # The pinned chowdsp_wdf subproject still declares CMake 3.1 policies.
-      cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
-    });
+    chow-kick =
+      (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { pcre = final.pcre2; }).overrideAttrs
+        (old: {
+          patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
+          # The pinned chowdsp_wdf subproject still declares CMake 3.1 policies.
+          cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
+        });
     chow-tape-model =
-      (final.callPackage "${inputs.audio}/chow/chow-tape-model.nix" { }).overrideAttrs
+      (final.callPackage "${inputs.audio}/chow/chow-tape-model.nix" { pcre = final.pcre2; }).overrideAttrs
         (old: {
           # The bundled RTNeural still declares CMake 3.1 policies.
           cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
@@ -49,13 +52,13 @@ let
           '';
         });
     chow-multitool =
-      (final.callPackage "${inputs.audio}/chow/chow-multitool.nix" { }).overrideAttrs
+      (final.callPackage "${inputs.audio}/chow/chow-multitool.nix" { pcre = final.pcre2; }).overrideAttrs
         (old: {
           patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
           cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
         });
-    papu = final.callPackage "${inputs.audio}/vst/papu.nix" { };
-    paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { };
+    papu = final.callPackage "${inputs.audio}/vst/papu.nix" { pcre = final.pcre2; };
+    paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { pcre = final.pcre2; };
 
     inherit (fixes) redlib dorion;
     jetbrains-jdk-patched = prev.jetbrains.jdk-no-jcef-21.overrideAttrs (old: {
@@ -149,8 +152,20 @@ let
       kernelModuleMakeFlags = final.linuxPackages.kernelModuleMakeFlags;
     };
     schildi-revenge = inputs.schildi-revenge.packages.${system}.schildi-revenge;
-    slskd-mcp = final.callPackage ../pkgs/slskd-mcp { src = inputs.slskd-mcp; };
-    prowlarr-mcp = final.callPackage ../pkgs/prowlarr-mcp { src = inputs.prowlarr-mcp; };
+    slskd-mcp = final.callPackage ../pkgs/slskd-mcp {
+      pythonPackages = import ../pkgs/mcp-nixos/python.nix {
+        pkgs = final;
+        upstream = inputs.mcp-nixos;
+      };
+      src = inputs.slskd-mcp;
+    };
+    prowlarr-mcp = final.callPackage ../pkgs/prowlarr-mcp {
+      pythonPackages = import ../pkgs/mcp-nixos/python.nix {
+        pkgs = final;
+        upstream = inputs.mcp-nixos;
+      };
+      src = inputs.prowlarr-mcp;
+    };
     ghidra-mcp = final.callPackage ../pkgs/ghidra-mcp { src = inputs.ghidra-mcp; };
     kuna = inputs.kuna.packages.${system}.kuna;
     rea = final.callPackage ../pkgs/rea { };
