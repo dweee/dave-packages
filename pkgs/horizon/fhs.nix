@@ -88,7 +88,8 @@ buildFHSEnv {
     inherit (launcher) pin;
   };
 
+  # The launcher's own platforms, on Linux: upstream's build (-bin) has no ARM Linux one.
   meta = launcher.meta // {
-    platforms = lib.platforms.linux;
+    platforms = lib.intersectLists lib.platforms.linux launcher.meta.platforms;
   };
 }

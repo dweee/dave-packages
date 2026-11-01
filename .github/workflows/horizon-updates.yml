@@ -40,8 +40,9 @@ jobs:
       - name: Every Horizon package still evaluates
         run: |
           for system in x86_64-linux aarch64-linux aarch64-darwin; do
+            # Upstream's prebuilt (-bin) packages do not exist for every system.
             nix eval --json ".#legacyPackages.$system.horizonPackages.packages" \
-              --apply 'ps: builtins.mapAttrs (_: p: p.drvPath) ps' > /dev/null
+              --apply "ps: builtins.mapAttrs (_: p: p.drvPath) (builtins.removeAttrs ps (builtins.filter (n: !(builtins.elem \"$system\" ps.\${n}.meta.platforms)) (builtins.attrNames ps)))" > /dev/null
           done
       - name: Open a review PR for the new pins
         env:
