@@ -15,8 +15,8 @@ Microsoft.
 | `horizon-launcher-bin` | upstream's launcher build | x86_64 Linux, macOS |
 | `horizon`, `-unstable`, `-git` | the game: horizon-client, horizon-ctl, horizon-prepare, horizon-server | Linux, macOS |
 | `horizon-server`, `-unstable`, `-git` | the server build: the game without sound or controllers as horizon-engine, horizon-prepare, horizon-server | Linux (aarch64 too), macOS |
-| `horizon-bin`, `horizon-bin-unstable` | upstream's game folders | x86_64 Linux, macOS |
-| `horizon-server-bin`, `-unstable` | upstream's server folder (macOS: the game folder) | x86_64 Linux, macOS |
+| `horizon-bin` | upstream's game folders | x86_64 Linux, macOS |
+| `horizon-server-bin` | upstream's server folder (macOS: the game folder) | x86_64 Linux, macOS |
 | `horizon-mixins` | the tool that applies native mods to the game's source | Linux, macOS |
 
 The channels:
@@ -31,7 +31,10 @@ Source builds pin a Nightly's source commit, which upstream keeps for good as th
 `nightly-source/<date>-<short>`, and set `HORIZON_VERSION`/`HORIZON_NIGHTLY` as upstream's
 release builds do, so the game and `--version` say which Nightly they are. Dated Nightly
 releases (their prebuilt archives) are deleted after seven days: the `-bin` pins stay
-fetchable only while the updater keeps them current, or from a binary cache.
+fetchable only while the updater keeps them current, or from a binary cache. The rolling Nightly's
+archives are replaced in place by the next Nightly, so its prebuilt packages
+(`channels.unstable.{game-bin,server-bin}`, the modules' `channel = "unstable"; variant = "bin"`)
+are not in the catalog's package outputs or CI; prefer the source build for that channel.
 
 `legacyPackages.<system>.horizonPackages` holds every channel and variant:
 `channels.<stable|unstable|head>.{launcher, game, server, game-bin, server-bin}`.

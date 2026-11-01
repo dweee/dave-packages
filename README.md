@@ -95,7 +95,6 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | ghidra-kuna | yes | yes | yes |
 | horizon | yes | yes | yes |
 | horizon-bin | yes | yes | - |
-| horizon-bin-unstable | yes | yes | - |
 | horizon-git | yes | yes | yes |
 | horizon-launcher | yes | yes | yes |
 | horizon-launcher-bin | yes | yes | - |
@@ -103,7 +102,6 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | horizon-mixins | yes | yes | yes |
 | horizon-server | yes | yes | yes |
 | horizon-server-bin | yes | yes | - |
-| horizon-server-bin-unstable | yes | yes | - |
 | horizon-server-git | yes | yes | yes |
 | horizon-server-unstable | yes | yes | yes |
 | horizon-unstable | yes | yes | yes |

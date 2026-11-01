@@ -54,6 +54,8 @@ in
   inherit mixins;
 
   # The catalog's attribute names: no suffix for stable, -unstable, -git.
+  # The -bin-unstable archives are replaced in place by each Nightly, so they
+  # are built only through channels.unstable (the modules), not the catalog CI.
   packages = {
     horizon-launcher = channels.stable.launcher;
     horizon-launcher-git = channels.head.launcher;

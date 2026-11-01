@@ -72,6 +72,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     wayland
   ];
 
+  # gpui compiles its Metal shaders with Xcode's `metal` tool unless they are
+  # compiled at run time, which the sandbox needs (as nixpkgs' Zed does).
+  buildFeatures = lib.optional stdenv.hostPlatform.isDarwin "gpui_platform/runtime_shaders";
+
   env = {
     OPENSSL_NO_VENDOR = true;
     # launcher.yml's build: the release line it is on and the version it says.
