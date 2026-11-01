@@ -1,0 +1,76 @@
+name: Horizon updates
+# pkgs/horizon/update.py pins Horizon's stable, unstable and head channels in
+# pkgs/horizon/sources.json. When they moved, this opens (or replaces) one
+# review PR and dispatches the native package workflows on it: a PR opened
+# with the workflow token emits no pull_request events of its own.
+"on":
+  schedule:
+    - cron: "41 1,7,13,19 * * *"
+  workflow_dispatch: {}
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+concurrency:
+  group: horizon-updates
+  cancel-in-progress: false
+jobs:
+  update:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3 # v3
+        with:
+          source-tag: v3.24.1
+          summarize: false
+          kvm: false
+          extra-conf: |
+            experimental-features = nix-command flakes parallel-eval
+            eval-cores = 2
+            accept-flake-config = false
+      - name: Pin the newest Horizon of every channel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 pkgs/horizon/update.py | tee "$RUNNER_TEMP/horizon-update.txt"
+      - name: Every Horizon package still evaluates
+        run: |
+          for system in x86_64-linux aarch64-linux aarch64-darwin; do
+            nix eval --json ".#legacyPackages.$system.horizonPackages.packages" \
+              --apply 'ps: builtins.mapAttrs (_: p: p.drvPath) ps' > /dev/null
+          done
+      - name: Open a review PR for the new pins
+        env:
+          GH_TOKEN: ${{ secrets.UPDATE_TOKEN || github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- pkgs/horizon/sources.json; then
+            echo "Horizon is up to date"
+            exit 0
+          fi
+          tree=$(git hash-object pkgs/horizon/sources.json)
+          branch="automation/horizon-${tree:0:16}"
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            echo "Already proposed on $branch"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add pkgs/horizon/sources.json
+          git commit -q -m "horizon: update pins" -m "$(cat "$RUNNER_TEMP/horizon-update.txt")"
+          git -c credential.helper= -c "http.extraheader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" \
+            push origin "HEAD:refs/heads/$branch"
+          body=$(printf 'Automated by `.github/workflows/horizon-updates.yml`.\n\n```\n%s\n```\n' "$(cat "$RUNNER_TEMP/horizon-update.txt")")
+          gh pr create --base main --head "$branch" --title "horizon: update pins" --body "$body"
+          # Older Horizon update PRs are superseded by this one.
+          gh pr list --state open --json number,headRefName \
+            --jq ".[] | select(.headRefName | startswith(\"automation/horizon-\")) | select(.headRefName != \"$branch\") | .number" |
+            while read -r number; do gh pr close "$number" --comment "Superseded by $branch." --delete-branch; done
+          for workflow in others-actions.yml darwin-actions.yml; do
+            gh workflow run "$workflow" --ref "$branch" -f package=all
+          done
