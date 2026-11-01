@@ -16,9 +16,9 @@
 
   stealthFirefox = callPackage ./stealth-firefox.nix {};
 
+  # Upstream keeps only its newest releases: scripts/update-geoip.py keeps this pin current.
   geoipMmdbZip = fetchurl {
-    url = "https://github.com/daijro/geoip-all-in-one/releases/download/2026.10.14/geoip-aio-all.mmdb.zip";
-    hash = "sha256-GFV9DeJV/v7AB5HjkdnPU+BE9LrKQ4a2Ou3mnqLJfbg=";
+    inherit (lib.importJSON ./geoip.json) url hash;
   };
 
   invisible-core = python313Packages.callPackage ./invisible-core.nix {};
@@ -122,7 +122,8 @@ in
 
     pythonImportsCheck = ["src.consts" "src.owui"];
     # Use the same explicit skew allowance as the installed runtime wrapper.
-    INVISIBLE_PLAYWRIGHT_SKEW = "allow";
+    # Python builds use structured attrs: only `env` reaches the import check.
+    env.INVISIBLE_PLAYWRIGHT_SKEW = "allow";
 
     doCheck = false;
 
@@ -193,7 +194,7 @@ in
     '';
 
     passthru = {
-      inherit invisible-core invisible-playwright playwright-captcha stealthFirefox playwrightBrowsers;
+      inherit geoipMmdbZip invisible-core invisible-playwright playwright-captcha stealthFirefox playwrightBrowsers;
     };
 
     meta = {
