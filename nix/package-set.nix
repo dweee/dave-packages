@@ -19,6 +19,7 @@ let
     ];
   };
   cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
+  horizon = final.callPackage ../pkgs/horizon { };
   definitions = {
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
@@ -162,7 +163,8 @@ let
     paneru-lua = inputs.paneru.packages.${system}.paneru-lua;
     tabrix = inputs.tabrix.packages.${system}.tabrix;
     tabrix-extension = inputs.tabrix.packages.${system}.tabrix-extension;
-  };
+  }
+  // horizon.packages;
 in
 lib.genAttrs (platforms.${system} or [ ]) (
   name:
@@ -176,6 +178,8 @@ lib.genAttrs (platforms.${system} or [ ]) (
 
 // {
   wiicompiled-nodtool = wii.wiicompiled-nodtool;
+  # Every channel and variant, for the Horizon modules (pkgs/horizon/modules).
+  horizonPackages = horizon;
 }
 // lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
   inherit (fixes) spotify;

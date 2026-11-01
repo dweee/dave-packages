@@ -118,6 +118,18 @@
         (import ./nix/xorg-compat.nix)
         packageOverlay
       ];
+      # The modules choose from the catalog's own Horizon builds, so a host gets
+      # the binary cache's outputs; pkgs.horizonPackages (the overlay) or
+      # horizon.packageSet still override them.
+      horizonModule =
+        module:
+        { lib, pkgs, ... }:
+        {
+          imports = [ module ];
+          horizon.packageSet = lib.mkOverride 1100 (
+            pkgs.horizonPackages or self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.horizonPackages
+          );
+        };
       pkgsFor =
         system:
         import nixpkgs {
@@ -143,6 +155,14 @@
         nixpkgs.lib.genAttrs (cacheOnlyPlatforms.${system} or [ ]) (name: definitions.${name})
       );
       nixosModules.android-avf-kernel-patches = import ./nix/android-avf/kernel-patches.nix;
+      # Horizon (pkgs/horizon/README.md): the launcher, the game and a server.
+      nixosModules.horizon = horizonModule ./pkgs/horizon/modules/nixos.nix;
+      darwinModules.horizon = horizonModule ./pkgs/horizon/modules/darwin.nix;
+      homeManagerModules.horizon = horizonModule ./pkgs/horizon/modules/home-manager.nix;
+      # Every Horizon channel and variant, built as `packages` are.
+      legacyPackages = nixpkgs.lib.genAttrs systems (system: {
+        inherit ((pkgsFor system)) horizonPackages;
+      });
 
       packages = nixpkgs.lib.genAttrs systems (
         system:
@@ -156,6 +176,10 @@
         self.packages.${system}
         // {
           kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
+        }
+        // import ./pkgs/horizon/checks.nix {
+          inherit self inputs system;
+          pkgs = pkgsFor system;
         }
       );
       formatter = nixpkgs.lib.genAttrs systems (system: (pkgsFor system).nixfmt);
