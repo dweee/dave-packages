@@ -122,6 +122,17 @@ class AtticPublicationTests(unittest.TestCase):
         sleep.assert_not_called()
         self.assertFalse((self.root / 'summary').exists())
 
+    def test_permanent_error_tail_is_reported_on_stderr_without_the_secret(self):
+        with patch.dict(os.environ, self.env, clear=True), \
+                patch.object(module.subprocess, 'run', return_value=subprocess.CompletedProcess(
+                    [], 1, stdout='noise\nHTTP 403 Forbidden ' + self.secret + '\n')), \
+                contextlib.redirect_stderr(io.StringIO()) as errors, \
+                contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaises(subprocess.CalledProcessError):
+                module.publish(self.outputs)
+        self.assertIn('error: attic push: HTTP 403 Forbidden [redacted]', errors.getvalue())
+        self.assertNotIn(self.secret, errors.getvalue())
+
     def test_transient_errors_are_bounded_and_remove_credentials(self):
         directories = []
         def upload(args, **kwargs):
