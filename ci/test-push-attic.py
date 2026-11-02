@@ -182,6 +182,13 @@ class AtticPublicationTests(unittest.TestCase):
                 with self.assertRaises(ValueError): module.publish(self.outputs)
                 call.assert_not_called()
 
+    def test_cli_names_the_rejected_check_on_stderr(self):
+        with patch.dict(os.environ, self.env | {'ATTIC_BIN': '/missing/attic'}, clear=True), \
+                patch.object(module.sys, 'argv', ['push-attic.py', '--outputs', str(self.outputs)]), \
+                contextlib.redirect_stderr(io.StringIO()) as errors:
+            self.assertEqual(module.main(), 1)
+        self.assertRegex(errors.getvalue(), r'error: attic publish rejected \(ValueError at line \d+\)')
+
     def test_empty_or_invalid_manifest_never_contacts_server(self):
         for content in ['', '\n', '/tmp/arbitrary\n', self.paths[0] + '/child\n', self.paths[0] + '.drv\n', self.paths[0] + '\nnot-a-store-path\n']:
             self.outputs.write_text(content)

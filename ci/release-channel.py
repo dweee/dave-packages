@@ -454,8 +454,10 @@ def build(system):
     expected = {}
     with tempfile.TemporaryDirectory(prefix='channel-outputs-') as directory:
         phase('prepare-cache-publisher')
+        # Root the publisher: on a long inventory the runner's automatic store
+        # collection can otherwise delete it before a later upload.
         client = run('nix', 'build', '--inputs-from', flake, 'nixpkgs#attic-client', *FLAGS,
-                     '--no-link', '--print-out-paths', env=env)
+                     '--out-link', str(Path(directory) / 'attic-client'), '--print-out-paths', env=env)
         if not STORE.fullmatch(client):
             raise ValueError('Invalid publisher')
         publish_env = dict(os.environ, ATTIC_BIN=client + '/bin/attic',

@@ -114,8 +114,13 @@ def main():
     except subprocess.TimeoutExpired:
         print("Attic publication exceeded its total upload deadline; publication failed.", file=sys.stderr)
         return 1
-    except (ValueError, OSError):
-        # Avoid echoing credentials, URL values or server responses in validation errors.
+    except (ValueError, OSError) as error:
+        # Avoid echoing credentials, URL values or server responses in validation
+        # errors; the exception type and source line identify which check failed.
+        line = error.__traceback__
+        while line.tb_next:
+            line = line.tb_next
+        print(f"error: attic publish rejected ({type(error).__name__} at line {line.tb_lineno})", file=sys.stderr)
         print("Attic publication configuration or output manifest is invalid; see ci/ATTIC.md.", file=sys.stderr)
         return 1
     return 0
