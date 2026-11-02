@@ -101,7 +101,7 @@ let
         "github.com/caddyserver/cache-handler@v0.16.0"
         "github.com/darkweak/storages/simplefs/caddy@v0.0.19"
       ];
-      hash = "sha256-8e0cAIe8TWc1xLPzt02gXIC/xTPAs9jMeLMG62z4aUc=";
+      hash = "sha256-H6SwdJRitkNp4e4GMoVCtKiW601M8MBSyHSmRT689H0=";
     };
     matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel {
       inherit (prev) matrix-tuwunel;

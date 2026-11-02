@@ -82,5 +82,13 @@
     "virby": {
       "source": "github:quinneden/virby-nix-darwin"
     }
+  },
+  "fixedOutputHashes": {
+    "files": [
+      "nix/package-set.nix"
+    ],
+    "packages": [
+      "caddy-custom"
+    ]
   }
 }
