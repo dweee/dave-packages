@@ -46,6 +46,54 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.horizon",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-launcher",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-launcher-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-launcher-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-mixins",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-server",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-server-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-server-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-server-unstable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-unstable",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.infrared",
         "visibility": "public"
       },
@@ -357,6 +405,54 @@
       },
       {
         "attribute": "packages.x86_64-linux.homeassistant-base",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-launcher",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-launcher-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-launcher-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-mixins",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-server",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-server-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-server-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-server-unstable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-unstable",
         "visibility": "public"
       },
       {
@@ -683,6 +779,42 @@
       },
       {
         "attribute": "packages.aarch64-linux.homeassistant-base",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-launcher",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-launcher-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-mixins",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-server",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-server-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-server-unstable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-unstable",
         "visibility": "public"
       },
       {

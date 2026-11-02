@@ -46,6 +46,17 @@ the strip tool mistakes its ICO header for COFF and corrupts/expands the icon.
 Spicetify inherits the exclusion. This unfree package is exposed through
 `cacheOnlyPackages.aarch64-darwin.spotify`, outside public runtime exports.
 
+## Horizon
+
+`horizon` (the game), `horizon-server` (its dedicated server, aarch64 Linux
+included) and `horizon-launcher` build from source in three channels: no suffix
+for the newest dated Nightly, `-unstable` for the rolling Nightly and `-git` for
+upstream main. `-bin` packages wrap upstream's prebuilt x86 Linux and macOS
+archives. `nixosModules.horizon`, `darwinModules.horizon` and
+`homeManagerModules.horizon` configure the launcher, the game and a declarative
+server, with content mods, datapacks and native mods. See
+[the package notes](pkgs/horizon/README.md).
+
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and
@@ -82,6 +93,18 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | gdb-mcp | yes | yes | yes |
 | ghidra-mcp | yes | yes | yes |
 | ghidra-kuna | yes | yes | yes |
+| horizon | yes | yes | yes |
+| horizon-bin | yes | yes | - |
+| horizon-git | yes | yes | yes |
+| horizon-launcher | yes | yes | yes |
+| horizon-launcher-bin | yes | yes | - |
+| horizon-launcher-git | yes | yes | yes |
+| horizon-mixins | yes | yes | yes |
+| horizon-server | yes | yes | yes |
+| horizon-server-bin | yes | yes | - |
+| horizon-server-git | yes | yes | yes |
+| horizon-server-unstable | yes | yes | yes |
+| horizon-unstable | yes | yes | yes |
 | infrared | yes | yes | yes |
 | kuna | yes | yes | yes |
 | kopuz | yes | yes | yes |

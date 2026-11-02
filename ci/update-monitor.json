@@ -5,6 +5,11 @@
       "python3",
       "scripts/update-geoip.py",
       "--check"
+    ],
+    [
+      "python3",
+      "pkgs/horizon/update.py",
+      "--check"
     ]
   ],
   "upstreams": []
