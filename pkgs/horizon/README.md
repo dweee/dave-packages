@@ -54,6 +54,9 @@ with `research-lock.json`, `crates/horizon-prepare`, `tools` and the exporters' 
   installs are upstream's ordinary Linux programs. The environment also has the C toolchain,
   pkg-config files and headers the launcher's native-mod builds need, and JDK 25.
   Self-update is off; the menu entry it writes starts `horizon-launcher` from `PATH`.
+- The source launcher is built with Horizon's own Azure app ID (`HORIZON_MSA_CLIENT_ID`), as
+  upstream's release builds are, so it can sign in to Microsoft and pass the owner gate.
+  `launcher.nix` takes it as `msaClientId`; the variable at run time still overrides it.
 - On macOS, `horizon-launcher-bin` installs upstream's signed `Horizon.app`.
 
 ## Modules
