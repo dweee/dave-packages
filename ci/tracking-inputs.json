@@ -70,9 +70,6 @@
     "slskd-mcp": {
       "source": "github:abl030/slskd-mcp"
     },
-    "t3-code": {
-      "source": "github:LisaScheers/t3-code-nix"
-    },
     "tabrix": {
       "source": "git+https://github.com/dweee/tabrix.git?ref=tested"
     },
