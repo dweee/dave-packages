@@ -24,6 +24,10 @@
   libxi,
   libxrandr,
   pin,
+  # Horizon's own Azure app, which upstream's release builds carry
+  # (docs/microsoft-account.md). Without it the launcher can't sign in, and
+  # the owner gate keeps it from starting the game. "" builds it without one.
+  msaClientId ? "331e08f8-172d-43b9-835a-3108c2fcdbf3",
 }:
 
 let
@@ -81,6 +85,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # launcher.yml's build: the release line it is on and the version it says.
     HORIZON_LAUNCHER_VERSION = pin.release or "";
     HORIZON_LAUNCHER_TAG = lib.optionalString (pin ? release) "launcher@${pin.release}";
+    HORIZON_MSA_CLIENT_ID = msaClientId;
   };
 
   # The UI tests need a display.
