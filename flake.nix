@@ -14,7 +14,7 @@
       inputs.pyproject-build-systems.follows = "pyproject-build-systems";
     };
     pyproject-nix = {
-      url = "github:pyproject-nix/pyproject.nix/bf7d4b1d6de61db02fd4e748395634f03006e5de";
+      url = "github:pyproject-nix/pyproject.nix/d43f0e74444c1f266c640fc49ce6ce6fb69d33c3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     uv2nix = {
@@ -23,7 +23,7 @@
       inputs.pyproject-nix.follows = "pyproject-nix";
     };
     pyproject-build-systems = {
-      url = "github:pyproject-nix/build-system-pkgs/461a6a8540307fb9c05b8f6ad29e9720d2a621db";
+      url = "github:pyproject-nix/build-system-pkgs/947b2b0c973de462b19577715f04ba8d6f48ed7e";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.pyproject-nix.follows = "pyproject-nix";
       inputs.uv2nix.follows = "uv2nix";
@@ -41,14 +41,14 @@
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
     t3-code.url = "github:LisaScheers/t3-code-nix/a63a7a785b9ad73e160c6782b3042e6eefa4d098";
     nixos-jellyfin = {
-      url = "github:matt1432/nixos-jellyfin/ad9153c014bfa35d627aa9b692e2b5bd63e993f2";
+      url = "github:matt1432/nixos-jellyfin/fa6787941fb84e3a00470d8bf2adb49a3309f335";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
       url = "github:oxalica/rust-overlay/7fcafdf6f0761462d68012aba6a627be3f008d68";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/feb1bf872d5309565fe94a7dc31a47aaf861a915";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/554703fb0d4d7ec96fdc4f7a31e8c29648bde145";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
