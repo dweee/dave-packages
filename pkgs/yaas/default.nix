@@ -41,7 +41,11 @@ in
   flutter347.buildFlutterApplication {
     inherit pname version src;
 
-    autoPubspecLock = "${src}/pubspec.lock";
+    # Committed JSON, not autoPubspecLock: that reads ${src}/pubspec.lock during
+    # evaluation (import-from-derivation), which the release gate's no-build
+    # retained-root evaluation cannot realise. Regenerate after a bump with
+    #   yq -o=json . "$(nix build --no-link --print-out-paths .#yaas.src)/pubspec.lock" > pkgs/yaas/pubspec.lock.json
+    pubspecLock = lib.importJSON ./pubspec.lock.json;
 
     customSourceBuilders = {
       rinf = {

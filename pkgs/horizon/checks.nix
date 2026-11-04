@@ -1,6 +1,12 @@
 # Horizon module checks: a NixOS VM that lays out and starts a server, and an
 # evaluation of the nix-darwin module. No Minecraft files exist here, so the
 # server is expected to stop at "no prepared game files".
+#
+# The release gate's GitHub runners run Nix with `kvm: false`, so they cannot
+# build a NixOS VM test. The flake check builds the test machine's system
+# closure, which still catches module and package breakage; the VM test itself
+# is `checks.<linux>.horizon-server-module.vmTest`, run where KVM exists:
+#   nix build .#checks.x86_64-linux.horizon-server-module.vmTest
 {
   self,
   inputs,
@@ -12,9 +18,8 @@ let
   inherit (pkgs) lib;
   linux = lib.hasSuffix "-linux" system;
   darwin = lib.hasSuffix "-darwin" system;
-in
-lib.optionalAttrs linux {
-  horizon-server-module = pkgs.testers.runNixOSTest {
+
+  vmTest = pkgs.testers.runNixOSTest {
     name = "horizon-server-module";
     nodes.machine = {
       imports = [ self.nixosModules.horizon ];
@@ -52,6 +57,13 @@ lib.optionalAttrs linux {
       machine.succeed("horizon-server-admin config --json | grep -q hard")
     '';
   };
+in
+lib.optionalAttrs linux {
+  horizon-server-module = vmTest.nodes.machine.system.build.toplevel.overrideAttrs (old: {
+    passthru = (old.passthru or { }) // {
+      inherit vmTest;
+    };
+  });
 }
 // lib.optionalAttrs darwin {
   horizon-darwin-module =
