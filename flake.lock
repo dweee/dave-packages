@@ -50,6 +50,22 @@
     },
     "crane": {
       "locked": {
+        "lastModified": 1783203018,
+        "narHash": "sha256-G6R9IT/xwFuu+CYBWDUAok6AdC4ERC4ZfPPFtEpxnZE=",
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "80db5bdc391be8a1794f6d8a2d56e3a84ebcede2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ipetkov",
+        "repo": "crane",
+        "rev": "80db5bdc391be8a1794f6d8a2d56e3a84ebcede2",
+        "type": "github"
+      }
+    },
+    "crane_2": {
+      "locked": {
         "lastModified": 1785541369,
         "narHash": "sha256-6VCYI5xashcnAR1lambqt9FGh0F6kYhg1P2Z0VDlr48=",
         "owner": "ipetkov",
@@ -357,16 +373,17 @@
     },
     "kopuz": {
       "inputs": {
+        "crane": "crane",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1792376186,
-        "narHash": "sha256-vZsCtFawjqCPF14o7oGUU2IZYEaSTIXKdTJC+UDaUFg=",
+        "lastModified": 1793781805,
+        "narHash": "sha256-gta0T9P5RlR4d5THeeLSbLS2ty46c9NOVetYiLBVQAk=",
         "ref": "flakey",
-        "rev": "823bd190138bfcfaa3727e82d799393c5cb9be73",
-        "revCount": 1404,
+        "rev": "8a8ea7b8111100b655c53b386f9a868cdae0900e",
+        "revCount": 1432,
         "type": "git",
         "url": "https://github.com/dweee/kopuz"
       },
@@ -786,7 +803,7 @@
     },
     "paneru": {
       "inputs": {
-        "crane": "crane",
+        "crane": "crane_2",
         "flake-parts": "flake-parts_4",
         "import-tree": "import-tree_2",
         "nix-darwin": [
