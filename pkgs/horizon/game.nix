@@ -105,28 +105,37 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   # Native mods are applied after cargoSetupHook has checked Cargo.lock
   # against the vendored crates: a bundle may add path crates of its own.
-  preBuild = lib.optionalString (nativeMods != [ ]) ''
-    mkdir -p "$TMPDIR/horizon-native-mods"
-    ${lib.concatMapStringsSep "\n" (
-      mod: ''cp -r --no-preserve=mode ${mod} "$TMPDIR/horizon-native-mods/"''
-    ) nativeMods}
-    # As the launcher does: the bundles build on this commit (it rewrites
-    # their horizon_revision), which horizon-mixins reads without git here.
-    echo ${pin.rev} > .horizon-revision
-    find "$TMPDIR/horizon-native-mods" -name horizon-mixin.toml -exec \
-      sed -i -E 's/^horizon_revision *=.*/horizon_revision = "${pin.rev}"/' {} +
-    # horizon-mixins refuses symlinks in what it stages (CLAUDE.md is one).
-    find . -path ./target -prune -o -type l -print | while read -r link; do
-      if [ -f "$link" ]; then cp --remove-destination "$(readlink -f "$link")" "$link"; else rm "$link"; fi
-    done
-    horizon-mixins apply --workspace "$PWD" --mods "$TMPDIR/horizon-native-mods" \
-      --out "$TMPDIR/horizon-modded"
-    cp -rT --no-preserve=mode "$TMPDIR/horizon-modded" "$PWD"
-    # The launcher's builds: horizon-client/mods, where the modded source has it.
-    if sed -n '/^\[features\]/,/^\[/p' crates/horizon-client/Cargo.toml | grep -q '^mods *='; then
-      cargoBuildFlags+=(--features=horizon-client/mods)
-    fi
-  '';
+  preBuild =
+    lib.optionalString (nativeMods != [ ]) ''
+      mkdir -p "$TMPDIR/horizon-native-mods"
+      ${lib.concatMapStringsSep "\n" (
+        mod: ''cp -r --no-preserve=mode ${mod} "$TMPDIR/horizon-native-mods/"''
+      ) nativeMods}
+      # As the launcher does: the bundles build on this commit (it rewrites
+      # their horizon_revision), which horizon-mixins reads without git here.
+      echo ${pin.rev} > .horizon-revision
+      find "$TMPDIR/horizon-native-mods" -name horizon-mixin.toml -exec \
+        sed -i -E 's/^horizon_revision *=.*/horizon_revision = "${pin.rev}"/' {} +
+      # horizon-mixins refuses symlinks in what it stages (CLAUDE.md is one).
+      find . -path ./target -prune -o -type l -print | while read -r link; do
+        if [ -f "$link" ]; then cp --remove-destination "$(readlink -f "$link")" "$link"; else rm "$link"; fi
+      done
+      horizon-mixins apply --workspace "$PWD" --mods "$TMPDIR/horizon-native-mods" \
+        --out "$TMPDIR/horizon-modded"
+      cp -rT --no-preserve=mode "$TMPDIR/horizon-modded" "$PWD"
+      # The launcher's builds: horizon-client/mods, where the modded source has it.
+      if sed -n '/^\[features\]/,/^\[/p' crates/horizon-client/Cargo.toml | grep -q '^mods *='; then
+        cargoBuildFlags+=(--features=horizon-client/mods)
+      fi
+    ''
+    # Upstream 42a5981e set autobins = false in horizon-client and declared
+    # horizon-ctl in horizon-client-lib; older pins still have it in
+    # horizon-client. Select the package that declares it, as game-build.yml does.
+    + lib.optionalString (!headless) ''
+      if grep -qs '^name *= *"horizon-ctl"' crates/horizon-client-lib/Cargo.toml; then
+        cargoBuildFlags+=(--package=horizon-client-lib)
+      fi
+    '';
 
   # The parity harnesses need a prepared vanilla tree, which the sandbox lacks.
   doCheck = false;

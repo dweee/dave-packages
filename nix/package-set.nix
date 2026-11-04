@@ -34,7 +34,7 @@ let
     chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { pcre = final.pcre2; };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
     chow-kick =
-      (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { pcre = final.pcre2; }).overrideAttrs
+      (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { pcre = final.pcre2; gtk2-x11 = null; }).overrideAttrs
         (old: {
           patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
           # The pinned chowdsp_wdf subproject still declares CMake 3.1 policies.

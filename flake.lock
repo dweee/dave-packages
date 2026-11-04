@@ -1028,11 +1028,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792353943,
-        "narHash": "sha256-uxLZ0w2yA0Buf+Hsaxz5nR4aOKRtPlKd9LZFwMf40ko=",
+        "lastModified": 1793724016,
+        "narHash": "sha256-25mu5SI5cU7VkfL5cFVd+GwcNdZEJHhvxVYUw+BgoXc=",
         "ref": "flakey",
-        "rev": "254c0639647d86b1aae6464ddf65adb222c5ba2e",
-        "revCount": 3427,
+        "rev": "3ce26d08caa23387656762c2eaca7c2a559fe743",
+        "revCount": 3592,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge"
