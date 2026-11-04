@@ -2,14 +2,14 @@
   runCommand,
   stdenv,
   ghidra-kuna,
-  jdk21,
+  openjdk25,
 }:
 runCommand "ghidra-kuna-headless-smoke"
   {
     nativeBuildInputs = [
       stdenv.cc
       ghidra-kuna
-      jdk21
+      openjdk25
     ];
   }
   ''
@@ -18,7 +18,7 @@ runCommand "ghidra-kuna-headless-smoke"
     cc -O1 -g -fno-inline ${./fixture.c} -o "$TMPDIR/fixture"
     "$TMPDIR/fixture"
     mkdir -p "$TMPDIR/project" "$TMPDIR/ghidra-home"
-    export JAVA_HOME=${jdk21.home}
+    export JAVA_HOME=${openjdk25.home}
     # LaunchSupport is a separate JVM and must also have a writable sandbox home,
     # notably on Darwin where it saves the selected JDK under ~/Library/ghidra.
     export JAVA_TOOL_OPTIONS="-Duser.home=$TMPDIR/ghidra-home -Djava.io.tmpdir=$TMPDIR"
