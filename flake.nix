@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/7fcafdf6f0761462d68012aba6a627be3f008d68";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/554703fb0d4d7ec96fdc4f7a31e8c29648bde145";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/3a1b223ef828b8a994faa29443a0f802f9d1935f";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +57,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/f20c85dac2eef06564ebc27729264f4f75ae7e1c";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/25112ab9d0ecb94f7c6e11f363d033ddbe79cbe8";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -72,7 +72,7 @@
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
-    tabrix = { url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=90bd73baf5fafdebb2cc0fa31c0cd26002600578"; };
+    tabrix = { url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=ec95ec86fccc3dba952b8349637cc3606aea0e98"; };
     rekordbox-mcp = {
       url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=dc3e239ee37b1830c621b1141eee25ddd53646f6";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -82,7 +82,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=a01cf51d1796c0c3883ac5c770af430b45a3c840&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=909a13ae2eee3d52b05b7bf6e5cc8d5a990ca103&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
