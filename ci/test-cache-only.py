@@ -45,7 +45,7 @@ class CacheOnlyBoundary(unittest.TestCase):
         elif args[0] == "nix-store":
             value = self.runtime
         else:
-            self.assertTrue(args[1].endswith("/ci/push-attic.py"))
+            self.assertTrue(args[1].endswith(("/ci/push-attic.py", "/ci/push-niks3.py")))
             manifest = Path(args[args.index("--outputs") + 1])
             self.assertEqual(manifest.read_text(), PATH + "\n")
             self.manifest = manifest
@@ -63,7 +63,9 @@ class CacheOnlyBoundary(unittest.TestCase):
     def test_unfree_allowed_only_in_direct_private_pipeline_and_manifest_removed(self):
         self.run_build()
         self.assertFalse(self.manifest.exists())
-        for args, env in self.calls[:-1]:
+        for args, env in self.calls:
+            if args[0] == module.sys.executable:
+                continue
             self.assertNotIn("ATTIC_TOKEN", env)
             self.assertNotIn("synthetic-private-token", " ".join(args))
         self.assertTrue(any("cacheOnlyPackages.x86_64-linux.veracrypt" in " ".join(a) for a, _ in self.calls))
@@ -93,7 +95,8 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.assertEqual(installables[2:], [[f"{target}.{a}^*"] for a in module.STAGED["keyguard"]["attributes"]]
                          + [[target + "^*"]])
         pushes = [a for a, _ in self.calls if a[0] == module.sys.executable]
-        self.assertEqual(len(pushes), len(module.STAGED["keyguard"]["attributes"]) + 1)
+        self.assertEqual(len(pushes), 2 * (len(module.STAGED["keyguard"]["attributes"]) + 1))
+        self.assertEqual([Path(a[1]).name for a in pushes], ["push-attic.py", "push-niks3.py"] * (len(pushes)//2))
         for args, env in self.calls:
             if args[0] != module.sys.executable:
                 self.assertNotIn("ATTIC_TOKEN", env)
@@ -119,6 +122,12 @@ class CacheOnlyBoundary(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.run_build()
                 self.assertFalse(any("build" in a for a, _ in self.calls))
+
+    def test_niks3_failure_blocks_success_after_attic_upload(self):
+        self.failure = str(Path(module.__file__).parent / 'push-niks3.py')
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.run_build()
+        self.assertTrue(any(a[1].endswith('/ci/push-attic.py') for a, _ in self.calls if a[0] == module.sys.executable))
 
     def test_unknown_package_rejected_before_nix_or_credentials(self):
         with patch.object(module, "quiet") as run:
@@ -164,7 +173,7 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.assertNotIn("pull_request:", workflow)
         for forbidden in ["upload-artifact", "download-artifact", "transfer-attic", "gh release", "contents: write"]:
             self.assertNotIn(forbidden, workflow)
-        self.assertEqual(workflow.count("github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"), 2)
+        self.assertEqual(" ".join(workflow.split()).count("github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"), 2)
         archive = (ROOT / ".github/workflows/archive-packages.yml").read_text()
         self.assertNotIn("Dave packages cache only", archive)
 

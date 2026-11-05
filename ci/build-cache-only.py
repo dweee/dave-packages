@@ -160,6 +160,8 @@ def publish(root, client, manifest, paths, env):
         # configuration and uploads roots plus their runtime closures.
         quiet([sys.executable, str(root / "ci/push-attic.py"), "--outputs", str(manifest)],
               publish_env, stdout=log)
+        quiet([sys.executable, str(root / "ci/push-niks3.py"), "--outputs", str(manifest)],
+              publish_env, stdout=log)
 
 def build(system, package):
     resource_heartbeat()
@@ -167,7 +169,7 @@ def build(system, package):
     inventory = json.loads((root / "nix/cache-only-platforms.json").read_text())
     if package not in inventory.get(system, []):
         raise ValueError("Not an approved cache-only target")
-    env = {key: value for key, value in os.environ.items() if key != "ATTIC_TOKEN"}
+    env = {key: value for key, value in os.environ.items() if key not in {"ATTIC_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_URL"}}
     if quiet(["nix", "eval", "--impure", "--raw", "--expr", "builtins.currentSystem"], env).stdout.strip() != system:
         raise ValueError("Native runner mismatch")
     target = f".#cacheOnlyPackages.{system}.{package}"

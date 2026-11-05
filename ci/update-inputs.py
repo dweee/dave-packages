@@ -13,6 +13,7 @@ import re
 import subprocess
 import sys
 
+sys.dont_write_bytecode = True  # see release-channel.py: tracked bytecode dirtied the checkout
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('channel_diagnostics', ROOT / 'ci/release-channel.py')
 channel = importlib.util.module_from_spec(spec)
@@ -46,19 +47,22 @@ def run(*args):
         # Authenticated GitHub API reads avoid the shared anonymous rate limit.
         # The token travels in the environment, never on a command line.
         env = dict(os.environ, NIX_CONFIG=os.environ.get('NIX_CONFIG', '') + '\naccess-tokens = github.com=' + token + '\n')
-    try:
-        result = subprocess.run(args, cwd=ROOT, env=env, text=True, capture_output=True, timeout=3600)
-    except subprocess.TimeoutExpired:
-        raise channel.CommandFailure('command deadline exceeded') from None
-    if result.returncode:
-        diagnostic = (result.stderr or '') + '\n' + (result.stdout or '')
-        kind = channel.failure_category(diagnostic)
-        message = kind + ' (exit ' + str(result.returncode) + ')'
-        detail = safe_detail(diagnostic, token)
-        if detail:
-            message += ': ' + detail
-        raise channel.CommandFailure(message)
-    return result.stdout.strip()
+
+    def attempt():
+        try:
+            result = subprocess.run(args, cwd=ROOT, env=env, text=True, capture_output=True, timeout=3600)
+        except subprocess.TimeoutExpired:
+            raise channel.CommandFailure('command deadline exceeded') from None
+        if result.returncode:
+            diagnostic = (result.stderr or '') + '\n' + (result.stdout or '')
+            kind = channel.failure_category(diagnostic)
+            message = kind + ' (exit ' + str(result.returncode) + ')'
+            detail = safe_detail(diagnostic, token)
+            if detail:
+                message += ': ' + detail
+            raise channel.CommandFailure(message, kind)
+        return result.stdout.strip()
+    return channel.with_transport_retries(args, attempt)
 
 
 def pin_url(locked):
@@ -108,48 +112,6 @@ def instantiation_expression(system):
             'in { packages = drvs "packages"; checks = drvs "checks"; }')
 
 
-def mismatched_hash(diagnostic):
-    # Nix reports a stale fixed-output hash as "specified: X" then "got: Y".
-    found = re.search(r'specified:\s*(sha256-[A-Za-z0-9+/]+=*)\s+got:\s*(sha256-[A-Za-z0-9+/]+=*)', diagnostic)
-    return found.groups() if found else None
-
-
-def refresh_fixed_output_hashes(config, system):
-    """Rewrite stale hashes of derivations whose fixed-output inputs follow a bump.
-
-    A recipe such as `caddy.withPlugins` pins the hash of a Go module fetch that
-    depends on the nixpkgs-provided caddy version, so every nixpkgs move can
-    invalidate it. Build each listed package; on a hash mismatch, replace the
-    specified hash with the one Nix reports, provided it occurs exactly once in
-    the listed files. The result is left in the review diff like any other bump.
-    """
-    paths = [ROOT / name for name in config.get('files', [])]
-    fixed = []
-    for package in config.get('packages', []):
-        for _ in range(3):
-            result = subprocess.run(
-                ['nix', 'build', '--no-link', '--option', 'accept-flake-config', 'false',
-                 '--no-write-lock-file', '--no-update-lock-file', '.#packages.' + system + '.' + package],
-                cwd=ROOT, text=True, capture_output=True, timeout=3600)
-            if not result.returncode:
-                break
-            hashes = mismatched_hash(result.stderr + '\n' + result.stdout)
-            if not hashes:
-                raise channel.CommandFailure(channel.failure_category(result.stderr) + ' (exit ' +
-                                             str(result.returncode) + '): ' + safe_detail(result.stderr))
-            old, new = hashes
-            quoted = '"' + old + '"'
-            owners = [path for path in paths if path.read_text().count(quoted)]
-            if len(owners) != 1 or owners[0].read_text().count(quoted) != 1:
-                raise channel.CommandFailure('source-hash-mismatch (exit 1): ' + package +
-                                             ' hash is not declared exactly once in the listed files')
-            owners[0].write_text(owners[0].read_text().replace(quoted, '"' + new + '"'))
-            fixed.append(package)
-        else:
-            raise channel.CommandFailure('source-hash-mismatch (exit 1): ' + package + ' still mismatches after 3 rewrites')
-    return fixed
-
-
 def update():
     phase('inspect-tracking-inventory')
     config = json.loads((ROOT / 'ci/tracking-inputs.json').read_text())
@@ -157,6 +119,9 @@ def update():
         raise ValueError('Unknown tracking inventory')
     phase('check-clean-checkout')
     if run('git', 'status', '--porcelain', '--untracked-files=no'):
+        names = channel.dirty_tracked_paths()
+        print('Tracked files that differ from the checked-out commit: ' + (', '.join(names) or '(none listed)'),
+              file=sys.stderr, flush=True)
         raise ValueError('Input updates require a clean checkout')
     phase('inspect-locked-inputs')
     lockfile = ROOT / 'flake.lock'
@@ -213,15 +178,9 @@ def update():
     if alignment:
         phase('validate-catalog-alignment')
         run(sys.executable, 'scripts/check-dave-packages-pin.py')
-    system = run('nix', 'eval', '--impure', '--raw', '--expr', 'builtins.currentSystem')
     phase('instantiate-import-from-derivation')
     run('nix', 'eval', '--impure', '--json', '--option', 'accept-flake-config', 'false',
-        '--expr', instantiation_expression(system))
-    if config.get('fixedOutputHashes'):
-        phase('refresh-fixed-output-hashes')
-        refreshed = refresh_fixed_output_hashes(config['fixedOutputHashes'], system)
-        if refreshed:
-            print('Refreshed fixed-output hashes: ' + ', '.join(refreshed), flush=True)
+        '--expr', instantiation_expression(run('nix', 'eval', '--impure', '--raw', '--expr', 'builtins.currentSystem')))
     phase('validate-candidate')
     run('nix', 'flake', 'check', '--no-build', '--option', 'accept-flake-config', 'false',
         '--no-write-lock-file', '--no-update-lock-file')
