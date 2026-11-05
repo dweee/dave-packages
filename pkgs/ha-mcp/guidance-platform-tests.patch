@@ -1,0 +1,33 @@
+--- a/tests/src/unit/test_tool_error_signaling.py
++++ b/tests/src/unit/test_tool_error_signaling.py
+@@ -402,6 +402,8 @@
+     def test_environment_guidance_comes_first(
+         self, monkeypatch: pytest.MonkeyPatch, error: Exception
+     ) -> None:
++        # Test base classifier ordering independently of appended platform hints.
++        monkeypatch.setattr("ha_mcp.tools.helpers.sys.platform", "linux")
+         monkeypatch.delenv("SUPERVISOR_TOKEN", raising=False)
+         classified = self._classified(error)
+         result = exception_to_structured_error(
+@@ -409,6 +411,21 @@
+         )
+         assert result["error"]["suggestions"] == [*classified, "Caller hint"]
+         assert result["error"]["suggestion"] == classified[0]
++
++    def test_macos_environment_hints_survive_caller_suggestions(
++        self, monkeypatch: pytest.MonkeyPatch
++    ) -> None:
++        monkeypatch.setattr("ha_mcp.tools.helpers.sys.platform", "darwin")
++        monkeypatch.delenv("SUPERVISOR_TOKEN", raising=False)
++        error = HomeAssistantConnectionError("connection refused")
++        classified = self._classified(error)
++        result = exception_to_structured_error(
++            error, raise_error=False, suggestions=["Caller hint"]
++        )["error"]
++        assert result["suggestion"] == classified[0]
++        assert all(hint in result["suggestions"] for hint in classified)
++        assert "Caller hint" in result["suggestions"]
++        assert any("macOS may block local network access" in hint for hint in classified)
+ 
+     def test_add_on_auth_guidance_comes_first(
+         self, monkeypatch: pytest.MonkeyPatch

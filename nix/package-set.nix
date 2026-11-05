@@ -34,7 +34,10 @@ let
     chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { pcre = final.pcre2; };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
     chow-kick =
-      (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { pcre = final.pcre2; gtk2-x11 = null; }).overrideAttrs
+      (final.callPackage "${inputs.audio}/chow/chow-kick.nix" {
+        pcre = final.pcre2;
+        gtk2-x11 = null;
+      }).overrideAttrs
         (old: {
           patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
           # The pinned chowdsp_wdf subproject still declares CMake 3.1 policies.
@@ -107,7 +110,12 @@ let
       inherit (prev) matrix-tuwunel;
     };
     mlx-audio-separator = final.callPackage ../pkgs/mlx-audio-separator { };
-    pumpkin = inputs.pumpkin-nixpkgs.legacyPackages.${system}.pumpkin;
+    pumpkin = inputs.pumpkin-nixpkgs.legacyPackages.${system}.pumpkin.overrideAttrs (old: {
+      # Rust 1.99 needs more compiler stack for Pumpkin's generated registry data.
+      env = (old.env or { }) // {
+        RUST_MIN_STACK = "33554432";
+      };
+    });
     pumpkin-voice = final.callPackage ../pkgs/pumpkin-voice/nix/package.nix { };
     pumpkin-tpsbar = final.callPackage ../pkgs/pumpkin-tpsbar/nix/package.nix { };
     pumpkin-java-multiversion = final.callPackage ../pkgs/pumpkin-java-multiversion/nix/package.nix { };

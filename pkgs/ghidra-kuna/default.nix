@@ -4,7 +4,7 @@
   makeWrapper,
   ghidra,
   kuna,
-  jdk21,
+  openjdk25,
   stdenv,
 }:
 let
@@ -36,7 +36,7 @@ runCommand "ghidra-kuna-${ghidra.version}"
     makeWrapper "$out/lib/ghidra/support/.launch.sh-wrapped" \
       "$out/lib/ghidra/support/launch.sh" \
       --set NIX_GHIDRAHOME "$out/lib/ghidra/Ghidra" \
-      --prefix PATH : ${lib.makeBinPath [ jdk21 ]}
+      --prefix PATH : ${lib.makeBinPath [ openjdk25 ]}
     rm -f "$out/bin/ghidra" "$out/bin/ghidra-analyzeHeadless"
     ln -s "$out/lib/ghidra/ghidraRun" "$out/bin/ghidra"
     ln -s "$out/lib/ghidra/support/analyzeHeadless" "$out/bin/ghidra-analyzeHeadless"
