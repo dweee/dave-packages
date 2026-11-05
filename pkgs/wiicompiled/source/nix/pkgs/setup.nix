@@ -34,6 +34,13 @@
     dotnet-sdk = dotnetCorePackages.sdk_8_0;
     dotnet-runtime = dotnetCorePackages.runtime_8_0;
     executables = ["WiiCompiled.Setup.Linux"];
+    # .NET 8.0.32+ named mutexes need a writable per-user runtime directory.
+    # Nix build users have /var/empty as their passwd home; HOME alone does not
+    # redirect this lookup. Set it before the configureNuget phase runs.
+    postUnpack = ''
+      export XDG_RUNTIME_DIR="$NIX_BUILD_TOP/dotnet-runtime"
+      mkdir -m 700 "$XDG_RUNTIME_DIR"
+    '';
   };
 
   pkgConfigPath = lib.makeSearchPathOutput "dev" "lib/pkgconfig" [
