@@ -182,7 +182,8 @@ def build(system, package):
         raise ValueError("Missing derivation graph")
     check(graph)
     client = quiet(["nix", "build", "--inputs-from", ".", "nixpkgs#attic-client", *flags,
-                    "--no-link", "--print-out-paths", "--max-jobs", "0", "--builders", ""], env).stdout.strip()
+                    "--out-link", str(Path(os.environ["RUNNER_TEMP"]) / "attic-client"),
+                    "--print-out-paths", "--max-jobs", "0", "--builders", ""], env).stdout.strip()
     if not STORE.fullmatch(client):
         raise ValueError("Invalid client path")
     stages = STAGED.get(package) if system.endswith("-linux") else None

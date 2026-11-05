@@ -38,6 +38,8 @@ class CacheOnlyBoundary(unittest.TestCase):
         elif args[0] == "nix" and args[1] == "derivation":
             value = json.dumps(self.graph)
         elif "nixpkgs#attic-client" in args:
+            self.assertNotIn("--no-link", args)
+            self.assertEqual(args[args.index("--out-link") + 1], str(Path(self.directory.name) / "attic-client"))
             value = PATH
         elif args[0] == "nix" and args[1] == "build":
             stdout.write(PATH + "\n")
