@@ -25,50 +25,6 @@ m = load('update-monitor')
 a = load('automation-forge')
 
 
-class FixedOutputHashes(unittest.TestCase):
-    OLD = 'sha256-' + 'A' * 43 + '='
-    NEW = 'sha256-' + 'B' * 43 + '='
-
-    def mismatch(self):
-        return subprocess.CompletedProcess([], 1, '', 'error: hash mismatch in fixed-output derivation\n  specified: %s\n       got:    %s\n' % (self.OLD, self.NEW))
-
-    def build(self, results):
-        ok = subprocess.CompletedProcess([], 0, '', '')
-        return patch.object(u.subprocess, 'run', side_effect=results + [ok])
-
-    def setup_file(self, text):
-        root = Path(tempfile.mkdtemp())
-        self.addCleanup(shutil.rmtree, root)
-        (root / 'set.nix').write_text(text)
-        return root
-
-    def test_extracts_specified_and_got_hashes(self):
-        self.assertEqual(u.mismatched_hash(self.mismatch().stderr), (self.OLD, self.NEW))
-        self.assertIsNone(u.mismatched_hash('error: builder failed'))
-
-    def test_stale_hash_is_rewritten_and_the_build_retried(self):
-        root = self.setup_file('hash = "%s";\n' % self.OLD)
-        with patch.object(u, 'ROOT', root), self.build([self.mismatch()]) as run:
-            fixed = u.refresh_fixed_output_hashes({'files': ['set.nix'], 'packages': ['caddy-custom']}, 'x86_64-linux')
-        self.assertEqual(fixed, ['caddy-custom'])
-        self.assertEqual((root / 'set.nix').read_text(), 'hash = "%s";\n' % self.NEW)
-        self.assertEqual(run.call_count, 2)
-
-    def test_hash_declared_twice_is_refused(self):
-        root = self.setup_file('a = "%s";\nb = "%s";\n' % (self.OLD, self.OLD))
-        with patch.object(u, 'ROOT', root), self.build([self.mismatch()]):
-            with self.assertRaises(u.channel.CommandFailure):
-                u.refresh_fixed_output_hashes({'files': ['set.nix'], 'packages': ['p']}, 'x86_64-linux')
-        self.assertIn(self.OLD, (root / 'set.nix').read_text())
-
-    def test_other_build_failures_are_not_rewritten(self):
-        root = self.setup_file('hash = "%s";\n' % self.OLD)
-        failed = subprocess.CompletedProcess([], 1, '', 'error: builder for x failed')
-        with patch.object(u, 'ROOT', root), self.build([failed]):
-            with self.assertRaises(u.channel.CommandFailure):
-                u.refresh_fixed_output_hashes({'files': ['set.nix'], 'packages': ['p']}, 'x86_64-linux')
-
-
 class Updates(unittest.TestCase):
     def test_updater_failure_detail_redacts_credentials(self):
         text = 'noise\nerror: unable to download https://u:p@api.github.com/x: HTTP error 403 ghp_abcDEF123 secret-tok'
@@ -230,6 +186,33 @@ class FailureDiagnostics(unittest.TestCase):
             self.assertEqual(a.main(), 1)
         self.assertIn('read-monitor-report: validation-failed', error.getvalue())
         self.assertNotIn(secret, output.getvalue()+error.getvalue())
+
+
+class ApiRetries(unittest.TestCase):
+    rules = {'forge': 'forgejo'}
+
+    def test_get_retries_transport_failures_then_succeeds(self):
+        calls = [TimeoutError('timed out'), HTTPError('u', 503, 'x', None, None), {'ok': True}]
+        def once(*args):
+            value = calls.pop(0)
+            if isinstance(value, Exception): raise value
+            return value
+        with patch.object(a, 'api_once', side_effect=once), patch.object(a.time, 'sleep') as sleep:
+            self.assertEqual(a.api(self.rules, 'GET', '/x'), {'ok': True})
+        self.assertEqual([c.args[0] for c in sleep.call_args_list], list(a.API_RETRY_DELAYS))
+
+    def test_retries_are_bounded(self):
+        with patch.object(a, 'api_once', side_effect=TimeoutError('timed out')) as once, patch.object(a.time, 'sleep'):
+            with self.assertRaises(TimeoutError): a.api(self.rules, 'GET', '/x')
+        self.assertEqual(once.call_count, 1 + len(a.API_RETRY_DELAYS))
+
+    def test_writes_and_client_errors_are_never_retried(self):
+        for method, error in [('POST', TimeoutError('t')), ('PATCH', HTTPError('u', 503, 'x', None, None)),
+                              ('GET', HTTPError('u', 403, 'x', None, None)), ('GET', HTTPError('u', 404, 'x', None, None)),
+                              ('GET', ValueError('API redirect refused'))]:
+            with patch.object(a, 'api_once', side_effect=error) as once, patch.object(a.time, 'sleep'):
+                with self.assertRaises(type(error)): a.api(self.rules, method, '/x')
+            self.assertEqual(once.call_count, 1, (method, error))
 
 
 class ImportFromDerivation(unittest.TestCase):

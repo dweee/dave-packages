@@ -5,7 +5,7 @@ name: Verified release channels
     branches:
     - main
   schedule:
-  - cron: 27 3 * * *
+  - cron: 23 1 * * *
   workflow_dispatch:
     inputs:
       channel:
@@ -27,6 +27,8 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     outputs:
       revision: ${{ steps.selection.outputs.revision }}
     steps:
@@ -37,6 +39,7 @@ jobs:
         submodules: false
         persist-credentials: false
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       with:
         source-tag: v3.24.1
         summarize: false
@@ -47,6 +50,21 @@ jobs:
           accept-flake-config = false
           max-jobs = 1
           cores = 1
+    - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      with:
+        nix_version: 2.34.7
+        enable_kvm: false
+        nix_conf: |
+          experimental-features = nix-command flakes
+          accept-flake-config = false
+          max-jobs = 1
+          cores = 1
+    - name: Check Determinate Nix and daemon
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
+      run: |-
+        nix --version | grep -F 'Determinate Nix 3.24.1'
+        nix store info --store daemon --json
     - name: Regression tests and complete inventory policy
       run: |-
         python3 ci/test-release-channel.py
@@ -56,11 +74,12 @@ jobs:
       id: selection
       env:
         REVISION: ${{ inputs.revision || github.sha }}
-        CHANNEL: ${{ inputs.channel || 'tested' }}
       run: python3 -c 'import os,re; s=os.environ["REVISION"]; assert re.fullmatch("[a-f0-9]{40}",s); open(os.environ["GITHUB_OUTPUT"],"a").write("revision="+s+"\n")'
   build_aarch64_darwin:
     runs-on: macos-15
     timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     needs:
     - test
     outputs:
@@ -74,6 +93,7 @@ jobs:
         submodules: false
         persist-credentials: false
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       with:
         source-tag: v3.24.1
         summarize: false
@@ -84,10 +104,27 @@ jobs:
           accept-flake-config = false
           max-jobs = 1
           cores = 1
+    - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      with:
+        nix_version: 2.34.7
+        enable_kvm: false
+        nix_conf: |
+          experimental-features = nix-command flakes
+          accept-flake-config = false
+          max-jobs = 1
+          cores = 1
+    - name: Check Determinate Nix and daemon
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
+      run: |-
+        nix --version | grep -F 'Determinate Nix 3.24.1'
+        nix store info --store daemon --json
     - name: Configure job-local private cache reader
       env:
         ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN || secrets.FLAKEY_ATTIC_TOKEN }}
       run: python3 ci/configure-attic-read.py
+    - name: Install pinned Niks3 publisher
+      run: bash ci/install-niks3.sh
     - name: Build complete inventory, checkpoint closures, verify remote NAR bytes
       id: release
       env:
@@ -96,9 +133,14 @@ jobs:
     - name: Remove cache reader
       if: ${{ always() }}
       run: python3 ci/configure-attic-read.py --cleanup
+    permissions:
+      contents: read
+      id-token: write
   retain_aarch64_darwin:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
       }}
     steps:
@@ -109,6 +151,7 @@ jobs:
         submodules: false
         persist-credentials: false
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       with:
         source-tag: v3.24.1
         summarize: false
@@ -119,6 +162,21 @@ jobs:
           accept-flake-config = false
           max-jobs = 1
           cores = 1
+    - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      with:
+        nix_version: 2.34.7
+        enable_kvm: false
+        nix_conf: |
+          experimental-features = nix-command flakes
+          accept-flake-config = false
+          max-jobs = 1
+          cores = 1
+    - name: Check Determinate Nix and daemon
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
+      run: |-
+        nix --version | grep -F 'Determinate Nix 3.24.1'
+        nix store info --store daemon --json
     - name: Configure job-local private reader
       env:
         ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN || secrets.FLAKEY_ATTIC_TOKEN }}
@@ -133,6 +191,8 @@ jobs:
   build_x86_64_linux:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     needs:
     - test
     outputs:
@@ -146,6 +206,7 @@ jobs:
         submodules: false
         persist-credentials: false
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       with:
         source-tag: v3.24.1
         summarize: false
@@ -156,10 +217,27 @@ jobs:
           accept-flake-config = false
           max-jobs = 1
           cores = 0
+    - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      with:
+        nix_version: 2.34.7
+        enable_kvm: false
+        nix_conf: |
+          experimental-features = nix-command flakes
+          accept-flake-config = false
+          max-jobs = 1
+          cores = 0
+    - name: Check Determinate Nix and daemon
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
+      run: |-
+        nix --version | grep -F 'Determinate Nix 3.24.1'
+        nix store info --store daemon --json
     - name: Configure job-local private cache reader
       env:
         ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN || secrets.FLAKEY_ATTIC_TOKEN }}
       run: python3 ci/configure-attic-read.py
+    - name: Install pinned Niks3 publisher
+      run: bash ci/install-niks3.sh
     - name: Build complete inventory, checkpoint closures, verify remote NAR bytes
       id: release
       env:
@@ -168,9 +246,14 @@ jobs:
     - name: Remove cache reader
       if: ${{ always() }}
       run: python3 ci/configure-attic-read.py --cleanup
+    permissions:
+      contents: read
+      id-token: write
   retain_x86_64_linux:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
       }}
     steps:
@@ -181,6 +264,7 @@ jobs:
         submodules: false
         persist-credentials: false
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       with:
         source-tag: v3.24.1
         summarize: false
@@ -191,6 +275,21 @@ jobs:
           accept-flake-config = false
           max-jobs = 1
           cores = 1
+    - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      with:
+        nix_version: 2.34.7
+        enable_kvm: false
+        nix_conf: |
+          experimental-features = nix-command flakes
+          accept-flake-config = false
+          max-jobs = 1
+          cores = 1
+    - name: Check Determinate Nix and daemon
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
+      run: |-
+        nix --version | grep -F 'Determinate Nix 3.24.1'
+        nix store info --store daemon --json
     - name: Configure job-local private reader
       env:
         ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN || secrets.FLAKEY_ATTIC_TOKEN }}
@@ -205,6 +304,8 @@ jobs:
   build_aarch64_linux:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     needs:
     - test
     outputs:
@@ -218,6 +319,7 @@ jobs:
         submodules: false
         persist-credentials: false
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       with:
         source-tag: v3.24.1
         summarize: false
@@ -228,10 +330,27 @@ jobs:
           accept-flake-config = false
           max-jobs = 1
           cores = 0
+    - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      with:
+        nix_version: 2.34.7
+        enable_kvm: false
+        nix_conf: |
+          experimental-features = nix-command flakes
+          accept-flake-config = false
+          max-jobs = 1
+          cores = 0
+    - name: Check Determinate Nix and daemon
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
+      run: |-
+        nix --version | grep -F 'Determinate Nix 3.24.1'
+        nix store info --store daemon --json
     - name: Configure job-local private cache reader
       env:
         ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN || secrets.FLAKEY_ATTIC_TOKEN }}
       run: python3 ci/configure-attic-read.py
+    - name: Install pinned Niks3 publisher
+      run: bash ci/install-niks3.sh
     - name: Build complete inventory, checkpoint closures, verify remote NAR bytes
       id: release
       env:
@@ -240,9 +359,14 @@ jobs:
     - name: Remove cache reader
       if: ${{ always() }}
       run: python3 ci/configure-attic-read.py --cleanup
+    permissions:
+      contents: read
+      id-token: write
   retain_aarch64_linux:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
       }}
     steps:
@@ -253,6 +377,7 @@ jobs:
         submodules: false
         persist-credentials: false
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       with:
         source-tag: v3.24.1
         summarize: false
@@ -263,6 +388,21 @@ jobs:
           accept-flake-config = false
           max-jobs = 1
           cores = 1
+    - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      with:
+        nix_version: 2.34.7
+        enable_kvm: false
+        nix_conf: |
+          experimental-features = nix-command flakes
+          accept-flake-config = false
+          max-jobs = 1
+          cores = 1
+    - name: Check Determinate Nix and daemon
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
+      run: |-
+        nix --version | grep -F 'Determinate Nix 3.24.1'
+        nix store info --store daemon --json
     - name: Configure job-local private reader
       env:
         ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN || secrets.FLAKEY_ATTIC_TOKEN }}
@@ -277,6 +417,8 @@ jobs:
   promote:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     needs:
     - test
     - build_aarch64_darwin
@@ -293,6 +435,7 @@ jobs:
         submodules: false
         persist-credentials: false
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       with:
         source-tag: v3.24.1
         summarize: false
@@ -303,6 +446,21 @@ jobs:
           accept-flake-config = false
           max-jobs = 1
           cores = 1
+    - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      with:
+        nix_version: 2.34.7
+        enable_kvm: false
+        nix_conf: |
+          experimental-features = nix-command flakes
+          accept-flake-config = false
+          max-jobs = 1
+          cores = 1
+    - name: Check Determinate Nix and daemon
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
+      run: |-
+        nix --version | grep -F 'Determinate Nix 3.24.1'
+        nix store info --store daemon --json
     - name: Atomically publish immutable release tag and channel
       env:
         CHANNEL_TOKEN: ${{ secrets.CHANNEL_TOKEN || github.token }}
