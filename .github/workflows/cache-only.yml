@@ -1,8 +1,7 @@
 name: Dave packages cache only
-'on':
+"on":
   push:
-    branches:
-    - main
+    branches: [main]
   workflow_dispatch:
     inputs:
       package:
@@ -17,43 +16,42 @@ concurrency:
   cancel-in-progress: false
 jobs:
   plan:
-    if: ${{ vars.DAVE_PACKAGES_CI_ENABLED == 'true' && vars.ATTIC_PUSH_ENABLED == 'true' && (github.event_name ==
-      'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-      }}
+    if: ${{ vars.DAVE_PACKAGES_CI_ENABLED == 'true' && vars.ATTIC_PUSH_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       has_jobs: ${{ steps.matrix.outputs.has_jobs }}
     steps:
-    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-      with:
-        persist-credentials: false
-        fetch-depth: 0
-    - name: Check portable publication metadata
-      run: python3 ci/test-public-source.py
-    - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
-      with:
-        source-tag: v3.24.1
-        summarize: false
-        kvm: false
-        extra-conf: |
-          experimental-features = nix-command flakes parallel-eval
-          eval-cores = 2
-          accept-flake-config = false
-    - name: Test derivation selection
-      run: python3 ci/test-changed-matrix.py
-    - id: matrix
-      env:
-        SELECTED_PACKAGE: ${{ inputs.package || 'all' }}
-      run: |
-        matrix=$(python3 ci/changed-matrix.py cache-only --package "$SELECTED_PACKAGE")
-        echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Check portable publication metadata
+        run: python3 ci/test-public-source.py
+      - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3 # v3
+        with:
+          source-tag: v3.24.1
+          summarize: false
+          kvm: false
+          extra-conf: |
+            experimental-features = nix-command flakes parallel-eval
+            eval-cores = 2
+            accept-flake-config = false
+      - name: Test derivation selection
+        run: python3 ci/test-changed-matrix.py
+      - id: matrix
+        env:
+          SELECTED_PACKAGE: ${{ inputs.package || 'all' }}
+        run: |
+          matrix=$(python3 ci/changed-matrix.py cache-only --package "$SELECTED_PACKAGE")
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
   build-and-publish:
+    permissions:
+      contents: read
+      id-token: write
     needs: plan
-    if: ${{ github.event_name != 'pull_request' && github.event_name != 'pull_request_target' && (needs.plan.outputs.has_jobs
-      == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}',
-      github.event.repository.default_branch)) }}
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'pull_request_target' && needs.plan.outputs.has_jobs == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     name: Cache only ${{ matrix.package }} (${{ matrix.system }})
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 360
@@ -62,56 +60,55 @@ jobs:
       max-parallel: 3
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
-    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-      with:
-        persist-credentials: false
-    - name: Reclaim unused Linux SDK space
-      if: runner.os == 'Linux'
-      run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
-    - name: Add swap for Keyguard's Linux build
-      if: matrix.package == 'keyguard' && runner.os == 'Linux'
-      run: |
-        set -euo pipefail
-        # The hosted image already swaps on /swapfile (3 GiB). fallocate of
-        # that path fails with "Text file busy". Keyguard's large dependency
-        # graph can exhaust available memory during Linux builds.
-        if ! swapon --show | grep -q '/mnt/keyguard.swap'; then
-          sudo dd if=/dev/zero of=/mnt/keyguard.swap bs=1M count=4096 status=none
-          sudo chmod 600 /mnt/keyguard.swap
-          sudo mkswap /mnt/keyguard.swap
-          sudo swapon /mnt/keyguard.swap
-        fi
-        free -h
-        swapon --show
-    - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
-      with:
-        source-tag: v3.24.1
-        summarize: false
-        kvm: false
-        extra-conf: |
-          experimental-features = nix-command flakes parallel-eval
-          eval-cores = 2
-          accept-flake-config = false
-          substituters = https://cache.nixos.org/
-          extra-substituters =
-          max-jobs = 1
-          # Keep Keyguard derivations serial, but let each build use every runner core.
-          cores = ${{ matrix.package == 'keyguard' && '0' || '3' }}
-    - name: Configure authenticated private reads
-      env:
-        ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
-      run: python3 ci/configure-attic-read.py
-    - name: Install pinned Niks3 publisher
-      run: bash ci/install-niks3.sh
-    - name: Build and publish directly to private flakey
-      env:
-        TARGET_SYSTEM: ${{ matrix.system }}
-        TARGET_PACKAGE: ${{ matrix.package }}
-        ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
-      run: python3 ci/build-cache-only.py
-    - name: Remove runtime read credential
-      if: always()
-      run: rm -f "$RUNNER_TEMP/flakey-attic.netrc"
-    permissions:
-      contents: read
-      id-token: write
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Reclaim unused Linux SDK space
+        if: runner.os == 'Linux'
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+      - name: Add swap for Keyguard's Linux build
+        if: matrix.package == 'keyguard' && runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          # The hosted image already swaps on /swapfile (3 GiB). fallocate of
+          # that path fails with "Text file busy". Keyguard's large dependency
+          # graph can exhaust available memory during Linux builds.
+          if ! swapon --show | grep -q '/mnt/keyguard.swap'; then
+            sudo dd if=/dev/zero of=/mnt/keyguard.swap bs=1M count=4096 status=none
+            sudo chmod 600 /mnt/keyguard.swap
+            sudo mkswap /mnt/keyguard.swap
+            sudo swapon /mnt/keyguard.swap
+          fi
+          free -h
+          swapon --show
+      - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3 # v3
+        with:
+          source-tag: v3.24.1
+          summarize: false
+          kvm: false
+          extra-conf: |
+            experimental-features = nix-command flakes parallel-eval
+            eval-cores = 2
+            accept-flake-config = false
+            substituters = https://cache.nixos.org/
+            extra-substituters =
+            max-jobs = 1
+            # Keep Keyguard derivations serial, but let each build use every runner core.
+            cores = ${{ matrix.package == 'keyguard' && '0' || '3' }}
+      - name: Configure authenticated private reads
+        env:
+          ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
+        run: python3 ci/configure-attic-read.py
+      - name: Install pinned Niks3 publisher
+        run: bash ci/install-niks3.sh
+      - name: Build and publish directly to private flakey
+        env:
+          TARGET_SYSTEM: ${{ matrix.system }}
+          TARGET_PACKAGE: ${{ matrix.package }}
+          ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
+        # Resource samples come from the foreground build process: a background
+        # shell's output never reached the job log before the runner was killed.
+        run: python3 ci/build-cache-only.py
+      - name: Remove runtime read credential
+        if: always()
+        run: rm -f "$RUNNER_TEMP/flakey-attic.netrc"
