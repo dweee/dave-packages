@@ -149,6 +149,7 @@ let
     trawl = final.callPackage ../pkgs/trawl { };
     sable-desktop = final.callPackage ../pkgs/sable-desktop { };
     sable-desktop-legacy = final.callPackage ../pkgs/sable-desktop-legacy { };
+    qobuzify = final.callPackage ../pkgs/qobuzify { };
     codexbar-cli = final.callPackage ../pkgs/codexbar/cli.nix { };
     codexbar-plasmoid = final.callPackage ../pkgs/codexbar/plasmoid.nix { };
     photogimp = final.callPackage ../pkgs/photogimp { };
