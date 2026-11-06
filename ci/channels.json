@@ -202,6 +202,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.qobuzify",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.rea",
         "visibility": "public"
       },
@@ -597,6 +601,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.pyrekordbox",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.qobuzify",
         "visibility": "public"
       },
       {
