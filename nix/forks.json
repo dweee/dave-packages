@@ -1,7 +1,7 @@
 {
   "paneru": {
     "repository": "https://github.com/dweee/paneru",
-    "revision": "4e1e4f144fe980dd55a8755e63886150e2ba4cbf",
+    "revision": "1c7be6004152951224ae7a94c0a35372888984fb",
     "branch": "flakey",
     "packages": [
       "paneru",
@@ -12,7 +12,7 @@
   },
   "tabrix": {
     "repository": "https://github.com/dweee/tabrix",
-    "revision": "ec95ec86fccc3dba952b8349637cc3606aea0e98",
+    "revision": "44904230459bc674cef77ea31c4effd22c972468",
     "branch": "flakey",
     "packages": [
       "tabrix",
@@ -23,7 +23,7 @@
   },
   "rekordbox-mcp": {
     "repository": "https://github.com/dweee/rekordbox-mcp",
-    "revision": "dc3e239ee37b1830c621b1141eee25ddd53646f6",
+    "revision": "041865bb5d22eda0d895351f4fec71dea2902828",
     "branch": "flakey",
     "packages": [
       "rekordbox-mcp"
@@ -43,7 +43,7 @@
   },
   "kopuz": {
     "repository": "https://github.com/dweee/kopuz",
-    "revision": "8a8ea7b8111100b655c53b386f9a868cdae0900e",
+    "revision": "ee1d3af8ecce449b160b8325c1097f3307833032",
     "branch": "flakey",
     "packages": [
       "kopuz"
@@ -53,7 +53,7 @@
   },
   "kuna": {
     "repository": "https://github.com/dweee/kuna",
-    "revision": "6df1a5c3de87d61968db89df1201fd722d62ef3c",
+    "revision": "e6ec706bb4034498511166234db1d3501f6288a6",
     "branch": "flakey",
     "packages": [
       "kuna"
@@ -69,6 +69,6 @@
     ],
     "ci_owner": "application fork",
     "private": false,
-    "revision": "d5f4c5b5bfdda3a58a6512fc7331ff40bc18facd"
+    "revision": "1f1417268edb8a38a77afa7c86834e7d514db84b"
   }
 }
