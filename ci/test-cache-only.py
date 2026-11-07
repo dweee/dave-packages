@@ -23,7 +23,11 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.calls = []
-        self.env = {"RUNNER_TEMP": self.directory.name, "ATTIC_TOKEN": "synthetic-private-token"}
+        binary = Path(self.directory.name) / "niks3"
+        binary.write_text("#!/bin/sh\nexit 0\n")
+        binary.chmod(0o700)
+        self.env = {"RUNNER_TEMP": self.directory.name, "ATTIC_TOKEN": "synthetic-private-token",
+                    "NIKS3_BIN": str(binary), "ACTIONS_ID_TOKEN_REQUEST_TOKEN": "synthetic-oidc-request"}
         self.graph = {PATH + ".drv": {"outputs": {"out": {}}, "env": {"license": "unfree"}}}
         self.runtime = PATH
         self.failure = None
@@ -37,24 +41,20 @@ class CacheOnlyBoundary(unittest.TestCase):
             value = self.system
         elif args[0] == "nix" and args[1] == "derivation":
             value = json.dumps(self.graph)
-        elif "nixpkgs#attic-client" in args:
-            self.assertNotIn("--no-link", args)
-            self.assertEqual(args[args.index("--out-link") + 1], str(Path(self.directory.name) / "attic-client"))
-            value = PATH
         elif args[0] == "nix" and args[1] == "build":
             stdout.write(PATH + "\n")
             value = ""
         elif args[0] == "nix-store":
             value = self.runtime
         else:
-            self.assertTrue(args[1].endswith(("/ci/push-attic.py", "/ci/push-niks3.py")))
+            self.assertTrue(args[1].endswith("/ci/push-niks3.py"))
             manifest = Path(args[args.index("--outputs") + 1])
             self.assertEqual(manifest.read_text(), PATH + "\n")
             self.manifest = manifest
             self.assertIsNotNone(stdout)  # uploader progress cannot reach public logs
-            self.assertEqual(env["ATTIC_TOKEN"], self.env["ATTIC_TOKEN"])
-            self.assertEqual(env["ATTIC_CACHE"], "flakey")
-            self.assertEqual(env["ATTIC_ENDPOINT"], "https://attic.monke.fail")
+            self.assertNotIn("ATTIC_TOKEN", env)
+            self.assertNotIn("ATTIC_ENDPOINT", env)
+            self.assertEqual(env["ACTIONS_ID_TOKEN_REQUEST_TOKEN"], self.env["ACTIONS_ID_TOKEN_REQUEST_TOKEN"])
             value = ""
         return subprocess.CompletedProcess(args, 0, stdout=value)
 
@@ -97,11 +97,21 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.assertEqual(installables[2:], [[f"{target}.{a}^*"] for a in module.STAGED["keyguard"]["attributes"]]
                          + [[target + "^*"]])
         pushes = [a for a, _ in self.calls if a[0] == module.sys.executable]
-        self.assertEqual(len(pushes), 2 * (len(module.STAGED["keyguard"]["attributes"]) + 1))
-        self.assertEqual([Path(a[1]).name for a in pushes], ["push-attic.py", "push-niks3.py"] * (len(pushes)//2))
+        self.assertEqual(len(pushes), 2 + len(module.STAGED["keyguard"]["attributes"]) + 1)
+        self.assertEqual([Path(a[1]).name for a in pushes], ["push-niks3.py"] * len(pushes))
         for args, env in self.calls:
             if args[0] != module.sys.executable:
                 self.assertNotIn("ATTIC_TOKEN", env)
+
+    def test_completed_fetch_batch_is_cached_before_a_later_fetch_failure(self):
+        self.graph = self.staged_graph()
+        self.failure = "/nix/store/" + "d" * 32 + "-artifact-d.jar.drv^*"
+        with patch.object(module, "FETCH_BATCH", 2), patch.dict(os.environ, self.env, clear=True), patch.object(module, "quiet", side_effect=self.run_quiet):
+            with self.assertRaises(subprocess.CalledProcessError):
+                module.build("x86_64-linux", "keyguard")
+        pushes = [args for args, _ in self.calls if args[0] == module.sys.executable]
+        self.assertEqual(len(pushes), 1)
+        self.assertTrue(pushes[0][1].endswith("/ci/push-niks3.py"))
 
     def test_darwin_keyguard_keeps_one_build(self):
         self.graph = self.staged_graph()
@@ -125,11 +135,11 @@ class CacheOnlyBoundary(unittest.TestCase):
                     self.run_build()
                 self.assertFalse(any("build" in a for a, _ in self.calls))
 
-    def test_niks3_failure_blocks_success_after_attic_upload(self):
+    def test_niks3_failure_blocks_success_without_an_attic_dependency(self):
         self.failure = str(Path(module.__file__).parent / 'push-niks3.py')
         with self.assertRaises(subprocess.CalledProcessError):
             self.run_build()
-        self.assertTrue(any(a[1].endswith('/ci/push-attic.py') for a, _ in self.calls if a[0] == module.sys.executable))
+        self.assertFalse(any('attic-client' in str(a) or 'push-attic.py' in str(a) for a, _ in self.calls))
 
     def test_unknown_package_rejected_before_nix_or_credentials(self):
         with patch.object(module, "quiet") as run:
