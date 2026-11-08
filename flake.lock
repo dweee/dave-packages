@@ -310,17 +310,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1793601680,
-        "narHash": "sha256-w2hP3WAIIeJOGpJB7vpqm7V0Cqf7kgNhxSD9rwuRVdg=",
+        "lastModified": 1794115450,
+        "narHash": "sha256-CQBoBK/Ciqd71NyYGigv7XHGjJlVWJRGsxHO7BZRVAw=",
         "owner": "dweee",
         "repo": "Handy",
-        "rev": "d5f4c5b5bfdda3a58a6512fc7331ff40bc18facd",
+        "rev": "7f2a5aee2a070d1e728373ca72815258df3029a1",
         "type": "github"
       },
       "original": {
         "owner": "dweee",
         "repo": "Handy",
-        "rev": "d5f4c5b5bfdda3a58a6512fc7331ff40bc18facd",
+        "rev": "7f2a5aee2a070d1e728373ca72815258df3029a1",
         "type": "github"
       }
     },
@@ -384,17 +384,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1793781805,
-        "narHash": "sha256-gta0T9P5RlR4d5THeeLSbLS2ty46c9NOVetYiLBVQAk=",
+        "lastModified": 1794115418,
+        "narHash": "sha256-C7zhW3z7bUbsb5eOnuKcjG3yILdjkZCtDS7djchOkSE=",
         "ref": "tested",
-        "rev": "8a8ea7b8111100b655c53b386f9a868cdae0900e",
-        "revCount": 1432,
+        "rev": "7d7a690e0f65791651abf33ef3b76f255d3faa57",
+        "revCount": 1453,
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "8a8ea7b8111100b655c53b386f9a868cdae0900e",
+        "rev": "7d7a690e0f65791651abf33ef3b76f255d3faa57",
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       }

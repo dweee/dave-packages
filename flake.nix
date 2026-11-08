@@ -30,7 +30,7 @@
     };
     # Retain native fork toolchains so catalog updates reuse their CI outputs.
     handy = {
-      url = "github:dweee/Handy/d5f4c5b5bfdda3a58a6512fc7331ff40bc18facd";
+      url = "github:dweee/Handy/7f2a5aee2a070d1e728373ca72815258df3029a1";
     };
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
@@ -63,7 +63,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=8a8ea7b8111100b655c53b386f9a868cdae0900e";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=7d7a690e0f65791651abf33ef3b76f255d3faa57";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
