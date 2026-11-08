@@ -98,7 +98,7 @@ def failure_class(blob):
         blob = blob.decode("utf-8", "replace")
     text = blob.lower()
     if "transferred a partial file" in text or "stream error in the http/2 framing layer" in text:
-        return "attic-partial-nar"
+        return "cache-partial-nar"
     if "unable to download" in text:
         return "substitute-download-failed"
     if "cannot allocate memory" in text or "out of memory" in text:
@@ -148,18 +148,16 @@ def realise(installables, env, directory, flags):
         raise ValueError("Invalid built output")
     return manifest, paths
 
-def publish(root, client, manifest, paths, env):
+def publish(root, manifest, paths, env):
     closure = quiet(["nix-store", "--query", "--requisites", *paths], env).stdout.splitlines()
     if not closure or any(not STORE.fullmatch(p) for p in closure):
         raise ValueError("Missing runtime closure")
     check(closure)
-    publish_env = dict(os.environ, ATTIC_BIN=client + "/bin/attic",
-                       ATTIC_ENDPOINT="https://attic.monke.fail", ATTIC_CACHE="flakey")
+    publish_env = {key: value for key, value in os.environ.items()
+                   if key not in {"ATTIC_TOKEN", "FLAKEY_ATTIC_TOKEN", "ATTIC_BIN", "ATTIC_ENDPOINT", "ATTIC_CACHE"}}
     with tempfile.TemporaryFile() as log:
         # The existing helper confines credentials to mode-0600 client
         # configuration and uploads roots plus their runtime closures.
-        quiet([sys.executable, str(root / "ci/push-attic.py"), "--outputs", str(manifest)],
-              publish_env, stdout=log)
         quiet([sys.executable, str(root / "ci/push-niks3.py"), "--outputs", str(manifest)],
               publish_env, stdout=log)
 
@@ -169,7 +167,12 @@ def build(system, package):
     inventory = json.loads((root / "nix/cache-only-platforms.json").read_text())
     if package not in inventory.get(system, []):
         raise ValueError("Not an approved cache-only target")
-    env = {key: value for key, value in os.environ.items() if key not in {"ATTIC_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_URL"}}
+    client = Path(os.environ["NIKS3_BIN"])
+    if not client.is_absolute() or not client.is_file() or not os.access(client, os.X_OK):
+        raise ValueError("Missing installed Niks3 publisher")
+    env = {key: value for key, value in os.environ.items() if key not in {
+        "ATTIC_TOKEN", "FLAKEY_ATTIC_TOKEN", "NIKS3_WRITE_TOKEN", "NIKS3_AUTH_TOKEN_FILE",
+        "ACTIONS_ID_TOKEN_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_URL", "GITHUB_TOKEN", "GH_TOKEN"}}
     if quiet(["nix", "eval", "--impure", "--raw", "--expr", "builtins.currentSystem"], env).stdout.strip() != system:
         raise ValueError("Native runner mismatch")
     target = f".#cacheOnlyPackages.{system}.{package}"
@@ -181,11 +184,6 @@ def build(system, package):
                 for drv in graph.values())):
         raise ValueError("Missing derivation graph")
     check(graph)
-    client = quiet(["nix", "build", "--inputs-from", ".", "nixpkgs#attic-client", *flags,
-                    "--out-link", str(Path(os.environ["RUNNER_TEMP"]) / "attic-client"),
-                    "--print-out-paths", "--max-jobs", "0", "--builders", ""], env).stdout.strip()
-    if not STORE.fullmatch(client):
-        raise ValueError("Invalid client path")
     stages = STAGED.get(package) if system.endswith("-linux") else None
     with tempfile.TemporaryDirectory(prefix="flakey-cache-only-", dir=os.environ["RUNNER_TEMP"]) as directory:
         if stages:
@@ -193,12 +191,12 @@ def build(system, package):
             for number, batch in enumerate(batches, 1):
                 # Stage labels carry counts only, never store paths.
                 print(f"Stage fetch batch {number}/{len(batches)} ({len(batch)} fetches)", flush=True)
-                realise([drv + "^*" for drv in batch], env, directory, flags)
+                publish(root, *realise([drv + "^*" for drv in batch], env, directory, flags), env)
             for attribute in stages["attributes"]:
                 print(f"Stage {attribute}", flush=True)
-                publish(root, client, *realise([f"{target}.{attribute}^*"], env, directory, flags), env)
+                publish(root, *realise([f"{target}.{attribute}^*"], env, directory, flags), env)
             print("Stage package", flush=True)
-        publish(root, client, *realise([target + "^*"], env, directory, flags), env)
+        publish(root, *realise([target + "^*"], env, directory, flags), env)
 
 if __name__ == "__main__":
     try:
