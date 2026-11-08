@@ -310,17 +310,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1794115450,
-        "narHash": "sha256-CQBoBK/Ciqd71NyYGigv7XHGjJlVWJRGsxHO7BZRVAw=",
+        "lastModified": 1794134050,
+        "narHash": "sha256-gZvk0G2rQQcTKQPv3MwjmKFLTG1jTtAorPKgh7zp9uY=",
         "owner": "dweee",
         "repo": "Handy",
-        "rev": "7f2a5aee2a070d1e728373ca72815258df3029a1",
+        "rev": "6aef7b41a6b6eae11c719c7c08d24b73f49b332f",
         "type": "github"
       },
       "original": {
         "owner": "dweee",
         "repo": "Handy",
-        "rev": "7f2a5aee2a070d1e728373ca72815258df3029a1",
+        "rev": "6aef7b41a6b6eae11c719c7c08d24b73f49b332f",
         "type": "github"
       }
     },
@@ -384,17 +384,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794115418,
-        "narHash": "sha256-C7zhW3z7bUbsb5eOnuKcjG3yILdjkZCtDS7djchOkSE=",
+        "lastModified": 1794141397,
+        "narHash": "sha256-6rtxVJKHmgv/78q5qjU7gt6QVIWUrBaOVLKG2vJU4+8=",
         "ref": "tested",
-        "rev": "7d7a690e0f65791651abf33ef3b76f255d3faa57",
-        "revCount": 1453,
+        "rev": "4d105fdac6d9db5e19057f3c56dd169247b44217",
+        "revCount": 1456,
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "7d7a690e0f65791651abf33ef3b76f255d3faa57",
+        "rev": "4d105fdac6d9db5e19057f3c56dd169247b44217",
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       }
@@ -406,17 +406,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794115395,
-        "narHash": "sha256-w9EvI+3tPmEnqgrA183nwRQlXt8GhlG0niK4yW2oSBE=",
+        "lastModified": 1794135360,
+        "narHash": "sha256-K9O4sVGeCmORszi5Svia8IZqUHF42uJx+3GsP1pK3dM=",
         "owner": "dweee",
         "repo": "kuna",
-        "rev": "540532fbd41ed41d63bd71334de2ca14b3d8115e",
+        "rev": "019d03e199eb5bd01002ba2460aee6baa2d35472",
         "type": "github"
       },
       "original": {
         "owner": "dweee",
         "repo": "kuna",
-        "rev": "540532fbd41ed41d63bd71334de2ca14b3d8115e",
+        "rev": "019d03e199eb5bd01002ba2460aee6baa2d35472",
         "type": "github"
       }
     },
@@ -822,17 +822,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794115391,
-        "narHash": "sha256-qSHHpdCeFM4lByWQLlyDa80vN8sfBmDUJ3zTXUHXXuY=",
+        "lastModified": 1794134261,
+        "narHash": "sha256-GCYvfNcBIjwMBmcrmNS3zKWiLzGPNfG01gl1ExaDwfk=",
         "ref": "tested",
-        "rev": "f93a6f2d0bbfb674b281b623d5818355edaccd15",
-        "revCount": 1062,
+        "rev": "eaeea04a1e361d152927c94131097c1a424b8bd0",
+        "revCount": 1064,
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "f93a6f2d0bbfb674b281b623d5818355edaccd15",
+        "rev": "eaeea04a1e361d152927c94131097c1a424b8bd0",
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       }
@@ -944,17 +944,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794115404,
-        "narHash": "sha256-ywCeyC6Oz9DDFZzPeBB0GyzPPBjKs3zGMsZvEFeS9iI=",
+        "lastModified": 1794133833,
+        "narHash": "sha256-yAf3unxxe+3fBeWnxkhdGM+dvIbuNMsjEHk0qhL/wUA=",
         "ref": "tested",
-        "rev": "e47c9f66f6260f34a7c65bc52f702752878d37af",
-        "revCount": 94,
+        "rev": "4fcbe4b31f2b30ee6b2254c1da49d7dea05f9690",
+        "revCount": 96,
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "e47c9f66f6260f34a7c65bc52f702752878d37af",
+        "rev": "4fcbe4b31f2b30ee6b2254c1da49d7dea05f9690",
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp.git"
       }
@@ -1057,18 +1057,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1793829685,
-        "narHash": "sha256-BulRwAGnHkTKoBGjpuTU2fi0T5VkdIEpAfck9jhrgVg=",
+        "lastModified": 1794138694,
+        "narHash": "sha256-Tavrlp+XCyQEc5MLmVkScfAW/IQP0AvD6ssQy2E+1vk=",
         "ref": "tested",
-        "rev": "909a13ae2eee3d52b05b7bf6e5cc8d5a990ca103",
-        "revCount": 3596,
+        "rev": "b0b8a1b62a11fdd4c59ae1604a96cef976cc68a1",
+        "revCount": 3623,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "909a13ae2eee3d52b05b7bf6e5cc8d5a990ca103",
+        "rev": "b0b8a1b62a11fdd4c59ae1604a96cef976cc68a1",
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
@@ -1148,17 +1148,17 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1794115400,
-        "narHash": "sha256-++VXJkByONJRLw+BggZNnY+0UCaTZQ6nUOsy7QWokPU=",
+        "lastModified": 1794133836,
+        "narHash": "sha256-j+XgxMHGXIr60xW+3M7lMIvZpn2QxZkEdHh6B7I4YJk=",
         "ref": "tested",
-        "rev": "64b70d74d9d993386bae70cf6ac4d2fc2df624e9",
-        "revCount": 1805,
+        "rev": "356d35c8e594c9b8b64a32b58397882e6b40a9d5",
+        "revCount": 1807,
         "type": "git",
         "url": "https://github.com/dweee/tabrix.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "64b70d74d9d993386bae70cf6ac4d2fc2df624e9",
+        "rev": "356d35c8e594c9b8b64a32b58397882e6b40a9d5",
         "type": "git",
         "url": "https://github.com/dweee/tabrix.git"
       }
