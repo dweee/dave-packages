@@ -1,0 +1,112 @@
+diff --git a/python/bridge_mcp_ghidra/cli.py b/python/bridge_mcp_ghidra/cli.py
+index f9a3952..b623376 100644
+--- a/python/bridge_mcp_ghidra/cli.py
++++ b/python/bridge_mcp_ghidra/cli.py
+@@ -77,7 +77,7 @@ def _cors_origin_regex(bind_host: str) -> str:
+     return rf"^https?://({alternatives})(:\d+)?$"
+ 
+ 
+-def _build_http_app(transport: str, bind_host: str):
++def _build_http_app(transport: str, bind_host: str, transport_security=None):
+     """Return the transport's Starlette app wrapped in CORS middleware.
+ 
+     Browser-based clients (MCP Inspector) send an OPTIONS preflight before
+@@ -87,7 +87,15 @@ def _build_http_app(transport: str, bind_host: str):
+     header was invisible to scripts — this wrapper is why the bridge runs
+     uvicorn itself instead of delegating to ``mcp.run()``.
+     """
+-    app = mcp.sse_app() if transport == "sse" else mcp.streamable_http_app()
++    # mcp 2.x: transport options are arguments of the app builders, not
++    # MCPServer settings. ``host`` drives the SDK's localhost DNS-rebinding
++    # default when no explicit ``transport_security`` is given.
++    kwargs = {"transport_security": transport_security, "host": bind_host}
++    app = (
++        mcp.sse_app(**kwargs)
++        if transport == "sse"
++        else mcp.streamable_http_app(**kwargs)
++    )
+     app.add_middleware(
+         CORSMiddleware,
+         allow_origin_regex=_cors_origin_regex(bind_host),
+@@ -155,9 +163,10 @@ def main():
+     _auto_connect()
+ 
+     mcp.settings.log_level = "INFO"
+-    mcp.settings.host = args.mcp_host
+-    if args.mcp_port:
+-        mcp.settings.port = args.mcp_port
++    # mcp 2.x removed host/port/transport_security from MCPServer settings
++    # (assigning them raises ValueError); keep them local and pass them to the
++    # app builder instead.
++    transport_security = None
+ 
+     _host = args.mcp_host
+     if _host not in {"127.0.0.1", "localhost", "::1"}:
+@@ -180,7 +189,7 @@ def main():
+                     "GHIDRA_MCP_DISABLE_REBIND_PROTECTION=1 — any page in the "
+                     "user's browser can drive this server."
+                 )
+-                mcp.settings.transport_security = TransportSecuritySettings(
++                transport_security = TransportSecuritySettings(
+                     enable_dns_rebinding_protection=False
+                 )
+             else:
+@@ -195,13 +204,13 @@ def main():
+                     "is rejected.",
+                     _host, allowed,
+                 )
+-                mcp.settings.transport_security = TransportSecuritySettings(
++                transport_security = TransportSecuritySettings(
+                     enable_dns_rebinding_protection=True,
+                     allowed_hosts=allowed,
+                     allowed_origins=[f"http://{h}" for h in allowed],
+                 )
+         else:
+-            mcp.settings.transport_security = TransportSecuritySettings(
++            transport_security = TransportSecuritySettings(
+                 enable_dns_rebinding_protection=True,
+                 allowed_hosts=[f"{_host}:*", "localhost:*", "127.0.0.1:*"],
+                 allowed_origins=[f"http://{_host}:*", "http://localhost:*", "http://127.0.0.1:*"],
+@@ -209,10 +218,10 @@ def main():
+     logger.info(f"Starting MCP bridge ({args.transport})")
+     if args.transport in ("sse", "streamable-http"):
+         host = args.mcp_host
+-        port = args.mcp_port if args.mcp_port else mcp.settings.port
++        port = args.mcp_port if args.mcp_port else 8000  # FastMCP 1.x default
+         path = "/sse" if args.transport == "sse" else "/mcp"
+         logger.info(f"MCP endpoint: http://{host}:{port}{path}")
+-        app = _build_http_app(args.transport, host)
++        app = _build_http_app(args.transport, host, transport_security)
+         uvicorn.run(app, host=host, port=port, log_level=mcp.settings.log_level.lower())
+     else:
+         mcp.run(transport=args.transport)
+diff --git a/python/bridge_mcp_ghidra/server.py b/python/bridge_mcp_ghidra/server.py
+index 87258ea..ed4eaf1 100644
+--- a/python/bridge_mcp_ghidra/server.py
++++ b/python/bridge_mcp_ghidra/server.py
+@@ -1,15 +1,15 @@
+-"""The FastMCP server singleton and its initialization-options patch."""
++"""The MCPServer singleton and its initialization-options patch."""
+ 
+-from mcp.server.fastmcp import FastMCP, Context  # noqa: F401  (Context re-exported)
++from mcp.server.mcpserver import MCPServer, Context  # noqa: F401  (Context re-exported)
+ from mcp.server.lowlevel.server import NotificationOptions
+ 
+ # The MCP server singleton. All static and dynamically registered tools attach
+ # to this object.
+-mcp = FastMCP("ghidra-mcp")
++mcp = MCPServer("ghidra-mcp")
+ 
+ # Enable tools/list_changed notifications so clients re-fetch tools after
+ # dynamic registration.
+-_orig_init_options = mcp._mcp_server.create_initialization_options
++_orig_init_options = mcp._lowlevel_server.create_initialization_options
+ 
+ 
+ def _patched_init_options(**kwargs):
+@@ -18,4 +18,4 @@ def _patched_init_options(**kwargs):
+     )
+ 
+ 
+-mcp._mcp_server.create_initialization_options = _patched_init_options
++mcp._lowlevel_server.create_initialization_options = _patched_init_options

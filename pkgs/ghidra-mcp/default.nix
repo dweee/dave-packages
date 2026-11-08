@@ -5,9 +5,19 @@
   stdenvNoCC,
   fetchurl,
   unzip,
+  applyPatches,
   src,
 }: let
   version = "6.0.0";
+  # The bridge targets mcp 1.x (upstream pins mcp<2). Port it to the mcp 2.x
+  # MCPServer API that nixpkgs ships: the module rename, the _lowlevel_server
+  # attribute, and transport options moving from settings to the app builders.
+  # https://py.sdk.modelcontextprotocol.io/v2/migration/#fastmcp-renamed-to-mcpserver
+  patchedSrc = applyPatches {
+    name = "ghidra-mcp-source";
+    inherit src;
+    patches = [./mcp2.patch];
+  };
   pythonEnv = python3.withPackages (ps: [
     ps.mcp
     ps.starlette
@@ -50,7 +60,7 @@ in
     name = "ghidra-mcp";
     runtimeInputs = [pythonEnv];
     text = ''
-      export PYTHONPATH=${src}/python''${PYTHONPATH:+:$PYTHONPATH}
+      export PYTHONPATH=${patchedSrc}/python''${PYTHONPATH:+:$PYTHONPATH}
       export GHIDRA_MCP_URL="''${GHIDRA_MCP_URL:-http://127.0.0.1:8089}"
       exec python -m bridge_mcp_ghidra --transport stdio "$@"
     '';

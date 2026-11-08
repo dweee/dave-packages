@@ -183,6 +183,33 @@
           inherit self inputs system;
           pkgs = pkgsFor system;
         }
+        // (
+          let
+            mcpStdioSmoke = (pkgsFor system).callPackage ./nix/mcp-stdio-smoke.nix { };
+            available = name: self.packages.${system} ? ${name};
+          in
+          nixpkgs.lib.optionalAttrs (available "gdb-mcp") {
+            gdb-mcp-stdio = mcpStdioSmoke {
+              package = self.packages.${system}.gdb-mcp;
+              tools = [
+                "dbg_start"
+                "dbg_terminate"
+                "dbg_raw_command"
+              ];
+            };
+          }
+          // nixpkgs.lib.optionalAttrs (available "ghidra-mcp") {
+            ghidra-mcp-stdio = mcpStdioSmoke {
+              package = self.packages.${system}.ghidra-mcp;
+              # Static tools only; schema tools need a running Ghidra.
+              tools = [
+                "connect_instance"
+                "list_instances"
+                "import_file"
+              ];
+            };
+          }
+        )
       );
       formatter = nixpkgs.lib.genAttrs systems (system: (pkgsFor system).nixfmt);
     };
