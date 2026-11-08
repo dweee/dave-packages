@@ -1,0 +1,37 @@
+diff --git a/tools/topology/topology1/CMakeLists.txt b/tools/topology/topology1/CMakeLists.txt
+index 2f5f0eea..a14c9f25 100644
+--- a/tools/topology/topology1/CMakeLists.txt
++++ b/tools/topology/topology1/CMakeLists.txt
+@@ -192,8 +192,8 @@ set(TPLGS
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-max98390-rt5682-rtnr-google-aec\;-DCODEC=MAX98390\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DBT_OFFLOAD\;-DCHANNELS=2\;-DGOOGLE_RTC_AUDIO_PROCESSING\;-DRTNR\;-DNOHOTWORD\;-DNO16KDMIC"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-max98390-ssp2-rt5682-ssp0\;-DCODEC=MAX98390\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=2\;-DDYNAMIC=1"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-rt5682\;-DNO_AMP\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DDYNAMIC=1"
+-	"sof-tgl-max98357a-rt5682\;sof-adl-rt1019-rt5682\;-DCODEC=RT1019\;-DFMT=s24le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DSPK_MIC_PERIOD_US=10000\;-DBT_OFFLOAD\;-DDYNAMIC=1"
+-	"sof-tgl-max98357a-rt5682\;sof-adl-rt1019-rt5682-waves\;-DCODEC=RT1019\;-DFMT=s24le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DWAVES\;-DBT_OFFLOAD"
++	"sof-tgl-max98357a-rt5682\;sof-adl-rt1019-rt5682\;-DCODEC=RT1019\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DSPK_MIC_PERIOD_US=10000\;-DBT_OFFLOAD\;-DDYNAMIC=1"
++	"sof-tgl-max98357a-rt5682\;sof-adl-rt1019-rt5682-waves\;-DCODEC=RT1019\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DWAVES\;-DBT_OFFLOAD"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-cs35l41-google-aec-waves\;-DCODEC=CS35L41\;-DFMT=s24le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_ssp_amp\;-DAMP_SSP=1\;-DBT_OFFLOAD\;-DNO_HEADPHONE\;-DGOOGLE_RTC_AUDIO_PROCESSING\;-DWAVES\;-DNOHOTWORD\;-DNO16KDMIC\;-DSPK_MIC_PERIOD_US=10000"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-cs35l41\;-DCODEC=CS35L41\;-DFMT=s24le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_ssp_amp\;-DAMP_SSP=1\;-DBT_OFFLOAD\;-DNO_HEADPHONE\;-DSPK_MIC_PERIOD_US=10000\;-DDYNAMIC=1"
+ 	 "sof-tgl-max98357a-rt5682\;sof-adl-cs35l41-waves\;-DCODEC=CS35L41\;-DFMT=s24le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_ssp_amp\;-DAMP_SSP=1\;-DBT_OFFLOAD\;-DNO_HEADPHONE\;-DWAVES\;-DNOHOTWORD\;-DNO16KDMIC"
+@@ -229,7 +229,7 @@ set(TPLGS
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-max98360a-rt5682-drceq\;-DCODEC=MAX98360A\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DBT_OFFLOAD\;-DSPK_MIC_PERIOD_US=10000\;-DDYNAMIC=1\;-DDRC_EQ"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-max98390-rt5682-drceq\;-DCODEC=MAX98390\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DBT_OFFLOAD\;-DDYNAMIC=1\;-DDRC_EQ"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-max98390-ssp2-rt5682-ssp0-drceq\;-DCODEC=MAX98390\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=2\;-DDYNAMIC=1\;-DDRC_EQ"
+-	"sof-tgl-max98357a-rt5682\;sof-adl-rt1019-rt5682-drceq\;-DCODEC=RT1019\;-DFMT=s24le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DSPK_MIC_PERIOD_US=10000\;-DBT_OFFLOAD\;-DDYNAMIC=1\;-DDRC_EQ"
++	"sof-tgl-max98357a-rt5682\;sof-adl-rt1019-rt5682-drceq\;-DCODEC=RT1019\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DSPK_MIC_PERIOD_US=10000\;-DBT_OFFLOAD\;-DDYNAMIC=1\;-DDRC_EQ"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-cs35l41-drceq\;-DCODEC=CS35L41\;-DFMT=s24le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_ssp_amp\;-DAMP_SSP=1\;-DBT_OFFLOAD\;-DNO_HEADPHONE\;-DDYNAMIC=1\;-DDRC_EQ"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-max98360a-da7219-drceq\;-DUSE_DA7219\;-DCODEC=MAX98360A\;-DFMT=s32le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DBT_OFFLOAD\;-DSPK_MIC_PERIOD_US=10000\;-DNOHOTWORD\;-DNO16KDMIC\;-DDRC_EQ"
+ 	"sof-tgl-max98357a-rt5682\;sof-adl-rt5650-drceq\;-DUSE_RT5650\;-DFMT=s24le\;-DPLATFORM=adl\;-DLINUX_MACHINE_DRIVER=sof_rt5682\;-DAMP_SSP=1\;-DSPK_MIC_PERIOD_US=10000\;-DBT_OFFLOAD\;-DNOHOTWORD\;-DNO16KDMIC\;-DDRC_EQ"
+diff --git a/tools/topology/topology1/sof-tgl-max98357a-rt5682.m4 b/tools/topology/topology1/sof-tgl-max98357a-rt5682.m4
+index d69b2c6a..74390c01 100644
+--- a/tools/topology/topology1/sof-tgl-max98357a-rt5682.m4
++++ b/tools/topology/topology1/sof-tgl-max98357a-rt5682.m4
+@@ -469,7 +469,7 @@ ifelse(
+                 SSP_CLOCK(bclk, 3072000, codec_slave),
+                 SSP_CLOCK(fsync, 48000, codec_slave),
+                 SSP_TDM(2, 32, 3, 3),
+-                SSP_CONFIG_DATA(SSP, SPK_SSP_INDEX, 24)))',
++                SSP_CONFIG_DATA(SSP, SPK_SSP_INDEX, 32)))',
+ 	CODEC, `CS35L41', `
+ 	SSP_CONFIG(DSP_A, SSP_CLOCK(mclk, MCLK_RATE, codec_mclk_in),
+ 		SSP_CLOCK(bclk, 6144000, codec_slave),

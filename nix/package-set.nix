@@ -147,6 +147,7 @@ let
     openghub = final.callPackage ../pkgs/openghub { };
     yaas = final.callPackage ../pkgs/yaas { };
     trawl = final.callPackage ../pkgs/trawl { };
+    sof-tplg-adl-rt1019 = final.callPackage ../pkgs/sof-tplg-adl-rt1019 { };
     sable-desktop = final.callPackage ../pkgs/sable-desktop { };
     sable-desktop-legacy = final.callPackage ../pkgs/sable-desktop-legacy { };
     qobuzify = final.callPackage ../pkgs/qobuzify { };
