@@ -67,18 +67,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=4e1e4f144fe980dd55a8755e63886150e2ba4cbf";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=f93a6f2d0bbfb674b281b623d5818355edaccd15";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
-    tabrix = { url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=ec95ec86fccc3dba952b8349637cc3606aea0e98"; };
+    tabrix = {
+      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=64b70d74d9d993386bae70cf6ac4d2fc2df624e9";
+    };
     rekordbox-mcp = {
-      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=dc3e239ee37b1830c621b1141eee25ddd53646f6";
+      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=e47c9f66f6260f34a7c65bc52f702752878d37af";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kuna = {
-      url = "github:dweee/kuna/6df1a5c3de87d61968db89df1201fd722d62ef3c";
+      url = "github:dweee/kuna/540532fbd41ed41d63bd71334de2ca14b3d8115e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
