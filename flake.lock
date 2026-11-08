@@ -310,17 +310,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1794115450,
-        "narHash": "sha256-CQBoBK/Ciqd71NyYGigv7XHGjJlVWJRGsxHO7BZRVAw=",
+        "lastModified": 1794134050,
+        "narHash": "sha256-gZvk0G2rQQcTKQPv3MwjmKFLTG1jTtAorPKgh7zp9uY=",
         "owner": "dweee",
         "repo": "Handy",
-        "rev": "7f2a5aee2a070d1e728373ca72815258df3029a1",
+        "rev": "6aef7b41a6b6eae11c719c7c08d24b73f49b332f",
         "type": "github"
       },
       "original": {
         "owner": "dweee",
         "repo": "Handy",
-        "rev": "7f2a5aee2a070d1e728373ca72815258df3029a1",
+        "rev": "6aef7b41a6b6eae11c719c7c08d24b73f49b332f",
         "type": "github"
       }
     },
@@ -406,17 +406,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794115395,
-        "narHash": "sha256-w9EvI+3tPmEnqgrA183nwRQlXt8GhlG0niK4yW2oSBE=",
+        "lastModified": 1794135360,
+        "narHash": "sha256-K9O4sVGeCmORszi5Svia8IZqUHF42uJx+3GsP1pK3dM=",
         "owner": "dweee",
         "repo": "kuna",
-        "rev": "540532fbd41ed41d63bd71334de2ca14b3d8115e",
+        "rev": "019d03e199eb5bd01002ba2460aee6baa2d35472",
         "type": "github"
       },
       "original": {
         "owner": "dweee",
         "repo": "kuna",
-        "rev": "540532fbd41ed41d63bd71334de2ca14b3d8115e",
+        "rev": "019d03e199eb5bd01002ba2460aee6baa2d35472",
         "type": "github"
       }
     },
@@ -548,34 +548,34 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1794003668,
-        "narHash": "sha256-znvxkrEOmW+CUHVOO/2uYbcTMzfjCcrfS2izPVBZhhU=",
+        "lastModified": 1794085552,
+        "narHash": "sha256-UaxCj1wEZ3vGM+tLGuCFk7uhIikl8FVj1uz7c6nP5XU=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "53532f14476a597abeaa67bca19f2c009a043fb6",
+        "rev": "7afffb536a8c5472adf080c4fcb770681ce8444d",
         "type": "github"
       },
       "original": {
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "53532f14476a597abeaa67bca19f2c009a043fb6",
+        "rev": "7afffb536a8c5472adf080c4fcb770681ce8444d",
         "type": "github"
       }
     },
     "nix-zed-extensions": {
       "flake": false,
       "locked": {
-        "lastModified": 1793960861,
-        "narHash": "sha256-+8ypes8yS8XznNM85PiuLZpcpiCAF80C+PxAngektvU=",
+        "lastModified": 1794044409,
+        "narHash": "sha256-as6J13DzggtZW48Nz7rV5evVO6L4aTPzKf7hx2z2zO8=",
         "owner": "SwornSystems",
         "repo": "nix-zed-extensions",
-        "rev": "992574f0471cd7efead7d83209b84323ee4955ae",
+        "rev": "64db72f20d9c2e3d0ea83c5aba94701a4c905884",
         "type": "github"
       },
       "original": {
         "owner": "SwornSystems",
         "repo": "nix-zed-extensions",
-        "rev": "992574f0471cd7efead7d83209b84323ee4955ae",
+        "rev": "64db72f20d9c2e3d0ea83c5aba94701a4c905884",
         "type": "github"
       }
     },
@@ -715,11 +715,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1793931523,
-        "narHash": "sha256-kyzSFmRVevj9lr2XVskwKnae/pXJEbQ+bHKc+mpjqFE=",
+        "lastModified": 1794070417,
+        "narHash": "sha256-leOOarLQ85CtX6NUcHuqNoOCwHbNKLRj6mNK59enKAA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7dd597af6a9776394693e4d0fed85dd5ea8d56da",
+        "rev": "d63e5b96ca17ae27b5d248d29564e31ff7a83f02",
         "type": "github"
       },
       "original": {
@@ -731,17 +731,17 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1793726008,
-        "narHash": "sha256-jQp1wKvbwWdLBASTXkSi/VYmDJ5AbBi1WvcMt9HWJC8=",
+        "lastModified": 1793876309,
+        "narHash": "sha256-Wojg9lIH/hDH91iDVH2/EPw8oDSpxjxhXONbU1yf4Zg=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "1d060086d60cb76a40cf37109f979d88a5bd6396",
+        "rev": "f9a75f41be3a74eab55d3a7679d34ad6cc0da977",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "1d060086d60cb76a40cf37109f979d88a5bd6396",
+        "rev": "f9a75f41be3a74eab55d3a7679d34ad6cc0da977",
         "type": "github"
       }
     },
@@ -822,17 +822,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794115391,
-        "narHash": "sha256-qSHHpdCeFM4lByWQLlyDa80vN8sfBmDUJ3zTXUHXXuY=",
+        "lastModified": 1794134261,
+        "narHash": "sha256-GCYvfNcBIjwMBmcrmNS3zKWiLzGPNfG01gl1ExaDwfk=",
         "ref": "tested",
-        "rev": "f93a6f2d0bbfb674b281b623d5818355edaccd15",
-        "revCount": 1062,
+        "rev": "eaeea04a1e361d152927c94131097c1a424b8bd0",
+        "revCount": 1064,
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "f93a6f2d0bbfb674b281b623d5818355edaccd15",
+        "rev": "eaeea04a1e361d152927c94131097c1a424b8bd0",
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       }
@@ -875,17 +875,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1794016063,
-        "narHash": "sha256-7bDTRd7BY7KKw95JOFMlUsouXp/NS7Snwa5Gh9JC3M4=",
+        "lastModified": 1794136450,
+        "narHash": "sha256-jWayHCD/xXIpE/mCzoIWWg0sNt9DQgVaoHPQbF2fMAM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9db03e98d43e902b5e0c12a45d768c40dba399a2",
+        "rev": "d0265858b595557a0bf2e93ff37a708ce7f7cf2f",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9db03e98d43e902b5e0c12a45d768c40dba399a2",
+        "rev": "d0265858b595557a0bf2e93ff37a708ce7f7cf2f",
         "type": "github"
       }
     },
@@ -944,17 +944,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794115404,
-        "narHash": "sha256-ywCeyC6Oz9DDFZzPeBB0GyzPPBjKs3zGMsZvEFeS9iI=",
+        "lastModified": 1794133833,
+        "narHash": "sha256-yAf3unxxe+3fBeWnxkhdGM+dvIbuNMsjEHk0qhL/wUA=",
         "ref": "tested",
-        "rev": "e47c9f66f6260f34a7c65bc52f702752878d37af",
-        "revCount": 94,
+        "rev": "4fcbe4b31f2b30ee6b2254c1da49d7dea05f9690",
+        "revCount": 96,
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "e47c9f66f6260f34a7c65bc52f702752878d37af",
+        "rev": "4fcbe4b31f2b30ee6b2254c1da49d7dea05f9690",
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp.git"
       }
@@ -1036,17 +1036,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1793956102,
-        "narHash": "sha256-dASUovwB3DUoTm6daga0hsNZZAFCCGlUS4FPBjK0OwA=",
+        "lastModified": 1794127728,
+        "narHash": "sha256-QhZ104DwHvvMxWxmI13zdppISE27UmdqhRI2VwBg/yU=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "74cebce67ef6671ea48fda353a5be2d229bd2920",
+        "rev": "51c6dc40d18552701f7c5c62e3f7a5fc899f7132",
         "type": "github"
       },
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "74cebce67ef6671ea48fda353a5be2d229bd2920",
+        "rev": "51c6dc40d18552701f7c5c62e3f7a5fc899f7132",
         "type": "github"
       }
     },
@@ -1057,18 +1057,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1793829685,
-        "narHash": "sha256-BulRwAGnHkTKoBGjpuTU2fi0T5VkdIEpAfck9jhrgVg=",
+        "lastModified": 1794125061,
+        "narHash": "sha256-rni4KocQJsQB/B5ZIu/M8l32r2//Yi3J+z/z6eOlPWw=",
         "ref": "tested",
-        "rev": "909a13ae2eee3d52b05b7bf6e5cc8d5a990ca103",
-        "revCount": 3596,
+        "rev": "c1d4f4068ebcfcd29916ea382f0754eded5e1dd3",
+        "revCount": 3620,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "909a13ae2eee3d52b05b7bf6e5cc8d5a990ca103",
+        "rev": "c1d4f4068ebcfcd29916ea382f0754eded5e1dd3",
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
@@ -1148,17 +1148,17 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1794115400,
-        "narHash": "sha256-++VXJkByONJRLw+BggZNnY+0UCaTZQ6nUOsy7QWokPU=",
+        "lastModified": 1794133836,
+        "narHash": "sha256-j+XgxMHGXIr60xW+3M7lMIvZpn2QxZkEdHh6B7I4YJk=",
         "ref": "tested",
-        "rev": "64b70d74d9d993386bae70cf6ac4d2fc2df624e9",
-        "revCount": 1805,
+        "rev": "356d35c8e594c9b8b64a32b58397882e6b40a9d5",
+        "revCount": 1807,
         "type": "git",
         "url": "https://github.com/dweee/tabrix.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "64b70d74d9d993386bae70cf6ac4d2fc2df624e9",
+        "rev": "356d35c8e594c9b8b64a32b58397882e6b40a9d5",
         "type": "git",
         "url": "https://github.com/dweee/tabrix.git"
       }
