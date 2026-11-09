@@ -1,9 +1,9 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
+    nixpkgs.url = "github:nixos/nixpkgs/f4a03c008967841f2a0b3cb7c436fc6fc31671f6";
     nix-zed-extensions = {
-      url = "github:SwornSystems/nix-zed-extensions/992574f0471cd7efead7d83209b84323ee4955ae";
+      url = "github:SwornSystems/nix-zed-extensions/64db72f20d9c2e3d0ea83c5aba94701a4c905884";
       flake = false;
     };
     mcp-nix = {
@@ -35,7 +35,7 @@
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
     mcp-nixos = {
-      url = "github:utensils/mcp-nixos/2e88096695bef9c41c5fa9157211d52a45d9a913";
+      url = "github:utensils/mcp-nixos/a0fb7ab7701d8aff179199536b7c2574ef05507a";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
@@ -45,10 +45,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/74cebce67ef6671ea48fda353a5be2d229bd2920";
+      url = "github:oxalica/rust-overlay/51c6dc40d18552701f7c5c62e3f7a5fc899f7132";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/9db03e98d43e902b5e0c12a45d768c40dba399a2";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/1de690d7bd75b80eab1805fb333e82732f038334";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +57,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/53532f14476a597abeaa67bca19f2c009a043fb6";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/9df32f70be3550911f178b3ba9ad784996a4e80c";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -84,7 +84,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=b0b8a1b62a11fdd4c59ae1604a96cef976cc68a1&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=b00a69586fe3416e8927ec163b3bcc5f09da2f5d&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
