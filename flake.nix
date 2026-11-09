@@ -130,13 +130,17 @@
             pkgs.horizonPackages or self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.horizonPackages
           );
         };
-      pkgsFor =
+      # Packages, Horizon modules and checks share the same pure package set.
+      # A plain function would rebuild the bootstrap/fixed point on every call.
+      pkgsBySystem = nixpkgs.lib.genAttrs systems (
         system:
         import nixpkgs {
           inherit system;
           config.allowUnfree = false;
           overlays = [ overlay ];
-        };
+        }
+      );
+      pkgsFor = system: pkgsBySystem.${system};
     in
     {
       overlays.default = overlay;
