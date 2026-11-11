@@ -12,7 +12,7 @@
   },
   "tabrix": {
     "repository": "https://github.com/dweee/tabrix",
-    "revision": "356d35c8e594c9b8b64a32b58397882e6b40a9d5",
+    "revision": "2542b5d350fc29d2eda557248557d43f5414c0f4",
     "branch": "flakey",
     "packages": [
       "tabrix",
@@ -33,7 +33,7 @@
   },
   "schildi-revenge": {
     "repository": "https://github.com/dweee/schildi-revenge",
-    "revision": "b0b8a1b62a11fdd4c59ae1604a96cef976cc68a1",
+    "revision": "8a70864cebbb2e897f0d56b331a832ea820ec90c",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"
