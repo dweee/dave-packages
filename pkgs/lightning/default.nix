@@ -1,6 +1,7 @@
 {
   lib,
   aws-lc,
+  sqlite,
   qt6,
   kdePackages,
   bzip2,
@@ -56,7 +57,15 @@ in
     {
       # aws-lc-sys uses the installed headers, shared libraries and generated
       # Rust bindings through pkg-config's split-output layout.
-      buildInputs = (old.buildInputs or []) ++ [aws-lc];
+      buildInputs = (old.buildInputs or []) ++ [aws-lc sqlite];
+      patches =
+        (old.patches or [])
+        ++ [
+          (builtins.path {
+            path = ./native-rust-link-libraries.patch;
+            name = "lightning-native-rust-link-libraries.patch";
+          })
+        ];
       passthru = (old.passthru or {}) // {inherit source;};
       meta = old.meta // {platforms = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];};
     }
