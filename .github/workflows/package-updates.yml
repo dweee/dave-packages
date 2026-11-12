@@ -39,6 +39,7 @@ jobs:
           python3 ci/test-horizon-update.py
           python3 ci/test-geoip-update.py
           python3 ci/test-lightning-update.py
+          python3 ci/test-wiicompiled-update.py
   prepare:
     needs: test
     if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}

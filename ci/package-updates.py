@@ -42,6 +42,14 @@ def configuration():
             or rules.get("branch") != "main"
             or rules.get("remote") != "https://github.com/dweee/dave-packages.git"):
         raise ValueError("Unreviewed package publication destination")
+    # Input handlers share the existing input PR publisher, never the data-only
+    # package proposal channel. Validate their maintained inventory separately.
+    for name, entry in policy.get("inputHandlers", {}).items():
+        tracking = json.loads((ROOT / "ci/tracking-inputs.json").read_text())["inputs"]
+        if (name not in tracking or entry.get("script") != f"pkgs/{name}/update.py"
+                or entry.get("files") != list(forge.INPUT_FILES)
+                or entry.get("publication") != "ci/automation-forge.py inputs"):
+            raise ValueError("Invalid input handler inventory")
     files = []
     for name, entry in policy["handlers"].items():
         if not re.fullmatch(r"[a-z][a-z0-9-]+", name):

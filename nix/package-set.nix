@@ -10,7 +10,7 @@ let
   t3code = import ../pkgs/t3code { inherit inputs system; };
   fixes = import ./host-fixes.nix final prev;
   mopidy = import ./mopidy-4.nix final prev;
-  wii = import ../pkgs/wiicompiled/source/nix/overlay.nix ../pkgs/wiicompiled/source final prev;
+  wii = import (inputs.wiicompiled + "/nix/overlay.nix") inputs.wiicompiled final prev;
   avfSystem = inputs.nixpkgs.lib.nixosSystem {
     system = "aarch64-linux";
     modules = [

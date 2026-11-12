@@ -24,8 +24,6 @@ OPERATOR_NAMES = {"validation.json", "provenance.json", "fork.json", "upstream.j
 
 def included(path):
     value = str(path)
-    if value.startswith("pkgs/wiicompiled/source/"):
-        return False
     # Test fixtures contain deliberately prohibited examples, so inspect the
     # implementation itself separately through unit tests and private reviews.
     if value.startswith("ci/test-") or value == "ci/check-public-source.py":

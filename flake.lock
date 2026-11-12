@@ -987,7 +987,8 @@
         "t3-code": "t3-code",
         "tabrix": "tabrix",
         "uv2nix": "uv2nix",
-        "virby": "virby"
+        "virby": "virby",
+        "wiicompiled": "wiicompiled"
       }
     },
     "rust-analyzer-src": {
@@ -1226,6 +1227,26 @@
         "repo": "virby-nix-darwin",
         "rev": "a52216470a97ef5970939acf697a00ec61beb0c6",
         "type": "github"
+      }
+    },
+    "wiicompiled": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794522173,
+        "narHash": "sha256-m2lodbVA7c/zLDxSVIaxmK7R3Jp17IrRX3YdnMdMqf0=",
+        "ref": "flakey",
+        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+        "revCount": 236,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/dweee/Wiicompiled.git"
+      },
+      "original": {
+        "ref": "flakey",
+        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/dweee/Wiicompiled.git"
       }
     }
   },

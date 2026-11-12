@@ -29,5 +29,16 @@
       "script": "pkgs/horizon/update.py",
       "files": ["pkgs/horizon/sources.json"]
     }
+  },
+  "inputHandlers": {
+    "wiicompiled": {
+      "script": "pkgs/wiicompiled/update.py",
+      "files": [
+        "flake.nix",
+        "flake.lock",
+        "nix/forks.json"
+      ],
+      "publication": "ci/automation-forge.py inputs"
+    }
   }
 }
