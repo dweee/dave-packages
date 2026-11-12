@@ -30,7 +30,7 @@
     };
     # Retain native fork toolchains so catalog updates reuse their CI outputs.
     handy = {
-      url = "github:dweee/Handy/7f2a5aee2a070d1e728373ca72815258df3029a1";
+      url = "github:dweee/Handy/6aef7b41a6b6eae11c719c7c08d24b73f49b332f";
     };
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
@@ -63,28 +63,28 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=7d7a690e0f65791651abf33ef3b76f255d3faa57";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=4d105fdac6d9db5e19057f3c56dd169247b44217";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=f93a6f2d0bbfb674b281b623d5818355edaccd15";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=eaeea04a1e361d152927c94131097c1a424b8bd0";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
     tabrix = {
-      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=64b70d74d9d993386bae70cf6ac4d2fc2df624e9";
+      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=356d35c8e594c9b8b64a32b58397882e6b40a9d5";
     };
     rekordbox-mcp = {
-      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=e47c9f66f6260f34a7c65bc52f702752878d37af";
+      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=4fcbe4b31f2b30ee6b2254c1da49d7dea05f9690";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kuna = {
-      url = "github:dweee/kuna/540532fbd41ed41d63bd71334de2ca14b3d8115e";
+      url = "github:dweee/kuna/019d03e199eb5bd01002ba2460aee6baa2d35472";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=909a13ae2eee3d52b05b7bf6e5cc8d5a990ca103&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=b0b8a1b62a11fdd4c59ae1604a96cef976cc68a1&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
