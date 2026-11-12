@@ -125,6 +125,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | schildi-revenge | yes | yes | yes |
 | slopbro | yes | yes | yes |
 | slskd-mcp | yes | yes | yes |
+| sof-tplg-adl-rt1019 | - | yes | - |
 | spank | yes | - | - |
 | tabrix | yes | yes | yes |
 | tabrix-extension | yes | yes | yes |

@@ -640,6 +640,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.sof-tplg-adl-rt1019",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.spotatui",
         "visibility": "public"
       },
