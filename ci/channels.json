@@ -320,6 +320,10 @@
       {
         "attribute": "cacheOnlyPackages.aarch64-darwin.stemlab",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-darwin.retro-rewind-pack",
+        "visibility": "cache-only"
       }
     ],
     "x86_64-linux": [
@@ -722,6 +726,14 @@
       {
         "attribute": "cacheOnlyPackages.x86_64-linux.stemlab",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.x86_64-linux.blackglass",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.retro-rewind-pack",
+        "visibility": "cache-only"
       }
     ],
     "aarch64-linux": [
@@ -1035,6 +1047,14 @@
       },
       {
         "attribute": "cacheOnlyPackages.aarch64-linux.keyguard",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.aarch64-linux.blackglass",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-linux.retro-rewind-pack",
         "visibility": "cache-only"
       }
     ]
