@@ -15,6 +15,15 @@ repository protections. Native build/check/cache/channel gates remain required.
 
 Current package handlers:
 
+- `geoip`: the newest stable dated releases for Byparr's exact ZIP asset and
+  Trawl's exact City database asset. Both selections are frozen before either
+  pin changes; canonical asset URLs and official SHA256 digests are required.
+  Public recursive graphs and actual Nix fixed-output fetches gate publication.
+  The daily GeoIP caller uses this publisher; `cache_only` still caches the
+  current pins separately. An unincorporated legacy GeoIP PR blocks a replacement,
+  while its ancestry already on the canonical base permits the next update.
+  Upstream can still delete older releases: this is regular refresh, not a
+  permanent-retention guarantee.
 - `horizon`: stable dated Nightly, rolling Nightly, main source and launcher semver;
   one frozen API/raw snapshot, Nix-generated source/vendor hashes, official asset
   checksums and the mixins revision from the selected new launcher. Unsupported
@@ -42,11 +51,17 @@ nix develop .#package-updates --command python3 ci/package-updates.py prepare \
 
 Each handler supports `--write-snapshot FILE`, `--snapshot FILE` and `--apply`.
 Reuse a directory of `<handler-name>.json` snapshots with `prepare --snapshots`
-to validate or resume a frozen target set. Discovery does not require a write
+to validate or resume a frozen target set. Add `--handler geoip` to prepare only
+that handler without querying other package owners. Discovery does not require a write
 token. Publication uses the existing repository-scoped automation identity,
 with credentials confined to temporary Git configuration. Preparation never
 receives that write identity, and the publisher never evaluates candidate Nix
 or executes candidate package code.
+
+The existing `UPDATE_TOKEN` fallback must have repository contents, pull-request
+and Actions permissions for publication and explicit native-check dispatch.
+Without it, the repository's workflow token needs the corresponding permitted
+operations. No caller extracts credentials or bypasses repository protections.
 
 Source changes and handler implementations belong in ordinary reviewed source
 PRs. The routine branch accepts only the explicitly classified generated pin

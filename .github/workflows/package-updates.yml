@@ -3,7 +3,16 @@ on:
   schedule:
     - cron: '51 3,9,15,21 * * *'
   workflow_dispatch:
+    inputs:
+      handler:
+        description: Registered package handler, or all
+        type: string
+        default: all
   workflow_call:
+    inputs:
+      handler:
+        type: string
+        default: all
   pull_request:
 permissions:
   contents: read
@@ -28,6 +37,7 @@ jobs:
           python3 ci/test-yaas-update.py
           python3 ci/test-blackglass-update.py
           python3 ci/test-horizon-update.py
+          python3 ci/test-geoip-update.py
   prepare:
     needs: test
     if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
@@ -60,7 +70,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           nix develop --no-update-lock-file --no-write-lock-file .#package-updates --command \
-            python3 ci/package-updates.py prepare --proposal "$RUNNER_TEMP/package-update-proposal.json"
+            python3 ci/package-updates.py prepare --handler "${{ inputs.handler || 'all' }}" --proposal "$RUNNER_TEMP/package-update-proposal.json"
       - name: Preserve Horizon recipe and public dependency gates before publication
         run: |
           for system in x86_64-linux aarch64-linux aarch64-darwin; do
@@ -72,9 +82,17 @@ jobs:
           policy = json.load(open('ci/channels.json'))
           for system, targets in policy['targets'].items():
               for target in targets:
-                  if target['visibility'] == 'public' and target['attribute'].rsplit('.', 1)[-1].startswith('horizon'):
+                  if target['visibility'] == 'public' and (target['attribute'].rsplit('.', 1)[-1].startswith('horizon') or target['attribute'].rsplit('.', 1)[-1] in {'byparr', 'trawl'}):
                       subprocess.run(['python3', 'ci/public-closure.py', '.#' + target['attribute']], check=True)
+          for target in ['.#packages.x86_64-linux.byparr.geoipMmdbZip', '.#packages.x86_64-linux.trawl.camoufox-bin.geoip']:
+              subprocess.run(['python3', 'ci/public-closure.py', target], check=True)
           PYTHON
+      - name: Verify selected public GeoIP asset hashes before publication
+        if: ${{ inputs.handler == 'geoip' || inputs.handler == 'all' || inputs.handler == '' }}
+        run: >-
+          nix build --no-link --no-update-lock-file --no-write-lock-file
+          .#packages.x86_64-linux.byparr.geoipMmdbZip
+          .#packages.x86_64-linux.trawl.camoufox-bin.geoip
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: ${{ steps.prepare.outputs.changed == 'true' }}
         with:

@@ -206,10 +206,11 @@ print(json.dumps({'changed':old!=new}))
         self.g("add", "pkgs/codexbar/update.py")
         self.g("commit", "-qm", "fixture canonical handler")
         self.base = self.g("rev-parse", "HEAD")
-        policy = {"handlers": {"codexbar-cli": {"script": "pkgs/codexbar/update.py", "files": [PIN]}}}
+        policy = {"handlers": {"codexbar-cli": {"script": "pkgs/codexbar/update.py", "files": [PIN]},
+                               "unused": {"script": "pkgs/unused/update.py", "files": ["pkgs/unused/pin.json"]}}}
         self.config_mock.return_value = policy, self.rules, {PIN}
         proposal = Path(self.temporary.name) / "prepared.json"
-        value = u.prepare(proposal)
+        value = u.prepare(proposal, handler="codexbar-cli")
         self.assertEqual(value["base"], self.base)
         self.assertEqual(set(value["files"]), {PIN})
         self.assertEqual(json.loads(base64.b64decode(value["files"][PIN]["content"]))["version"], "2.0.0")
@@ -218,7 +219,7 @@ print(json.dumps({'changed':old!=new}))
         frozen = Path(self.temporary.name) / "snapshots"
         frozen.mkdir()
         (frozen / "codexbar-cli.json").write_text('{"target":"2.0.0"}')
-        again = u.prepare(proposal, frozen)
+        again = u.prepare(proposal, frozen, handler="codexbar-cli")
         self.assertEqual(again["files"], {})
         self.assertEqual(self.g("status", "--porcelain"), "")
 
@@ -228,6 +229,35 @@ class GuardTests(unittest.TestCase):
         policy, rules, files = u.configuration()
         self.assertEqual(rules["repository"], "dweee/dave-packages")
         self.assertEqual(len(files), sum(len(p["files"]) for p in policy["handlers"].values()))
+
+    def test_geoip_normalizer_preserves_sources_and_release_bound_urls(self):
+        name = "pkgs/byparr/geoip.json"
+        old = (SOURCE / name).read_bytes()
+        new = json.loads(old)
+        new["release"] = "2026.11.12"
+        new["url"] = "https://github.com/daijro/geoip-all-in-one/releases/download/2026.11.12/geoip-aio-all.mmdb.zip"
+        u.validate_change(name, old, json.dumps(new).encode())
+        new["url"] = "https://example.invalid/floating"
+        with self.assertRaises(ValueError):
+            u.validate_change(name, old, json.dumps(new).encode())
+
+    def test_unincorporated_legacy_geoip_pr_is_preserved_without_replacement(self):
+        path = "pkgs/byparr/geoip.json"
+        pin = (SOURCE / path).read_bytes()
+        pr = {"head": {"ref": "automation/geoip-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        with patch.object(u, "git", side_effect=["", "b" * 40, "c" * 40, path]), \
+                patch.object(u.subprocess, "check_output", side_effect=[pin, pin]), \
+                self.assertRaisesRegex(ValueError, "existing GeoIP PR"):
+            u.protect_legacy_geoip_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"},
+                                      [pr], "a" * 40, {path}, {})
+
+    def test_incorporated_legacy_geoip_ancestry_does_not_block_next_pin_set(self):
+        pr = {"head": {"ref": "automation/geoip-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        with patch.object(u, "git", side_effect=["", "b" * 40, "b" * 40, ""]):
+            u.protect_legacy_geoip_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"},
+                                      [pr], "a" * 40, {"pkgs/byparr/geoip.json"}, {})
 
     def test_yaas_source_code_cannot_hide_inside_a_pin_update(self):
         text = (SOURCE / "pkgs/yaas/default.nix").read_bytes()

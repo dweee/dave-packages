@@ -1,6 +1,10 @@
 {
   "version": 1,
   "handlers": {
+    "geoip": {
+      "script": "scripts/update-geoip.py",
+      "files": ["pkgs/byparr/geoip.json", "pkgs/trawl/geoip.json"]
+    },
     "codexbar-cli": {
       "script": "pkgs/codexbar/update.py",
       "files": ["pkgs/codexbar/cli-pin.json"]

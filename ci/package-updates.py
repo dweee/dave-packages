@@ -46,7 +46,9 @@ def configuration():
     for name, entry in policy["handlers"].items():
         if not re.fullmatch(r"[a-z][a-z0-9-]+", name):
             raise ValueError("Invalid package handler")
-        for path in [entry["script"], *entry["files"]]:
+        if ".." in entry["script"] or (entry["script"] != "scripts/update-geoip.py" and not re.fullmatch(r"pkgs/[a-z0-9._/-]+[.]py", entry["script"])):
+            raise ValueError("Invalid package updater script")
+        for path in entry["files"]:
             if not re.fullmatch(r"pkgs/[a-z0-9._/-]+[.][a-z]+", path) or ".." in path:
                 raise ValueError("Invalid package updater path")
         files.extend(entry["files"])
@@ -67,6 +69,17 @@ def normalized(path, content):
             text = pattern.sub(name + ' = "<generated>";', text, count=1)
         return text
     value = json.loads(content)
+    geoip = {"pkgs/byparr/geoip.json": ("daijro/geoip-all-in-one", "geoip-aio-all.mmdb.zip"),
+             "pkgs/trawl/geoip.json": ("P3TERX/GeoLite.mmdb", "GeoLite2-City.mmdb")}
+    if path in geoip:
+        repo, asset = geoip[path]
+        if (set(value) != {"repo", "asset", "release", "url", "hash"}
+                or (value["repo"], value["asset"]) != (repo, asset)
+                or not re.fullmatch(r"\d{4}\.\d{2}\.\d{2}", value["release"])
+                or not SRI.fullmatch(value["hash"])
+                or value["url"] != f'https://github.com/{repo}/releases/download/{value["release"]}/{asset}'):
+            raise ValueError("Invalid generated GeoIP pin")
+        return "<generated GeoIP pin>"
     if path == "pkgs/yaas/pubspec.lock.json":
         if set(value) != {"packages", "sdks"} or not all(isinstance(v, dict) for v in value.values()):
             raise ValueError("Unexpected Flutter lock schema")
@@ -129,15 +142,21 @@ def validate_change(path, old, new):
         raise ValueError("Preserving manual source edits in " + path)
 
 
-def prepare(proposal, snapshots=None):
+def prepare(proposal, snapshots=None, handler="all"):
     policy, rules, allowed = configuration()
+    handlers = policy["handlers"]
+    if handler != "all":
+        if handler not in handlers:
+            raise ValueError("Unknown package handler")
+        handlers = {handler: handlers[handler]}
+        allowed = set(handlers[handler]["files"])
     if git("status", "--porcelain", "--untracked-files=all"):
         raise ValueError("Package preparation requires a clean checkout")
     base = git("rev-parse", "HEAD^{commit}")
     before = {name: (ROOT / name).read_bytes() for name in allowed}
     reports = {}
     with tempfile.TemporaryDirectory(prefix="package-discovery-") as directory:
-        for name, entry in policy["handlers"].items():
+        for name, entry in handlers.items():
             forge.phase("discover-" + name)
             snapshot = (snapshots or Path(directory)) / (name + ".json")
             script = [sys.executable, str(ROOT / entry["script"])]
@@ -250,6 +269,34 @@ def remote_head(rules, env):
     return fields[0]
 
 
+def protect_legacy_geoip_prs(rules, prs, base, files, env):
+    """Do not replace an unincorporated legacy GeoIP proposal or close its PR."""
+    geoip_files = {"pkgs/byparr/geoip.json", "pkgs/trawl/geoip.json"}
+    if not geoip_files.intersection(files):
+        return
+    for pr in prs:
+        ref = pr.get("head", {}).get("ref", "")
+        if not ref.startswith("automation/geoip-"):
+            continue
+        if (pr.get("draft") or pr["base"]["ref"] != rules["branch"]
+                or pr["head"].get("repo", {}).get("full_name", "").lower() != rules["repository"].lower()):
+            raise ValueError("Preserving held or manually owned GeoIP PR")
+        git("fetch", "--no-tags", rules["remote"], "refs/heads/" + ref, env=env)
+        head = git("rev-parse", "FETCH_HEAD")
+        if head != pr["head"]["sha"]:
+            raise ValueError("GeoIP PR advanced during verification")
+        ancestor = git("merge-base", base, head)
+        names = git("diff", "--no-renames", "--name-only", ancestor, head).splitlines()
+        if not set(names) <= geoip_files:
+            raise ValueError("Preserving GeoIP PR with other source changes")
+        for name in names:
+            old = subprocess.check_output(["git", "show", ancestor + ":" + name], cwd=ROOT)
+            new = subprocess.check_output(["git", "show", head + ":" + name], cwd=ROOT)
+            validate_change(name, old, new)
+        if ancestor != head:
+            raise ValueError("Preserving existing GeoIP PR; incorporate its reviewed ancestry before publishing another")
+
+
 def publish(proposal):
     _, rules, allowed = configuration()
     if proposal.is_symlink() or proposal.stat().st_size > 16 * 1024 * 1024:
@@ -288,6 +335,7 @@ def publish(proposal):
     with tempfile.TemporaryDirectory(prefix="package-publish-") as directory:
         with channel.build_environment(dict(os.environ, CHANNEL_TOKEN=os.environ["AUTOMATION_TOKEN"])):
             env = channel.git_env(directory)
+            protect_legacy_geoip_prs(rules, prs, base, files, env)
             head = remote_head(rules, env)
             if current and current["head"]["sha"] != head:
                 raise ValueError("Routine PR head changed during verification")
@@ -341,12 +389,13 @@ def main():
     parser.add_argument("action", choices=["prepare", "publish"])
     parser.add_argument("--proposal", type=Path, required=True)
     parser.add_argument("--snapshots", type=Path, help="Reuse an already frozen target set for reproducible preparation")
+    parser.add_argument("--handler", default="all", help="Prepare one registered handler, or all")
     args = parser.parse_args()
     try:
         if args.action == "prepare":
-            prepare(args.proposal, args.snapshots)
+            prepare(args.proposal, args.snapshots, args.handler)
         else:
-            if args.snapshots:
+            if args.snapshots or args.handler != "all":
                 raise ValueError("Snapshots apply only to preparation")
             publish(args.proposal)
     except Exception as error:
