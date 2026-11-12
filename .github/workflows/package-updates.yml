@@ -68,9 +68,10 @@ jobs:
         id: prepare
         env:
           GH_TOKEN: ${{ github.token }}
+          SELECTED_HANDLER: ${{ inputs.handler || 'all' }}
         run: |
           nix develop --no-update-lock-file --no-write-lock-file .#package-updates --command \
-            python3 ci/package-updates.py prepare --handler "${{ inputs.handler || 'all' }}" --proposal "$RUNNER_TEMP/package-update-proposal.json"
+            python3 ci/package-updates.py prepare --handler "$SELECTED_HANDLER" --proposal "$RUNNER_TEMP/package-update-proposal.json"
       - name: Preserve Horizon recipe and public dependency gates before publication
         run: |
           for system in x86_64-linux aarch64-linux aarch64-darwin; do
