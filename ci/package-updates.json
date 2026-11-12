@@ -21,6 +21,10 @@
       "script": "pkgs/blackglass/update.py",
       "files": ["pkgs/blackglass/pin.json"]
     },
+    "lightning": {
+      "script": "pkgs/lightning/update.py",
+      "files": ["pkgs/lightning/pin.json"]
+    },
     "horizon": {
       "script": "pkgs/horizon/update.py",
       "files": ["pkgs/horizon/sources.json"]

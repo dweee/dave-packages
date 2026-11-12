@@ -128,6 +128,7 @@ let
             }
           );
         });
+    lightning-matrix-client = final.qt6.callPackage ../pkgs/lightning { };
     matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel {
       inherit (prev) matrix-tuwunel;
     };

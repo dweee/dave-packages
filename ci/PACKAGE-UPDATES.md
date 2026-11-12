@@ -29,6 +29,14 @@ Current package handlers:
   checksums and the mixins revision from the selected new launcher. Unsupported
   binary platform pairs remain absent. Nightly expiry still requires regular updates.
 
+- `lightning`: the newest stable `Mizerd/lightning` release, its exact peeled
+  tag commit and Nix-generated source NAR hash. Release/source versions must
+  agree; downgrades and moved release tags require review. The small Qt 6
+  wrapper retains upstream Rust, Cargo, LTO and test policy while providing
+  system AWS-LC. Native callers check version/help, image decoders, call-media,
+  spelling, dynamic linkage and upstream Python contracts. Declared platforms
+  are x86_64-linux, aarch64-linux and aarch64-darwin; registration does not
+  establish native success or promote a channel.
 - `codexbar-cli`: stable upstream release, both Linux architecture assets and
   their published digests. Each actual payload is hashed with Nix before pins
   change. The KDE plasmoid and nixpkgs Darwin application are separate owners.

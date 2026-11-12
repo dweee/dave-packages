@@ -99,6 +99,11 @@ def normalized(path, content):
         if set(value) != {"version", "hash"} or not SEMVER.fullmatch(value["version"]) or not SRI.fullmatch(value["hash"]):
             raise ValueError("Unexpected Retro Rewind pin schema")
         return "<generated Retro Rewind pin>"
+    if path == "pkgs/lightning/pin.json":
+        if (set(value) != {"version", "revision", "hash"} or not SEMVER.fullmatch(value["version"])
+                or not SHA.fullmatch(value["revision"]) or not SRI.fullmatch(value["hash"])):
+            raise ValueError("Unexpected Lightning source manifest")
+        return "<generated Lightning source manifest>"
     if path == "pkgs/blackglass/pin.json":
         if (set(value) != {"version", "revision", "hash"} or not DATED.fullmatch(value["version"])
                 or not SHA.fullmatch(value["revision"]) or not SRI.fullmatch(value["hash"])):

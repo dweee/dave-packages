@@ -106,6 +106,16 @@ jobs:
           echo "Package build: ${SECONDS}s"
           cat outputs.txt
         } >> "$GITHUB_STEP_SUMMARY"
+    - name: Validate Lightning runtime libraries and upstream contracts
+      if: ${{ matrix.package == 'lightning-matrix-client' }}
+      env:
+        TARGET_SYSTEM: ${{ matrix.system }}
+      run: |
+        set -euo pipefail
+        package=$(head -n1 outputs.txt)
+        source=$(nix eval --raw ".#packages.$TARGET_SYSTEM.lightning-matrix-client.source" --no-update-lock-file --no-write-lock-file)
+        version=$(nix eval --raw ".#packages.$TARGET_SYSTEM.lightning-matrix-client.version" --no-update-lock-file --no-write-lock-file)
+        python3 pkgs/lightning/check.py --package "$package" --source "$source" --version "$version"
     - name: Verify the composed headless decompiler
       if: ${{ matrix.package == 'ghidra-kuna' || matrix.package == 'rea-kuna' }}
       env:

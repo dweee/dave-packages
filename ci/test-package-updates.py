@@ -230,6 +230,15 @@ class GuardTests(unittest.TestCase):
         self.assertEqual(rules["repository"], "dweee/dave-packages")
         self.assertEqual(len(files), sum(len(p["files"]) for p in policy["handlers"].values()))
 
+    def test_lightning_manifest_rejects_code_and_floating_revisions(self):
+        path = "pkgs/lightning/pin.json"
+        pin = {"version": "0.10.5", "revision": "b" * 40, "hash": "sha256-" + "A" * 43 + "="}
+        valid = u.normalized(path, json.dumps(pin).encode())
+        self.assertEqual(valid, u.normalized(path, json.dumps(pin | {"version": "0.10.6", "revision": "c" * 40}).encode()))
+        for edit in [{"revision": "main"}, {"extra": "builtins.getEnv"}, {"hash": "sha256-fake"}]:
+            with self.assertRaises(ValueError):
+                u.normalized(path, json.dumps(pin | edit).encode())
+
     def test_geoip_normalizer_preserves_sources_and_release_bound_urls(self):
         name = "pkgs/byparr/geoip.json"
         old = (SOURCE / name).read_bytes()

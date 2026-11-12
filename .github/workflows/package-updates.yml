@@ -38,6 +38,7 @@ jobs:
           python3 ci/test-blackglass-update.py
           python3 ci/test-horizon-update.py
           python3 ci/test-geoip-update.py
+          python3 ci/test-lightning-update.py
   prepare:
     needs: test
     if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
@@ -83,7 +84,7 @@ jobs:
           policy = json.load(open('ci/channels.json'))
           for system, targets in policy['targets'].items():
               for target in targets:
-                  if target['visibility'] == 'public' and (target['attribute'].rsplit('.', 1)[-1].startswith('horizon') or target['attribute'].rsplit('.', 1)[-1] in {'byparr', 'trawl'}):
+                  if target['visibility'] == 'public' and (target['attribute'].rsplit('.', 1)[-1].startswith('horizon') or target['attribute'].rsplit('.', 1)[-1] in {'byparr', 'trawl', 'lightning-matrix-client'}):
                       subprocess.run(['python3', 'ci/public-closure.py', '.#' + target['attribute']], check=True)
           for target in ['.#packages.x86_64-linux.byparr.geoipMmdbZip', '.#packages.x86_64-linux.trawl.camoufox-bin.geoip']:
               subprocess.run(['python3', 'ci/public-closure.py', target], check=True)
