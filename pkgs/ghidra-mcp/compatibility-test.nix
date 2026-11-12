@@ -1,6 +1,6 @@
 {
   runCommand,
-  stdenv,
+  python3,
   ghidra,
   jdk25,
   extension,
@@ -11,14 +11,15 @@ in
 runCommand "ghidra-mcp-real-api-compatibility"
   {
     nativeBuildInputs = [
-      stdenv.cc
+      python3
       withMcp
       jdk25
     ];
   }
   ''
-    printf 'int main(void) { return 0; }\n' > fixture.c
-    cc -O1 -g fixture.c -o fixture
+    # The smoke deliberately tests x86 decoder identity, including on ARM hosts.
+    # This inert ELF is parsed by Ghidra; it is never executed.
+    python ${./compatibility-fixture.py} fixture
     mkdir -p "$TMPDIR/project" "$TMPDIR/home"
     export JAVA_HOME=${jdk25.home}
     export JAVA_TOOL_OPTIONS="-Duser.home=$TMPDIR/home -Djava.io.tmpdir=$TMPDIR"
