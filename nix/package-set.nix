@@ -110,12 +110,21 @@ let
       inherit (prev) matrix-tuwunel;
     };
     mlx-audio-separator = final.callPackage ../pkgs/mlx-audio-separator { };
-    pumpkin = inputs.pumpkin-nixpkgs.legacyPackages.${system}.pumpkin.overrideAttrs (old: {
-      # Rust 1.99 needs more compiler stack for Pumpkin's generated registry data.
-      env = (old.env or { }) // {
-        RUST_MIN_STACK = "33554432";
-      };
-    });
+    pumpkin =
+      let
+        pumpkinPkgs = inputs.pumpkin-nixpkgs.legacyPackages.${system};
+      in
+      pumpkinPkgs.pumpkin.overrideAttrs (old: {
+        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pumpkinPkgs.pkg-config ];
+        # zstd-sys probes the system library with pkg-config's static mode.
+        buildInputs = (old.buildInputs or [ ]) ++ [
+          (pumpkinPkgs.zstd.override { enableStatic = true; })
+        ];
+        # Rust 1.99 needs more compiler stack for Pumpkin's generated registry data.
+        env = (old.env or { }) // {
+          RUST_MIN_STACK = "33554432";
+        };
+      });
     pumpkin-voice = final.callPackage ../pkgs/pumpkin-voice/nix/package.nix { };
     pumpkin-tpsbar = final.callPackage ../pkgs/pumpkin-tpsbar/nix/package.nix { };
     pumpkin-java-multiversion = final.callPackage ../pkgs/pumpkin-java-multiversion/nix/package.nix { };

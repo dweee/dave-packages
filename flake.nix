@@ -1,7 +1,7 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
+    nixpkgs.url = "github:nixos/nixpkgs/177d0540942fb205af6993b1d5fa0b57799e09f8";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/903ddb8951b05fd7e8f3a9d59eb39168823239ee";
       flake = false;
