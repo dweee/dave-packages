@@ -16,10 +16,12 @@
   writeShellApplication,
   p7zip,
   protobuf,
+  pkg-config,
   rinf_cli,
   rustPlatform,
   stdenvNoCC,
   writeText,
+  zstd,
 }: let
   pname = "yaas";
   version = "0-unstable-2026-10-29";
@@ -37,6 +39,9 @@
     buildAndTestSubdir = "native/hub";
 
     cargoHash = "sha256-k551dTlNoMaav/XlBUWxBi6cfmCPVx9xiMrbNeJ3lVA=";
+
+    nativeBuildInputs = [pkg-config];
+    buildInputs = [(zstd.override {enableStatic = true;})];
 
     doCheck = false;
 
