@@ -96,7 +96,7 @@
       flake = false;
     };
     ghidra-mcp = {
-      url = "github:bethington/ghidra-mcp/8cd2078e10b9ba28b188cb84ce5b9051a904b995";
+      url = "github:dweee/ghidra-mcp/86961ca288f2832e649e8ff371a4176ae1cc1535";
       flake = false;
     };
     gdb-mcp = {
@@ -199,6 +199,9 @@
             };
           }
           // nixpkgs.lib.optionalAttrs (available "ghidra-mcp") {
+            ghidra-mcp-compatibility = (pkgsFor system).callPackage ./pkgs/ghidra-mcp/compatibility-test.nix {
+              extension = self.packages.${system}.ghidra-mcp.extension;
+            };
             ghidra-mcp-stdio = mcpStdioSmoke {
               package = self.packages.${system}.ghidra-mcp;
               # Static tools only; schema tools need a running Ghidra.
