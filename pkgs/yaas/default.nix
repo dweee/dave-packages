@@ -6,6 +6,7 @@
   fetchFromGitHub,
   flutter347,
   lib,
+  libgit2,
   makeDesktopItem,
   mpv-unwrapped,
   nix-update,
@@ -41,7 +42,7 @@
     cargoHash = "sha256-k551dTlNoMaav/XlBUWxBi6cfmCPVx9xiMrbNeJ3lVA=";
 
     nativeBuildInputs = [pkg-config];
-    buildInputs = [(zstd.override {enableStatic = true;})];
+    buildInputs = [libgit2 (zstd.override {enableStatic = true;})];
 
     doCheck = false;
 
