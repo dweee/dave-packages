@@ -94,18 +94,40 @@ let
       forceEnableBackdrops = true;
       forceDisablePreferFmp4 = true;
     };
-    caddy-custom = prev.caddy.withPlugins {
-      plugins = [
-        "github.com/caddyserver/transform-encoder@v0.0.0-20260417205707-a6a89df4bc65"
-        "github.com/caddy-dns/porkbun@v0.3.1"
-        "github.com/mholt/caddy-webdav@v0.0.0-20260127042217-fa2f366b0d75"
-        "github.com/caddy-dns/njalla@v0.0.0-20250823094507-f709141f1fe6"
-        "github.com/tailscale/caddy-tailscale@v0.0.0-20260106222316-bb080c4414ac"
-        "github.com/caddyserver/cache-handler@v0.16.0"
-        "github.com/darkweak/storages/simplefs/caddy@v0.0.19"
-      ];
-      hash = "sha256-H6SwdJRitkNp4e4GMoVCtKiW601M8MBSyHSmRT689H0=";
-    };
+    caddy-custom =
+      (prev.caddy.withPlugins {
+        plugins = [
+          "github.com/caddyserver/transform-encoder@v0.0.0-20260417205707-a6a89df4bc65"
+          "github.com/caddy-dns/porkbun@v0.3.1"
+          "github.com/mholt/caddy-webdav@v0.0.0-20260127042217-fa2f366b0d75"
+          "github.com/caddy-dns/njalla@v0.0.0-20250823094507-f709141f1fe6"
+          "github.com/tailscale/caddy-tailscale@v0.0.0-20260106222316-bb080c4414ac"
+          "github.com/caddyserver/cache-handler@v0.16.0"
+          "github.com/darkweak/storages/simplefs/caddy@v0.0.19"
+        ];
+        hash = "sha256-6EMQd4QiiTZb8/K8t5G3lVtD+SVGfMK76G0uOo1w8cE=";
+      }).overrideAttrs
+        (old: {
+          src = old.src.overrideAttrs (
+            source:
+            let
+              vendorStep = "(cd buildenv* && go mod vendor)";
+              # The old shim aliases APIs removed from Go's JSON v2 implementation.
+              # Upstream json PR203 supplies the matching API without changing plugins.
+              jsonRevision = "dc5f05c800f19f9b0114acbbd240674f16b2762f";
+            in
+            assert builtins.length (prev.lib.splitString vendorStep source.buildPhase) == 2;
+            {
+              buildPhase =
+                builtins.replaceStrings
+                  [ vendorStep ]
+                  [
+                    "(cd buildenv* && go get github.com/go-json-experiment/json@${jsonRevision} && go mod vendor)"
+                  ]
+                  source.buildPhase;
+            }
+          );
+        });
     matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel {
       inherit (prev) matrix-tuwunel;
     };
