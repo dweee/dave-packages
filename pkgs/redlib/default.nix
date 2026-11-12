@@ -9,6 +9,7 @@
   perl,
   pkg-config,
   python3,
+  zstd,
 }:
 # Vendored fork of redlib-org/redlib @ a4d36e95 with named MAIN FEEDS
 # (REDLIB_DEFAULT_FEEDS + cookie-backed feeds UI). See
@@ -34,6 +35,9 @@ rustPlatform.buildRustPackage {
     pkg-config
     python3
   ];
+
+  # cargoSetupHook selects system zstd; zstd-sys requests its static archive.
+  buildInputs = [(zstd.override {enableStatic = true;})];
 
   postInstall = ''
     install --mode=444 -D contrib/redlib.service $out/lib/systemd/system/redlib.service
