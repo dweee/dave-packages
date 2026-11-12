@@ -20,6 +20,8 @@ def main():
     with tempfile.TemporaryDirectory(prefix="lightning-native-check-") as directory:
         env = os.environ.copy()
         env.update(HOME=directory, QT_QPA_PLATFORM="offscreen", LANG="C.UTF-8")
+        if sys.platform.startswith("linux"):
+            env["LD_BIND_NOW"] = "1"
         for key in ["XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME", "XDG_RUNTIME_DIR"]:
             path = Path(directory) / key.lower()
             path.mkdir(mode=0o700)
@@ -37,8 +39,8 @@ def main():
         run("image-format-status", [str(binary), "--image-format-status"])
         run("gstreamer-call-media-status", [str(binary), "--call-media-status"])
         run("spell-selftest", [str(binary), "--spell-selftest"])
-        candidates = list((args.package / "bin").glob(".*-wrapped"))
-        candidates += list((args.package / "Applications/Lightning.app/Contents/MacOS").glob(".*-wrapped"))
+        candidates = [args.package / "bin/.lightning-matrix-wrapped",
+                      args.package / "Applications/Lightning.app/Contents/MacOS/.Lightning-wrapped"]
         executable = next((p for p in candidates if p.is_file()), binary)
         if sys.platform.startswith("linux"):
             links = run("dynamic-linkage", ["ldd", str(executable)])
