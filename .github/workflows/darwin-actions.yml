@@ -112,6 +112,24 @@ jobs:
       run: |
         python3 ci/public-closure.py ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless"
         nix build ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless" --no-update-lock-file --no-write-lock-file --no-link -L
+    - name: Verify MCP protocol and SDK compatibility checks
+      if: ${{ matrix.package == 'gdb-mcp' || matrix.package == 'ghidra-mcp' }}
+      env:
+        TARGET_SYSTEM: ${{ matrix.system }}
+        TARGET_PACKAGE: ${{ matrix.package }}
+      run: |
+        set -euo pipefail
+        # Collector replaces the manifest: retain the package and every check together.
+        targets=(".#packages.$TARGET_SYSTEM.$TARGET_PACKAGE" ".#checks.$TARGET_SYSTEM.$TARGET_PACKAGE-stdio")
+        if [[ "$TARGET_PACKAGE" == ghidra-mcp ]]; then
+          targets+=(".#checks.$TARGET_SYSTEM.ghidra-mcp-compatibility")
+        fi
+        collection=()
+        for target in "${targets[@]}"; do
+          python3 ci/public-closure.py "$target"
+          collection+=(--target "$target")
+        done
+        python3 ci/retain-build-outputs.py "${collection[@]}" --manifest cache-outputs.txt -- nix build "${targets[@]}" --no-update-lock-file --no-write-lock-file --no-link --print-out-paths -L
     - name: Remove private read credentials before exporting build data
       if: ${{ always() }}
       run: python3 ci/configure-niks3.py --cleanup
