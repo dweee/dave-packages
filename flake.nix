@@ -1,7 +1,7 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/f4a03c008967841f2a0b3cb7c436fc6fc31671f6";
+    nixpkgs.url = "github:nixos/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/903ddb8951b05fd7e8f3a9d59eb39168823239ee";
       flake = false;
@@ -30,7 +30,7 @@
     };
     # Retain native fork toolchains so catalog updates reuse their CI outputs.
     handy = {
-      url = "github:dweee/Handy/6aef7b41a6b6eae11c719c7c08d24b73f49b332f";
+      url = "github:dweee/Handy/b3230de199e1e6880c204002d27543a63608def6";
     };
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
@@ -45,10 +45,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/0070500a3d72ade21323092e7bdd7125c5268482";
+      url = "github:oxalica/rust-overlay/89750a2ef1c6a44db9f4251b16c23deffdcfddff";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/90e00eb0643c54088eda88f0f7b3f4806a1366df";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/4ef59078fac51206439b82dcd0096bb23fa8ac9d";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +57,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/f60c040cc2dd33153b2e7ab01e40ccd277dcc32e";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/d73a77865a85b541d1dd6338c42dab2f984b33e9";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -67,7 +67,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=021bda272b8b4c3223d4e5c213586acc8301b94b";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=5f2faeac46550297c6468759075410a9a4d911d8";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
@@ -80,7 +80,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kuna = {
-      url = "github:dweee/kuna/1e38a6daa90f8b739df92f781ada662354577a5a";
+      url = "github:dweee/kuna/5ed5c9df944bb2873c3c2e527407f1e9aaee2d85";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {

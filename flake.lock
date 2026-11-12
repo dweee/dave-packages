@@ -310,17 +310,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1794134050,
-        "narHash": "sha256-gZvk0G2rQQcTKQPv3MwjmKFLTG1jTtAorPKgh7zp9uY=",
+        "lastModified": 1794471941,
+        "narHash": "sha256-FNq4DnGBco9FqGUEFpFCqedteFPjg8HoWfef5SMFOfc=",
         "owner": "dweee",
         "repo": "Handy",
-        "rev": "6aef7b41a6b6eae11c719c7c08d24b73f49b332f",
+        "rev": "b3230de199e1e6880c204002d27543a63608def6",
         "type": "github"
       },
       "original": {
         "owner": "dweee",
         "repo": "Handy",
-        "rev": "6aef7b41a6b6eae11c719c7c08d24b73f49b332f",
+        "rev": "b3230de199e1e6880c204002d27543a63608def6",
         "type": "github"
       }
     },
@@ -406,17 +406,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794424659,
-        "narHash": "sha256-/cdLsZzXrjwWL6gEn/Jo0RANiSk9fzpGm0vLmzU/i+A=",
+        "lastModified": 1794469317,
+        "narHash": "sha256-a6vaDhIo4ObzRq6TDUqlhf3b5GGW5/aqe+bPpb46SV0=",
         "owner": "dweee",
         "repo": "kuna",
-        "rev": "1e38a6daa90f8b739df92f781ada662354577a5a",
+        "rev": "5ed5c9df944bb2873c3c2e527407f1e9aaee2d85",
         "type": "github"
       },
       "original": {
         "owner": "dweee",
         "repo": "kuna",
-        "rev": "1e38a6daa90f8b739df92f781ada662354577a5a",
+        "rev": "5ed5c9df944bb2873c3c2e527407f1e9aaee2d85",
         "type": "github"
       }
     },
@@ -548,17 +548,17 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1794350001,
-        "narHash": "sha256-7bDprndrkGZDk5kvBv6ips/IAO4eyLFC7es+o4D7DJk=",
+        "lastModified": 1794271930,
+        "narHash": "sha256-SL/GOZrVBkOkRPFyg/1CymtBFN8bnjXs6WMkqOUoJy4=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "f60c040cc2dd33153b2e7ab01e40ccd277dcc32e",
+        "rev": "d73a77865a85b541d1dd6338c42dab2f984b33e9",
         "type": "github"
       },
       "original": {
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "f60c040cc2dd33153b2e7ab01e40ccd277dcc32e",
+        "rev": "d73a77865a85b541d1dd6338c42dab2f984b33e9",
         "type": "github"
       }
     },
@@ -715,11 +715,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1794309823,
-        "narHash": "sha256-BpgtuBhhjZ29znzj/v/oCVUzBOslI/WPK4/7URxkMTM=",
+        "lastModified": 1794214272,
+        "narHash": "sha256-eOJAtUYsfcuu+Ph4UyC9L5aPtsaHwqxhNoirwjCcH/k=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f37ff5c2009e3923aa79378f923f01d5759b6d84",
+        "rev": "41691813c5b74a5f1394fcac9a4dafa58b9e06f0",
         "type": "github"
       },
       "original": {
@@ -731,17 +731,17 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1794042290,
-        "narHash": "sha256-ziZn2PvCJE5JEEpqTdxXwJpPB+L3YqoCpTAMCzyaP3U=",
+        "lastModified": 1793726008,
+        "narHash": "sha256-jQp1wKvbwWdLBASTXkSi/VYmDJ5AbBi1WvcMt9HWJC8=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "f4a03c008967841f2a0b3cb7c436fc6fc31671f6",
+        "rev": "1d060086d60cb76a40cf37109f979d88a5bd6396",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "f4a03c008967841f2a0b3cb7c436fc6fc31671f6",
+        "rev": "1d060086d60cb76a40cf37109f979d88a5bd6396",
         "type": "github"
       }
     },
@@ -822,17 +822,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794380008,
-        "narHash": "sha256-wClxBIHVQ46P7BAuXvbjfiFCTXbkwa1XW5LjM8H2tAk=",
+        "lastModified": 1794427500,
+        "narHash": "sha256-GzZl7htNxqeQjVR2QWYPjo6aHBA8l803e5XSex/9fyY=",
         "ref": "tested",
-        "rev": "021bda272b8b4c3223d4e5c213586acc8301b94b",
-        "revCount": 1084,
+        "rev": "5f2faeac46550297c6468759075410a9a4d911d8",
+        "revCount": 1096,
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "021bda272b8b4c3223d4e5c213586acc8301b94b",
+        "rev": "5f2faeac46550297c6468759075410a9a4d911d8",
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       }
@@ -875,17 +875,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1794436897,
-        "narHash": "sha256-c44yj9PoRJ3mtGJFi7NL/ynPJN1ZGn/i0ellDjyFjPY=",
+        "lastModified": 1794487241,
+        "narHash": "sha256-c9SDfZ3wpAK9OUzABVv76FzgzgNH7XD9vahL/w4S030=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "90e00eb0643c54088eda88f0f7b3f4806a1366df",
+        "rev": "4ef59078fac51206439b82dcd0096bb23fa8ac9d",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "90e00eb0643c54088eda88f0f7b3f4806a1366df",
+        "rev": "4ef59078fac51206439b82dcd0096bb23fa8ac9d",
         "type": "github"
       }
     },
@@ -1036,17 +1036,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794388042,
-        "narHash": "sha256-rsskkiDNmuZGK6Xk3JvWUxWENjuX4Jf0hOSFYujGC0s=",
+        "lastModified": 1794303164,
+        "narHash": "sha256-UZMtOt43/HRVssXPSuPv8t11Toq9+CjyWUfYQ3tqGVE=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "0070500a3d72ade21323092e7bdd7125c5268482",
+        "rev": "89750a2ef1c6a44db9f4251b16c23deffdcfddff",
         "type": "github"
       },
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "0070500a3d72ade21323092e7bdd7125c5268482",
+        "rev": "89750a2ef1c6a44db9f4251b16c23deffdcfddff",
         "type": "github"
       }
     },
