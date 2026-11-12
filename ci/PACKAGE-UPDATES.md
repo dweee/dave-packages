@@ -15,6 +15,11 @@ repository protections. Native build/check/cache/channel gates remain required.
 
 Current package handlers:
 
+- `horizon`: stable dated Nightly, rolling Nightly, main source and launcher semver;
+  one frozen API/raw snapshot, Nix-generated source/vendor hashes, official asset
+  checksums and the mixins revision from the selected new launcher. Unsupported
+  binary platform pairs remain absent. Nightly expiry still requires regular updates.
+
 - `codexbar-cli`: stable upstream release, both Linux architecture assets and
   their published digests. Each actual payload is hashed with Nix before pins
   change. The KDE plasmoid and nixpkgs Darwin application are separate owners.

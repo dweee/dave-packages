@@ -91,6 +91,36 @@ def normalized(path, content):
                 or not SHA.fullmatch(value["revision"]) or not SRI.fullmatch(value["hash"])):
             raise ValueError("Unexpected Black Glass pin schema")
         return "<generated Black Glass pin>"
+    if path == "pkgs/horizon/sources.json":
+        if set(value) != {"launcher", "game", "bin", "mixins", "updated"}:
+            raise ValueError("Unexpected Horizon pin schema")
+        for group, channels in [("launcher", {"stable", "head"}), ("game", {"stable", "unstable", "head"})]:
+            if set(value[group]) != channels:
+                raise ValueError("Incomplete Horizon source channels")
+        for pin in [*value["launcher"].values(), *value["game"].values(), value["mixins"]]:
+            if (not {"version", "rev", "hash", "cargoHash"} <= set(pin)
+                    or not set(pin) <= {"version", "rev", "hash", "cargoHash", "release", "nightly"}
+                    or not SHA.fullmatch(pin["rev"]) or not SRI.fullmatch(pin["hash"])
+                    or not SRI.fullmatch(pin["cargoHash"])):
+                raise ValueError("Invalid Horizon source pin")
+        if set(value["bin"]) != {"stable", "unstable", "launcher"}:
+            raise ValueError("Unexpected Horizon binary channels")
+        for label in ["stable", "unstable"]:
+            entry = value["bin"][label]
+            if set(entry) != {"version", "tag", "rev", "game", "server"} or not SHA.fullmatch(entry["rev"]):
+                raise ValueError("Invalid Horizon binary channel")
+        if set(value["bin"]["launcher"]) != {"version", "assets"}:
+            raise ValueError("Invalid Horizon launcher assets")
+        groups = [value["bin"]["launcher"]["assets"]]
+        groups += [value["bin"][c][k] for c in ["stable", "unstable"] for k in ["game", "server"]]
+        for assets in groups:
+            if not set(assets) <= {"x86_64-linux", "aarch64-darwin", "x86_64-darwin"}:
+                raise ValueError("Unsupported Horizon binary platform")
+            for asset in assets.values():
+                if (set(asset) != {"url", "hash"} or not SRI.fullmatch(asset["hash"])
+                        or not re.fullmatch(r"https://github.com/horizon-rust/horizon/releases/download/[^/]+/horizon-[A-Za-z0-9_.-]+", asset["url"])):
+                    raise ValueError("Invalid Horizon binary asset")
+        return "<generated Horizon pins>"
     raise ValueError("Unclassified generated pin path")
 
 

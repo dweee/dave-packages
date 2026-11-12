@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: '51 3,9,15,21 * * *'
   workflow_dispatch:
+  workflow_call:
   pull_request:
 permissions:
   contents: read
@@ -26,6 +27,7 @@ jobs:
           python3 ci/test-retro-rewind-update.py
           python3 ci/test-yaas-update.py
           python3 ci/test-blackglass-update.py
+          python3 ci/test-horizon-update.py
   prepare:
     needs: test
     if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
@@ -59,6 +61,20 @@ jobs:
         run: |
           nix develop --no-update-lock-file --no-write-lock-file .#package-updates --command \
             python3 ci/package-updates.py prepare --proposal "$RUNNER_TEMP/package-update-proposal.json"
+      - name: Preserve Horizon recipe and public dependency gates before publication
+        run: |
+          for system in x86_64-linux aarch64-linux aarch64-darwin; do
+            nix eval --json ".#legacyPackages.$system.horizonPackages.packages" \
+              --apply "ps: builtins.mapAttrs (_: p: p.drvPath) (builtins.removeAttrs ps (builtins.filter (n: !(builtins.elem \"$system\" ps.\${n}.meta.platforms)) (builtins.attrNames ps)))" > /dev/null
+          done
+          python3 - <<'PYTHON'
+          import json, subprocess
+          policy = json.load(open('ci/channels.json'))
+          for system, targets in policy['targets'].items():
+              for target in targets:
+                  if target['visibility'] == 'public' and target['attribute'].rsplit('.', 1)[-1].startswith('horizon'):
+                      subprocess.run(['python3', 'ci/public-closure.py', '.#' + target['attribute']], check=True)
+          PYTHON
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: ${{ steps.prepare.outputs.changed == 'true' }}
         with:
