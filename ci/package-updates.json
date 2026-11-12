@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "handlers": {
+    "codexbar-cli": {
+      "script": "pkgs/codexbar/update.py",
+      "files": ["pkgs/codexbar/cli-pin.json"]
+    },
+    "retro-rewind-pack": {
+      "script": "pkgs/retro-rewind-pack/update.py",
+      "files": ["pkgs/retro-rewind-pack/pin.json"]
+    },
+    "yaas": {
+      "script": "pkgs/yaas/update.py",
+      "files": ["pkgs/yaas/default.nix", "pkgs/yaas/pubspec.lock.json"]
+    },
+    "blackglass": {
+      "script": "pkgs/blackglass/update.py",
+      "files": ["pkgs/blackglass/pin.json"]
+    }
+  }
+}

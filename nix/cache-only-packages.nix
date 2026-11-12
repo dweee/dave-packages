@@ -10,4 +10,5 @@
     jetbrains = pkgs.jetbrains // { jdk-no-jcef-21 = pkgs.jetbrains-jdk-patched; };
   };
   stemlab = pkgs.callPackage ../pkgs/stemlab { };
+  retro-rewind-pack = pkgs.callPackage ../pkgs/retro-rewind-pack { };
 }

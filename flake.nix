@@ -214,6 +214,20 @@
           }
         )
       );
+      devShells.x86_64-linux.package-updates =
+        let
+          pkgs = pkgsFor "x86_64-linux";
+        in
+        pkgs.mkShell {
+          packages = [
+            pkgs.git
+            pkgs.gh
+            pkgs.python3
+            pkgs.nix-update
+            pkgs.nix-prefetch-git
+            pkgs.yq-go
+          ];
+        };
       formatter = nixpkgs.lib.genAttrs systems (system: (pkgsFor system).nixfmt);
     };
 }

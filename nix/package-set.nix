@@ -135,6 +135,8 @@ let
     spank = final.callPackage ../pkgs/spank { };
     tokscale = final.callPackage ../pkgs/tokscale { };
     wheelwizard = final.callPackage ../pkgs/wheelwizard { };
+    retro-rewind-pack = final.callPackage ../pkgs/retro-rewind-pack { };
+    blackglass = final.callPackage ../pkgs/blackglass { };
     cursaves = final.callPackage ../pkgs/cursaves { };
     bitwig-theme-editor = final.callPackage ../pkgs/bitwig-theme-editor { };
     pyrekordbox = final.python3Packages.callPackage ../pkgs/pyrekordbox { };

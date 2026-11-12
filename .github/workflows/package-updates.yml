@@ -1,0 +1,93 @@
+name: Maintained package source updates
+on:
+  schedule:
+    - cron: '51 3,9,15,21 * * *'
+  workflow_dispatch:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: maintained-package-updates-${{ github.event_name == 'pull_request' && github.ref || 'scheduled' }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Handler and publication regressions
+        run: |
+          python3 ci/test-package-updates.py
+          python3 ci/test-codexbar-update.py
+          python3 ci/test-retro-rewind-update.py
+          python3 ci/test-yaas-update.py
+          python3 ci/test-blackglass-update.py
+  prepare:
+    needs: test
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    outputs:
+      changed: ${{ steps.prepare.outputs.changed }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+        with:
+          source-tag: v3.24.1
+          summarize: false
+          kvm: false
+          extra-conf: |
+            experimental-features = nix-command flakes
+            accept-flake-config = false
+            max-jobs = 1
+            cores = 2
+            http2 = false
+      - name: Resolve frozen package targets and regenerate exact hashes
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          nix develop --no-update-lock-file --no-write-lock-file .#package-updates --command \
+            python3 ci/package-updates.py prepare --proposal "$RUNNER_TEMP/package-update-proposal.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: ${{ steps.prepare.outputs.changed == 'true' }}
+        with:
+          name: package-update-proposal
+          path: ${{ runner.temp }}/package-update-proposal.json
+          if-no-files-found: error
+          retention-days: 2
+  publish:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.changed == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download data-only proposal from this run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name package-update-proposal --dir "$RUNNER_TEMP/package-proposal"
+      - name: Reuse the routine branch and PR through ordinary guards
+        env:
+          AUTOMATION_TOKEN: ${{ secrets.UPDATE_TOKEN || github.token }}
+        run: python3 ci/package-updates.py publish --proposal "$RUNNER_TEMP/package-proposal/package-update-proposal.json"
