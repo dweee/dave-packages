@@ -80,6 +80,7 @@
   "x86_64-linux": [
     "atuin",
     "bitwig-theme-editor",
+    "blackglass",
     "byparr",
     "caddy-custom",
     "cartographer",
@@ -176,6 +177,7 @@
   "aarch64-linux": [
     "atuin",
     "bitwig-theme-editor",
+    "blackglass",
     "byparr",
     "caddy-custom",
     "codexbar-cli",
