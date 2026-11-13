@@ -11,6 +11,7 @@ ha-mcp.overridePythonAttrs (old: {
   patches = (old.patches or [ ]) ++ [
     ./guidance-platform-tests.patch
     ./json-decoder-recursion-test.patch
+    ./wildcard-port-test-fixtures.patch
   ];
   postPatch = (old.postPatch or "") + ''
     mkdir -p src/ha_mcp/resources
