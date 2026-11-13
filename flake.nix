@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/84edd48f141b0c8910dffdd0296ddd577e829132";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/8e530ebcbed9c2f8442d9d48129f3674d6815bb3";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/09bc55d012c9906786d921053da8f3de920b7829";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -84,7 +84,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=189ef9fab43f98c7f38525cb0f5ed044f1e273df&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=c07339453e4e96df2616b8eaf22feffa80041e20&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {

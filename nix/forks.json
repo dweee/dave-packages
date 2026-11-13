@@ -33,7 +33,7 @@
   },
   "schildi-revenge": {
     "repository": "https://github.com/dweee/schildi-revenge",
-    "revision": "189ef9fab43f98c7f38525cb0f5ed044f1e273df",
+    "revision": "c07339453e4e96df2616b8eaf22feffa80041e20",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"
