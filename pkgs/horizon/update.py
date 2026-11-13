@@ -30,6 +30,8 @@ ROOT = HERE.parents[1]
 SOURCES = HERE / 'sources.json'
 REPO = 'horizon-rust/horizon'
 MIXINS = 'horizon-rust/horizon-mixins'
+REPLAY = None
+CAPTURE = None
 FAKE = 'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='
 LAUNCHER_TAG = re.compile(r'^launcher@(\d+)\.(\d+)\.(\d+)$')
 DATED = re.compile(r'^nightly-(\d{4}-\d{2}-\d{2})$')
@@ -52,12 +54,19 @@ SERVER_ASSETS = {
 
 
 def fetch(url, raw=False):
+    if REPLAY is not None:
+        if url not in REPLAY:
+            raise ValueError('Frozen Horizon snapshot lacks ' + url)
+        data = base64.b64decode(REPLAY[url], validate=True)
+        return data if raw else json.loads(data)
     request = urllib.request.Request(url, headers={'User-Agent': 'dave-packages-horizon-update'})
     token = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
     if token and url.startswith('https://api.github.com/'):
         request.add_header('Authorization', 'Bearer ' + token)
     with urllib.request.urlopen(request, timeout=60) as response:
         data = response.read()
+    if CAPTURE is not None:
+        CAPTURE[url] = base64.b64encode(data).decode()
     return data if raw else json.loads(data)
 
 
@@ -121,7 +130,7 @@ def cargo_hash(kind, pin, system):
     """The vendored crates' hash, from the mismatch Nix reports for a fake one."""
     expression = f'''
       let
-        flake = builtins.getFlake "path:{ROOT}";
+        flake = builtins.getFlake "git+file://{ROOT}";
         pkgs = import flake.inputs.nixpkgs {{ system = "{system}"; }};
         pin = builtins.fromJSON {json.dumps(json.dumps({**pin, 'cargoHash': FAKE}))};
       in (pkgs.callPackage {HERE}/{kind}.nix ({{ inherit pin; }}
@@ -209,7 +218,7 @@ def resolve(old, channels, system, check):
             changes.append(f'bin launcher: {old.get("bin", {}).get("launcher", {}).get("version")} -> '
                            f'{launcher_version}')
             new.setdefault('bin', {})['launcher'] = pins
-        rev = mixins_rev(new.get('launcher', {}).get('stable', {}).get('rev') or wanted['stable']['launcher'][0])
+        rev = mixins_rev(wanted['stable']['launcher'][0])
         current = old.get('mixins')
         if not current or current.get('rev') != rev:
             date = commit(MIXINS, rev)[1]
@@ -220,20 +229,40 @@ def resolve(old, channels, system, check):
 
 
 def main():
+    global REPLAY, CAPTURE
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--channel', action='append', choices=['stable', 'unstable', 'head'])
     parser.add_argument('--system', default=None, help='where the cargo hashes are computed (default: this one)')
+    parser.add_argument('--write-snapshot', type=Path)
+    parser.add_argument('--snapshot', type=Path)
+    parser.add_argument('--apply', action='store_true', help='Apply a frozen snapshot (default without snapshot options)')
     args = parser.parse_args()
+    if args.snapshot and args.write_snapshot:
+        parser.error('Choose one snapshot mode')
+    if args.snapshot:
+        snapshot = json.loads(args.snapshot.read_text())
+        if snapshot.get('version') != 1 or snapshot.get('repository') != REPO or not isinstance(snapshot.get('responses'), dict):
+            raise ValueError('Invalid Horizon snapshot')
+        REPLAY = snapshot['responses']
+    if args.write_snapshot:
+        CAPTURE = {}
+    snapshot_mode = bool(args.snapshot or args.write_snapshot)
+    check = args.check or (snapshot_mode and not args.apply)
     system = args.system or nix('eval', '--impure', '--raw', '--expr', 'builtins.currentSystem').stdout.strip()
     old = json.loads(SOURCES.read_text()) if SOURCES.exists() else {}
-    new, changes = resolve(old, args.channel or ['stable', 'unstable', 'head'], system, args.check)
-    for change in changes:
-        print(('update available ' if args.check else 'horizon: ') + change)
-    if not args.check and changes:
+    new, changes = resolve(old, args.channel or ['stable', 'unstable', 'head'], system, check)
+    if args.write_snapshot:
+        args.write_snapshot.write_text(json.dumps({'version': 1, 'repository': REPO, 'responses': CAPTURE}, indent=2) + '\n')
+    if not snapshot_mode:
+        for change in changes:
+            print(('update available ' if check else 'horizon: ') + change)
+    if not check and changes:
         new['updated'] = dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%d')
         SOURCES.write_text(json.dumps(new, indent=2, sort_keys=True) + '\n')
-    if not changes:
+    if snapshot_mode:
+        print(json.dumps({'changes': changes, 'applied': not check and bool(changes)}))
+    elif not changes:
         print('horizon: up to date')
     return 0
 

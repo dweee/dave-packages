@@ -3,6 +3,7 @@
 {
   lib,
   fetchFromGitHub,
+  rust-jemalloc-sys,
   rustPlatform,
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
@@ -17,6 +18,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
   };
 
   cargoHash = "sha256-hpcPoNLQya4ufXbkbxzm1T3aUXyk1jdAiTrxKtfbQx8=";
+
+  buildInputs = [ rust-jemalloc-sys ];
 
   meta = {
     description = "Transparent compression for Apple File System Compression (AFSC)";

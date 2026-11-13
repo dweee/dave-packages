@@ -1,7 +1,7 @@
 {
   "paneru": {
     "repository": "https://github.com/dweee/paneru",
-    "revision": "eaeea04a1e361d152927c94131097c1a424b8bd0",
+    "revision": "5f2faeac46550297c6468759075410a9a4d911d8",
     "branch": "flakey",
     "packages": [
       "paneru",
@@ -12,7 +12,7 @@
   },
   "tabrix": {
     "repository": "https://github.com/dweee/tabrix",
-    "revision": "356d35c8e594c9b8b64a32b58397882e6b40a9d5",
+    "revision": "cd9092c6756333328bd956fde804c88ac32a967e",
     "branch": "flakey",
     "packages": [
       "tabrix",
@@ -23,7 +23,7 @@
   },
   "rekordbox-mcp": {
     "repository": "https://github.com/dweee/rekordbox-mcp",
-    "revision": "4fcbe4b31f2b30ee6b2254c1da49d7dea05f9690",
+    "revision": "d7407c17520afcaf28614db97c04b55cde101e07",
     "branch": "flakey",
     "packages": [
       "rekordbox-mcp"
@@ -33,7 +33,7 @@
   },
   "schildi-revenge": {
     "repository": "https://github.com/dweee/schildi-revenge",
-    "revision": "b0b8a1b62a11fdd4c59ae1604a96cef976cc68a1",
+    "revision": "189ef9fab43f98c7f38525cb0f5ed044f1e273df",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"
@@ -43,7 +43,7 @@
   },
   "kopuz": {
     "repository": "https://github.com/dweee/kopuz",
-    "revision": "4d105fdac6d9db5e19057f3c56dd169247b44217",
+    "revision": "037279521417aba9d1d672e7f6623d947a577ebd",
     "branch": "flakey",
     "packages": [
       "kopuz"
@@ -53,7 +53,7 @@
   },
   "kuna": {
     "repository": "https://github.com/dweee/kuna",
-    "revision": "019d03e199eb5bd01002ba2460aee6baa2d35472",
+    "revision": "5ed5c9df944bb2873c3c2e527407f1e9aaee2d85",
     "branch": "flakey",
     "packages": [
       "kuna"
@@ -69,6 +69,19 @@
     ],
     "ci_owner": "application fork",
     "private": false,
-    "revision": "6aef7b41a6b6eae11c719c7c08d24b73f49b332f"
+    "revision": "b3230de199e1e6880c204002d27543a63608def6"
+  },
+  "wiicompiled": {
+    "repository": "https://github.com/dweee/Wiicompiled",
+    "revision": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+    "branch": "flakey",
+    "packages": [
+      "wiicompiled-translator",
+      "wiicompiled-native-prebuilt",
+      "wiicompiled-setup",
+      "wiicompiled-setup-unwrapped"
+    ],
+    "ci_owner": "application fork",
+    "private": false
   }
 }
