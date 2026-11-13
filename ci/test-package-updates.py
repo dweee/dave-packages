@@ -172,6 +172,14 @@ class Publication(unittest.TestCase):
             u.publish(self.proposal())
         self.assertEqual(self.remote_tip(), old)
 
+    def test_legacy_guard_runs_before_any_routine_branch_is_created(self):
+        with patch.object(u, "protect_legacy_package_prs", side_effect=ValueError("legacy preservation")), \
+                self.assertRaisesRegex(ValueError, "legacy preservation"):
+            u.publish(self.proposal())
+        self.assertIsNone(self.remote_tip())
+        self.assertFalse(any(method != "GET" for method, _, _ in self.calls))
+        self.assertEqual(self.g("status", "--porcelain"), "")
+
     def test_bad_hash_and_undeclared_paths_never_publish(self):
         for change in ["hash", "path"]:
             path = self.proposal()
@@ -258,15 +266,63 @@ class GuardTests(unittest.TestCase):
         with patch.object(u, "git", side_effect=["", "b" * 40, "c" * 40, path]), \
                 patch.object(u.subprocess, "check_output", side_effect=[pin, pin]), \
                 self.assertRaisesRegex(ValueError, "existing GeoIP PR"):
-            u.protect_legacy_geoip_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"},
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"},
                                       [pr], "a" * 40, {path}, {})
 
     def test_incorporated_legacy_geoip_ancestry_does_not_block_next_pin_set(self):
         pr = {"head": {"ref": "automation/geoip-previous", "sha": "b" * 40,
                        "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
         with patch.object(u, "git", side_effect=["", "b" * 40, "b" * 40, ""]):
-            u.protect_legacy_geoip_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"},
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"},
                                       [pr], "a" * 40, {"pkgs/byparr/geoip.json"}, {})
+
+    def test_unincorporated_legacy_horizon_pr_is_preserved(self):
+        path = "pkgs/horizon/sources.json"
+        pin = (SOURCE / path).read_bytes()
+        pr = {"head": {"ref": "automation/horizon-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        with patch.object(u, "git", side_effect=["", "b" * 40, "c" * 40, path]), \
+                patch.object(u.subprocess, "check_output", side_effect=[pin, pin]), \
+                self.assertRaisesRegex(ValueError, "existing Horizon PR"):
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {path}, {})
+
+    def test_incorporated_horizon_ancestry_allows_the_next_proposal(self):
+        pr = {"head": {"ref": "automation/horizon-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        with patch.object(u, "git", side_effect=["", "b" * 40, "b" * 40, ""]):
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {"pkgs/horizon/sources.json"}, {})
+
+    def test_horizon_head_change_and_manual_scope_fail_closed(self):
+        pr = {"head": {"ref": "automation/horizon-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        for outputs, message in [(["", "c" * 40], "advanced"),
+                                 (["", "b" * 40, "c" * 40, "pkgs/horizon/sources.json\nREADME.md"],
+                                  "other source changes")]:
+            with self.subTest(message=message), patch.object(u, "git", side_effect=outputs), \
+                    self.assertRaisesRegex(ValueError, message):
+                u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {"pkgs/horizon/sources.json"}, {})
+
+    def test_held_or_foreign_horizon_pr_is_preserved_before_fetch(self):
+        original = {"head": {"ref": "automation/horizon-previous", "sha": "b" * 40,
+                             "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        for case in ["draft", "base", "repository"]:
+            pr = copy.deepcopy(original)
+            if case == "draft":
+                pr["draft"] = True
+            elif case == "base":
+                pr["base"]["ref"] = "held"
+            else:
+                pr["head"]["repo"]["full_name"] = "other/catalog"
+            with self.subTest(case=case), patch.object(u, "git") as git, \
+                    self.assertRaisesRegex(ValueError, "held or manually owned Horizon"):
+                u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {"pkgs/horizon/sources.json"}, {})
+            git.assert_not_called()
+
+    def test_unrelated_handler_does_not_fetch_legacy_horizon(self):
+        pr = {"head": {"ref": "automation/horizon-previous"}}
+        with patch.object(u, "git") as git:
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {PIN}, {})
+        git.assert_not_called()
 
     def test_yaas_source_code_cannot_hide_inside_a_pin_update(self):
         text = (SOURCE / "pkgs/yaas/default.nix").read_bytes()

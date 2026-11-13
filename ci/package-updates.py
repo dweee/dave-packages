@@ -282,32 +282,39 @@ def remote_head(rules, env):
     return fields[0]
 
 
-def protect_legacy_geoip_prs(rules, prs, base, files, env):
-    """Do not replace an unincorporated legacy GeoIP proposal or close its PR."""
-    geoip_files = {"pkgs/byparr/geoip.json", "pkgs/trawl/geoip.json"}
-    if not geoip_files.intersection(files):
-        return
+def protect_legacy_package_prs(rules, prs, base, files, env):
+    """Preserve unincorporated proposals from the legacy package publishers."""
+    families = [
+        ("GeoIP", "automation/geoip-", {"pkgs/byparr/geoip.json", "pkgs/trawl/geoip.json"}),
+        ("Horizon", "automation/horizon-", {"pkgs/horizon/sources.json"}),
+    ]
+    for label, prefix, legacy_files in families:
+        if legacy_files.intersection(files):
+            protect_legacy_pr_family(rules, prs, base, env, label, prefix, legacy_files)
+
+
+def protect_legacy_pr_family(rules, prs, base, env, label, prefix, legacy_files):
     for pr in prs:
         ref = pr.get("head", {}).get("ref", "")
-        if not ref.startswith("automation/geoip-"):
+        if not ref.startswith(prefix):
             continue
         if (pr.get("draft") or pr["base"]["ref"] != rules["branch"]
                 or pr["head"].get("repo", {}).get("full_name", "").lower() != rules["repository"].lower()):
-            raise ValueError("Preserving held or manually owned GeoIP PR")
+            raise ValueError(f"Preserving held or manually owned {label} PR")
         git("fetch", "--no-tags", rules["remote"], "refs/heads/" + ref, env=env)
         head = git("rev-parse", "FETCH_HEAD")
         if head != pr["head"]["sha"]:
-            raise ValueError("GeoIP PR advanced during verification")
+            raise ValueError(f"{label} PR advanced during verification")
         ancestor = git("merge-base", base, head)
         names = git("diff", "--no-renames", "--name-only", ancestor, head).splitlines()
-        if not set(names) <= geoip_files:
-            raise ValueError("Preserving GeoIP PR with other source changes")
+        if not set(names) <= legacy_files:
+            raise ValueError(f"Preserving {label} PR with other source changes")
         for name in names:
             old = subprocess.check_output(["git", "show", ancestor + ":" + name], cwd=ROOT)
             new = subprocess.check_output(["git", "show", head + ":" + name], cwd=ROOT)
             validate_change(name, old, new)
         if ancestor != head:
-            raise ValueError("Preserving existing GeoIP PR; incorporate its reviewed ancestry before publishing another")
+            raise ValueError(f"Preserving existing {label} PR; incorporate its reviewed ancestry before publishing another")
 
 
 def publish(proposal):
@@ -348,7 +355,7 @@ def publish(proposal):
     with tempfile.TemporaryDirectory(prefix="package-publish-") as directory:
         with channel.build_environment(dict(os.environ, CHANNEL_TOKEN=os.environ["AUTOMATION_TOKEN"])):
             env = channel.git_env(directory)
-            protect_legacy_geoip_prs(rules, prs, base, files, env)
+            protect_legacy_package_prs(rules, prs, base, files, env)
             head = remote_head(rules, env)
             if current and current["head"]["sha"] != head:
                 raise ValueError("Routine PR head changed during verification")
