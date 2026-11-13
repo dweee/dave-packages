@@ -51,17 +51,17 @@
     },
     "crane": {
       "locked": {
-        "lastModified": 1783203018,
-        "narHash": "sha256-G6R9IT/xwFuu+CYBWDUAok6AdC4ERC4ZfPPFtEpxnZE=",
+        "lastModified": 1793836618,
+        "narHash": "sha256-TREenflwEjxOSq292FYwbc3kEm7TDRtXCZRNWEdjBmg=",
         "owner": "ipetkov",
         "repo": "crane",
-        "rev": "80db5bdc391be8a1794f6d8a2d56e3a84ebcede2",
+        "rev": "79fd63528501446749c09f08cad486a58c7d173e",
         "type": "github"
       },
       "original": {
         "owner": "ipetkov",
         "repo": "crane",
-        "rev": "80db5bdc391be8a1794f6d8a2d56e3a84ebcede2",
+        "rev": "79fd63528501446749c09f08cad486a58c7d173e",
         "type": "github"
       }
     },
@@ -384,17 +384,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794141397,
-        "narHash": "sha256-6rtxVJKHmgv/78q5qjU7gt6QVIWUrBaOVLKG2vJU4+8=",
+        "lastModified": 1794542682,
+        "narHash": "sha256-oqYjtjX6O+1gpRua7U28uOO0YaI2mZiFZTBdAgikbBk=",
         "ref": "tested",
-        "rev": "4d105fdac6d9db5e19057f3c56dd169247b44217",
-        "revCount": 1456,
+        "rev": "037279521417aba9d1d672e7f6623d947a577ebd",
+        "revCount": 1459,
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "4d105fdac6d9db5e19057f3c56dd169247b44217",
+        "rev": "037279521417aba9d1d672e7f6623d947a577ebd",
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       }

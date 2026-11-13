@@ -63,7 +63,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=4d105fdac6d9db5e19057f3c56dd169247b44217";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=037279521417aba9d1d672e7f6623d947a577ebd";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
