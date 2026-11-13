@@ -8,7 +8,10 @@ let
   };
 in
 ha-mcp.overridePythonAttrs (old: {
-  patches = (old.patches or [ ]) ++ [ ./guidance-platform-tests.patch ];
+  patches = (old.patches or [ ]) ++ [
+    ./guidance-platform-tests.patch
+    ./json-decoder-recursion-test.patch
+  ];
   postPatch = (old.postPatch or "") + ''
     mkdir -p src/ha_mcp/resources
     cp -a ${skills}/. src/ha_mcp/resources/skills-vendor/
