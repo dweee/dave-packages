@@ -65,6 +65,10 @@ forks, including the Kuna packaging fork. `nix/forks.json` and `flake.lock` reco
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
 
+HA-MCP's compatibility source lives in `dweee/ha-mcp`, preserving v9.1.0
+upstream ancestry. The catalog retains its recipe, native test matrix and cache
+publication; `pkgs/ha-mcp/default.nix` pins the source revision and hash.
+
 ## CI and binary cache
 
 `.github/workflows/darwin-actions.yml` builds native Apple Silicon packages;

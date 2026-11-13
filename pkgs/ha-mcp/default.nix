@@ -8,6 +8,15 @@ let
   };
 in
 ha-mcp.overridePythonAttrs (old: {
+  # Application changes retain upstream ancestry in the compatibility fork;
+  # packaging, native tests and cache publication remain catalog-owned.
+  version = "9.1.0";
+  src = fetchFromGitHub {
+    owner = "dweee";
+    repo = "ha-mcp";
+    rev = "dafcd92758c096a7cf3b7e871f605386c2d198ba";
+    hash = "sha256-PWigODTiJ43vcb9DThUCsPZOf+HC5tl836hupOLHAis=";
+  };
   patches = (old.patches or [ ]) ++ [
     ./guidance-platform-tests.patch
     ./json-decoder-recursion-test.patch
