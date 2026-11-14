@@ -565,17 +565,17 @@
     "nix-zed-extensions": {
       "flake": false,
       "locked": {
-        "lastModified": 1794307761,
-        "narHash": "sha256-0xFygiSW/NhMf4bxYhen6PZeBg74nYnczIdA7DPiNxs=",
+        "lastModified": 1794649883,
+        "narHash": "sha256-8l8JrmoS2iZhpw5lNwEXfQNv6QeBVcScoA7G5kM2Jqg=",
         "owner": "SwornSystems",
         "repo": "nix-zed-extensions",
-        "rev": "903ddb8951b05fd7e8f3a9d59eb39168823239ee",
+        "rev": "a374d3cd9165e5f3e04d9db2d10a56698cbeefe9",
         "type": "github"
       },
       "original": {
         "owner": "SwornSystems",
         "repo": "nix-zed-extensions",
-        "rev": "903ddb8951b05fd7e8f3a9d59eb39168823239ee",
+        "rev": "a374d3cd9165e5f3e04d9db2d10a56698cbeefe9",
         "type": "github"
       }
     },
@@ -822,17 +822,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794427500,
-        "narHash": "sha256-GzZl7htNxqeQjVR2QWYPjo6aHBA8l803e5XSex/9fyY=",
+        "lastModified": 1794601263,
+        "narHash": "sha256-sV7oXlH6JAlehDmZbE+PTbBM38qTLsNoMhhPOq3+d9k=",
         "ref": "tested",
-        "rev": "5f2faeac46550297c6468759075410a9a4d911d8",
-        "revCount": 1096,
+        "rev": "70da1567cab8fc3581f51506ed911bd3208a4ebe",
+        "revCount": 1106,
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "5f2faeac46550297c6468759075410a9a4d911d8",
+        "rev": "70da1567cab8fc3581f51506ed911bd3208a4ebe",
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       }
@@ -875,17 +875,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1794623243,
-        "narHash": "sha256-4ydhlIIlhMyY8+FBtaj2cnNXtmY0v37P4l+/3qo2BtM=",
+        "lastModified": 1794655248,
+        "narHash": "sha256-TZaK6nBgy1amLQBZ0oIHRD3tHcx1Qei4PhqoZHSQ9Vg=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "8706d21d16439e4686001069ba49c45da3a37119",
+        "rev": "056b97f22b14e493164dbe763ced4614dbc67201",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "8706d21d16439e4686001069ba49c45da3a37119",
+        "rev": "056b97f22b14e493164dbe763ced4614dbc67201",
         "type": "github"
       }
     },
@@ -1037,17 +1037,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794561628,
-        "narHash": "sha256-oWtItM1eQqkp9OJXq2/Zo10Y9Vu9PDE6O8JRjj4+EkE=",
+        "lastModified": 1794646145,
+        "narHash": "sha256-rpqDyUM/d5fACYB8W+wKxxO57ICWjjalzb2X25oFFkY=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "84edd48f141b0c8910dffdd0296ddd577e829132",
+        "rev": "5b87ee0513c29127a01ad06e9cb362ea5ce91e78",
         "type": "github"
       },
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "84edd48f141b0c8910dffdd0296ddd577e829132",
+        "rev": "5b87ee0513c29127a01ad06e9cb362ea5ce91e78",
         "type": "github"
       }
     },
