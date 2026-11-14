@@ -1,7 +1,7 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/177d0540942fb205af6993b1d5fa0b57799e09f8";
+    nixpkgs.url = "github:nixos/nixpkgs/d4f25a3e562008648d45bcf2d70bcc7422cad84e";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/903ddb8951b05fd7e8f3a9d59eb39168823239ee";
       flake = false;
@@ -45,10 +45,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/89750a2ef1c6a44db9f4251b16c23deffdcfddff";
+      url = "github:oxalica/rust-overlay/84edd48f141b0c8910dffdd0296ddd577e829132";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/4ef59078fac51206439b82dcd0096bb23fa8ac9d";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/8706d21d16439e4686001069ba49c45da3a37119";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +57,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/d73a77865a85b541d1dd6338c42dab2f984b33e9";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/f5e1fb8f1185cb51ef6d433e27ab7b60f54cd0e0";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -84,7 +84,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=189ef9fab43f98c7f38525cb0f5ed044f1e273df&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=c07339453e4e96df2616b8eaf22feffa80041e20&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
