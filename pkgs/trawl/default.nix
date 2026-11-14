@@ -59,7 +59,8 @@
     outputHashMode = "recursive";
     outputHash =
       {
-        x86_64-linux = "sha256-z631aHTgoYXbqTkM5mZY+hDBFf1v7IkpHoCiM3xh2GA=";
+        # Frozen source/bun.lock, regenerated and NAR-verified with pinned Bun 1.4.4.
+        x86_64-linux = "sha256-n30Es40pf6gmPpj0tOV+sYsPuUNkgaYHWKD+qP5lD94=";
       }.${
         stdenv.hostPlatform.system
       } or (throw "trawl: bun node_modules FOD hash is only recorded for x86_64-linux");

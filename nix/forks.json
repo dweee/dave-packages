@@ -70,5 +70,18 @@
     "ci_owner": "application fork",
     "private": false,
     "revision": "b3230de199e1e6880c204002d27543a63608def6"
+  },
+  "wiicompiled": {
+    "repository": "https://github.com/dweee/Wiicompiled",
+    "revision": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+    "branch": "flakey",
+    "packages": [
+      "wiicompiled-translator",
+      "wiicompiled-native-prebuilt",
+      "wiicompiled-setup",
+      "wiicompiled-setup-unwrapped"
+    ],
+    "ci_owner": "application fork",
+    "private": false
   }
 }

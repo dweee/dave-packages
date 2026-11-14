@@ -1,10 +1,17 @@
 {
+  aws-lc,
   cacert,
+  jemalloc,
   matrix-tuwunel,
   python3,
   symlinkJoin,
 }: let
   unwrapped = matrix-tuwunel.overrideAttrs (old: {
+    # cargoSetupHook makes aws-lc-sys use the system library.
+    buildInputs = (old.buildInputs or []) ++ [aws-lc jemalloc];
+    # Both supported Linux targets use jevmalloc's unprefixed ABI. Its
+    # system-library override expects a file, not an installation directory.
+    JEMALLOC_OVERRIDE = "${jemalloc}/lib/libjemalloc.so";
     # Each database test creates its own CPU-scaled worker pool. Concurrent
     # pools exhaust container task limits; keep all tests, running one at a time.
     dontUseCargoParallelTests = true;

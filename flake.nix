@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/84edd48f141b0c8910dffdd0296ddd577e829132";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/09bc55d012c9906786d921053da8f3de920b7829";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/8706d21d16439e4686001069ba49c45da3a37119";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +57,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/3084b743b4a3e54840a0ff39ac3c2853ecb87c0c";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/f5e1fb8f1185cb51ef6d433e27ab7b60f54cd0e0";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -97,6 +97,10 @@
     };
     ghidra-mcp = {
       url = "github:dweee/ghidra-mcp/86961ca288f2832e649e8ff371a4176ae1cc1535";
+      flake = false;
+    };
+    wiicompiled = {
+      url = "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&rev=0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac&submodules=1";
       flake = false;
     };
     gdb-mcp = {

@@ -7,9 +7,9 @@ name: Dave packages others
   workflow_dispatch:
     inputs:
       package:
-        description: Package attribute, or all for the complete native matrix
+        description: Package attribute, all for the complete native matrix, or changed for this branch's own changes (all on the default branch)
         required: true
-        default: all
+        default: changed
         type: string
 permissions:
   contents: read
@@ -37,6 +37,7 @@ jobs:
         python3 ci/test-configure-attic-read.py
         python3 ci/test-cache-only.py
         python3 ci/test-public-source.py
+        python3 ci/test-retain-build-outputs.py
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
       with:
         source-tag: v3.24.1
@@ -106,6 +107,19 @@ jobs:
           echo "Package build: ${SECONDS}s"
           cat outputs.txt
         } >> "$GITHUB_STEP_SUMMARY"
+    - name: Validate Lightning runtime libraries and upstream contracts
+      if: ${{ matrix.package == 'lightning-matrix-client' }}
+      env:
+        TARGET_SYSTEM: ${{ matrix.system }}
+      run: |
+        set -euo pipefail
+        package=$(head -n1 outputs.txt)
+        source=$(nix eval --raw ".#packages.$TARGET_SYSTEM.lightning-matrix-client.source" --no-update-lock-file --no-write-lock-file)
+        version=$(nix eval --raw ".#packages.$TARGET_SYSTEM.lightning-matrix-client.version" --no-update-lock-file --no-write-lock-file)
+        python3 pkgs/lightning/check.py --package "$package" --source "$source" --version "$version"
+    - name: Verify the Caddy source pin and install checks
+      if: ${{ matrix.package == 'caddy-custom' && matrix.system == 'x86_64-linux' }}
+      run: python3 ci/test-caddy-source.py
     - name: Verify the composed headless decompiler
       if: ${{ matrix.package == 'ghidra-kuna' || matrix.package == 'rea-kuna' }}
       env:

@@ -548,17 +548,17 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1794544161,
-        "narHash": "sha256-bwCxJCXCYEKEKYeNel621bXZLfOG/lSg5/05ugC5vp8=",
+        "lastModified": 1794610277,
+        "narHash": "sha256-q5xZJkzEbH/fMH2GeWDFiAWNIpxtALATi01pY7fKxvU=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "3084b743b4a3e54840a0ff39ac3c2853ecb87c0c",
+        "rev": "f5e1fb8f1185cb51ef6d433e27ab7b60f54cd0e0",
         "type": "github"
       },
       "original": {
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "3084b743b4a3e54840a0ff39ac3c2853ecb87c0c",
+        "rev": "f5e1fb8f1185cb51ef6d433e27ab7b60f54cd0e0",
         "type": "github"
       }
     },
@@ -715,11 +715,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1794493573,
-        "narHash": "sha256-IzdumBb69us47OjGzNjwqMM9mKw2042rqwOA0g9bJBA=",
+        "lastModified": 1794580336,
+        "narHash": "sha256-nH8frotF2VIsA+4tWfbo4skbobTpxc2XHsrl6z0TtpI=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3fe6b2e95f7304e16d6637199c6ae3b4382cbf89",
+        "rev": "ac9af266ee64ddb2eafeb4b250cac6a88147b43a",
         "type": "github"
       },
       "original": {
@@ -875,17 +875,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1794606701,
-        "narHash": "sha256-Z9yenXap29hxvJhGc558KN2Hjo1LM76qASKBEQH0u64=",
+        "lastModified": 1794623243,
+        "narHash": "sha256-4ydhlIIlhMyY8+FBtaj2cnNXtmY0v37P4l+/3qo2BtM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "09bc55d012c9906786d921053da8f3de920b7829",
+        "rev": "8706d21d16439e4686001069ba49c45da3a37119",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "09bc55d012c9906786d921053da8f3de920b7829",
+        "rev": "8706d21d16439e4686001069ba49c45da3a37119",
         "type": "github"
       }
     },
@@ -987,7 +987,8 @@
         "t3-code": "t3-code",
         "tabrix": "tabrix",
         "uv2nix": "uv2nix",
-        "virby": "virby"
+        "virby": "virby",
+        "wiicompiled": "wiicompiled"
       }
     },
     "rust-analyzer-src": {
@@ -1226,6 +1227,26 @@
         "repo": "virby-nix-darwin",
         "rev": "a52216470a97ef5970939acf697a00ec61beb0c6",
         "type": "github"
+      }
+    },
+    "wiicompiled": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794522173,
+        "narHash": "sha256-m2lodbVA7c/zLDxSVIaxmK7R3Jp17IrRX3YdnMdMqf0=",
+        "ref": "flakey",
+        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+        "revCount": 236,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/dweee/Wiicompiled.git"
+      },
+      "original": {
+        "ref": "flakey",
+        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/dweee/Wiicompiled.git"
       }
     }
   },

@@ -28,7 +28,7 @@ class PublicSourceBoundary(unittest.TestCase):
             "Build with nix build .#example. Configure runtime credentials separately."), [])
 
     def test_vendored_upstream_and_fixture_data_are_outside_this_check(self):
-        self.assertFalse(boundary.included(Path("pkgs/wiicompiled/source/runtime/README.md")))
+        self.assertTrue(boundary.included(Path("pkgs/wiicompiled/source/runtime/README.md")))
         self.assertFalse(boundary.included(Path("ci/test-public-source.py")))
         self.assertTrue(boundary.included(Path("pkgs/example/README.md")))
         self.assertTrue(boundary.included(Path("nix/platforms.json")))

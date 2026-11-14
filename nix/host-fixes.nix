@@ -24,11 +24,16 @@ final: prev: {
   # vulkan-headers, so WebKit's WebProcess compilation needs it explicitly.
   # Drop when nixpkgs adds both inputs under enableExperimental.
   dorion = prev.dorion.override {
-    webkitgtk_4_1 = (prev.webkitgtk_4_1.override { enableExperimental = true; }).overrideAttrs (old: {
-      buildInputs = (old.buildInputs or [ ]) ++ [
-        final.vulkan-volk
-        final.vulkan-headers
-      ];
-    });
+    webkitgtk_4_1 =
+      (prev.webkitgtk_4_1.override {
+        enableExperimental = true;
+        librice = import ../pkgs/librice-capi.nix { librice = prev.librice; };
+      }).overrideAttrs
+        (old: {
+          buildInputs = (old.buildInputs or [ ]) ++ [
+            final.vulkan-volk
+            final.vulkan-headers
+          ];
+        });
   };
 }

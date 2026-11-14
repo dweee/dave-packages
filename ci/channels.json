@@ -110,6 +110,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.lightning-matrix-client",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.mcp-nix",
         "visibility": "public"
       },
@@ -488,6 +492,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.lightning-matrix-client",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.linux-cachyos-server",
         "visibility": "public"
       },
@@ -859,6 +867,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.lightning-matrix-client",
         "visibility": "public"
       },
       {

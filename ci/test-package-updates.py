@@ -172,6 +172,14 @@ class Publication(unittest.TestCase):
             u.publish(self.proposal())
         self.assertEqual(self.remote_tip(), old)
 
+    def test_legacy_guard_runs_before_any_routine_branch_is_created(self):
+        with patch.object(u, "protect_legacy_package_prs", side_effect=ValueError("legacy preservation")), \
+                self.assertRaisesRegex(ValueError, "legacy preservation"):
+            u.publish(self.proposal())
+        self.assertIsNone(self.remote_tip())
+        self.assertFalse(any(method != "GET" for method, _, _ in self.calls))
+        self.assertEqual(self.g("status", "--porcelain"), "")
+
     def test_bad_hash_and_undeclared_paths_never_publish(self):
         for change in ["hash", "path"]:
             path = self.proposal()
@@ -206,10 +214,11 @@ print(json.dumps({'changed':old!=new}))
         self.g("add", "pkgs/codexbar/update.py")
         self.g("commit", "-qm", "fixture canonical handler")
         self.base = self.g("rev-parse", "HEAD")
-        policy = {"handlers": {"codexbar-cli": {"script": "pkgs/codexbar/update.py", "files": [PIN]}}}
+        policy = {"handlers": {"codexbar-cli": {"script": "pkgs/codexbar/update.py", "files": [PIN]},
+                               "unused": {"script": "pkgs/unused/update.py", "files": ["pkgs/unused/pin.json"]}}}
         self.config_mock.return_value = policy, self.rules, {PIN}
         proposal = Path(self.temporary.name) / "prepared.json"
-        value = u.prepare(proposal)
+        value = u.prepare(proposal, handler="codexbar-cli")
         self.assertEqual(value["base"], self.base)
         self.assertEqual(set(value["files"]), {PIN})
         self.assertEqual(json.loads(base64.b64decode(value["files"][PIN]["content"]))["version"], "2.0.0")
@@ -218,7 +227,7 @@ print(json.dumps({'changed':old!=new}))
         frozen = Path(self.temporary.name) / "snapshots"
         frozen.mkdir()
         (frozen / "codexbar-cli.json").write_text('{"target":"2.0.0"}')
-        again = u.prepare(proposal, frozen)
+        again = u.prepare(proposal, frozen, handler="codexbar-cli")
         self.assertEqual(again["files"], {})
         self.assertEqual(self.g("status", "--porcelain"), "")
 
@@ -228,6 +237,92 @@ class GuardTests(unittest.TestCase):
         policy, rules, files = u.configuration()
         self.assertEqual(rules["repository"], "dweee/dave-packages")
         self.assertEqual(len(files), sum(len(p["files"]) for p in policy["handlers"].values()))
+
+    def test_lightning_manifest_rejects_code_and_floating_revisions(self):
+        path = "pkgs/lightning/pin.json"
+        pin = {"version": "0.10.5", "revision": "b" * 40, "hash": "sha256-" + "A" * 43 + "="}
+        valid = u.normalized(path, json.dumps(pin).encode())
+        self.assertEqual(valid, u.normalized(path, json.dumps(pin | {"version": "0.10.6", "revision": "c" * 40}).encode()))
+        for edit in [{"revision": "main"}, {"extra": "builtins.getEnv"}, {"hash": "sha256-fake"}]:
+            with self.assertRaises(ValueError):
+                u.normalized(path, json.dumps(pin | edit).encode())
+
+    def test_geoip_normalizer_preserves_sources_and_release_bound_urls(self):
+        name = "pkgs/byparr/geoip.json"
+        old = (SOURCE / name).read_bytes()
+        new = json.loads(old)
+        new["release"] = "2026.11.12"
+        new["url"] = "https://github.com/daijro/geoip-all-in-one/releases/download/2026.11.12/geoip-aio-all.mmdb.zip"
+        u.validate_change(name, old, json.dumps(new).encode())
+        new["url"] = "https://example.invalid/floating"
+        with self.assertRaises(ValueError):
+            u.validate_change(name, old, json.dumps(new).encode())
+
+    def test_unincorporated_legacy_geoip_pr_is_preserved_without_replacement(self):
+        path = "pkgs/byparr/geoip.json"
+        pin = (SOURCE / path).read_bytes()
+        pr = {"head": {"ref": "automation/geoip-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        with patch.object(u, "git", side_effect=["", "b" * 40, "c" * 40, path]), \
+                patch.object(u.subprocess, "check_output", side_effect=[pin, pin]), \
+                self.assertRaisesRegex(ValueError, "existing GeoIP PR"):
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"},
+                                      [pr], "a" * 40, {path}, {})
+
+    def test_incorporated_legacy_geoip_ancestry_does_not_block_next_pin_set(self):
+        pr = {"head": {"ref": "automation/geoip-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        with patch.object(u, "git", side_effect=["", "b" * 40, "b" * 40, ""]):
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"},
+                                      [pr], "a" * 40, {"pkgs/byparr/geoip.json"}, {})
+
+    def test_unincorporated_legacy_horizon_pr_is_preserved(self):
+        path = "pkgs/horizon/sources.json"
+        pin = (SOURCE / path).read_bytes()
+        pr = {"head": {"ref": "automation/horizon-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        with patch.object(u, "git", side_effect=["", "b" * 40, "c" * 40, path]), \
+                patch.object(u.subprocess, "check_output", side_effect=[pin, pin]), \
+                self.assertRaisesRegex(ValueError, "existing Horizon PR"):
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {path}, {})
+
+    def test_incorporated_horizon_ancestry_allows_the_next_proposal(self):
+        pr = {"head": {"ref": "automation/horizon-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        with patch.object(u, "git", side_effect=["", "b" * 40, "b" * 40, ""]):
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {"pkgs/horizon/sources.json"}, {})
+
+    def test_horizon_head_change_and_manual_scope_fail_closed(self):
+        pr = {"head": {"ref": "automation/horizon-previous", "sha": "b" * 40,
+                       "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        for outputs, message in [(["", "c" * 40], "advanced"),
+                                 (["", "b" * 40, "c" * 40, "pkgs/horizon/sources.json\nREADME.md"],
+                                  "other source changes")]:
+            with self.subTest(message=message), patch.object(u, "git", side_effect=outputs), \
+                    self.assertRaisesRegex(ValueError, message):
+                u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {"pkgs/horizon/sources.json"}, {})
+
+    def test_held_or_foreign_horizon_pr_is_preserved_before_fetch(self):
+        original = {"head": {"ref": "automation/horizon-previous", "sha": "b" * 40,
+                             "repo": {"full_name": "fixture/catalog"}}, "base": {"ref": "main"}, "draft": False}
+        for case in ["draft", "base", "repository"]:
+            pr = copy.deepcopy(original)
+            if case == "draft":
+                pr["draft"] = True
+            elif case == "base":
+                pr["base"]["ref"] = "held"
+            else:
+                pr["head"]["repo"]["full_name"] = "other/catalog"
+            with self.subTest(case=case), patch.object(u, "git") as git, \
+                    self.assertRaisesRegex(ValueError, "held or manually owned Horizon"):
+                u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {"pkgs/horizon/sources.json"}, {})
+            git.assert_not_called()
+
+    def test_unrelated_handler_does_not_fetch_legacy_horizon(self):
+        pr = {"head": {"ref": "automation/horizon-previous"}}
+        with patch.object(u, "git") as git:
+            u.protect_legacy_package_prs({"repository": "fixture/catalog", "branch": "main", "remote": "fixture"}, [pr], "a" * 40, {PIN}, {})
+        git.assert_not_called()
 
     def test_yaas_source_code_cannot_hide_inside_a_pin_update(self):
         text = (SOURCE / "pkgs/yaas/default.nix").read_bytes()

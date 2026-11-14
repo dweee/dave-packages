@@ -14,6 +14,7 @@
   openssl,
   pipewire,
   pulseaudio,
+  sqlite,
   systemdLibs,
   webkitgtk_4_1,
   xdg-utils,
@@ -60,6 +61,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # The deb bundler refuses to run without it on pkg-config.
     libayatana-appindicator
     openssl
+    sqlite
     systemdLibs
     webkitgtk_4_1
     # LIGHTSYNC screen sampler: gst-launch-1.0 + pipewiresrc.
