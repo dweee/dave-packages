@@ -6,7 +6,8 @@ import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-FLAKE = 'git+file://' + str(ROOT)
+# shallow=1: CI build jobs check out one commit, which has no revCount.
+FLAKE = 'git+file://' + str(ROOT) + '?shallow=1'
 
 
 def evaluate(body):
