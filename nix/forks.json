@@ -1,7 +1,7 @@
 {
   "paneru": {
     "repository": "https://github.com/dweee/paneru",
-    "revision": "5f2faeac46550297c6468759075410a9a4d911d8",
+    "revision": "77d1ea83acaa75cbf6cc625f7d93736f4f980388",
     "branch": "flakey",
     "packages": [
       "paneru",
@@ -33,7 +33,7 @@
   },
   "schildi-revenge": {
     "repository": "https://github.com/dweee/schildi-revenge",
-    "revision": "189ef9fab43f98c7f38525cb0f5ed044f1e273df",
+    "revision": "cc05396249f5ffc986199932c198b8db9d4f74de",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"

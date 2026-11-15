@@ -548,34 +548,34 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1794271930,
-        "narHash": "sha256-SL/GOZrVBkOkRPFyg/1CymtBFN8bnjXs6WMkqOUoJy4=",
+        "lastModified": 1794692537,
+        "narHash": "sha256-VMug2jV6Ixb/rosbRpFdhwziuhC4h3uFfnJOKuo19sc=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "d73a77865a85b541d1dd6338c42dab2f984b33e9",
+        "rev": "c9620070e884d55c5b5566e3fd46611ee24c4d3b",
         "type": "github"
       },
       "original": {
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "d73a77865a85b541d1dd6338c42dab2f984b33e9",
+        "rev": "c9620070e884d55c5b5566e3fd46611ee24c4d3b",
         "type": "github"
       }
     },
     "nix-zed-extensions": {
       "flake": false,
       "locked": {
-        "lastModified": 1794307761,
-        "narHash": "sha256-0xFygiSW/NhMf4bxYhen6PZeBg74nYnczIdA7DPiNxs=",
+        "lastModified": 1794649883,
+        "narHash": "sha256-8l8JrmoS2iZhpw5lNwEXfQNv6QeBVcScoA7G5kM2Jqg=",
         "owner": "SwornSystems",
         "repo": "nix-zed-extensions",
-        "rev": "903ddb8951b05fd7e8f3a9d59eb39168823239ee",
+        "rev": "a374d3cd9165e5f3e04d9db2d10a56698cbeefe9",
         "type": "github"
       },
       "original": {
         "owner": "SwornSystems",
         "repo": "nix-zed-extensions",
-        "rev": "903ddb8951b05fd7e8f3a9d59eb39168823239ee",
+        "rev": "a374d3cd9165e5f3e04d9db2d10a56698cbeefe9",
         "type": "github"
       }
     },
@@ -715,11 +715,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1794214272,
-        "narHash": "sha256-eOJAtUYsfcuu+Ph4UyC9L5aPtsaHwqxhNoirwjCcH/k=",
+        "lastModified": 1794666816,
+        "narHash": "sha256-+0k232f2hL/ENytM0z48OY9BLdnJx1GVdW8lsyQ8lXU=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "41691813c5b74a5f1394fcac9a4dafa58b9e06f0",
+        "rev": "82566dfe91ca5e12bc10b36272280628142f651d",
         "type": "github"
       },
       "original": {
@@ -731,17 +731,17 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1794192123,
-        "narHash": "sha256-SvB8u5qaJAOwZZyZciqTVOg/rBoUs2w0sFTU6ED51AQ=",
+        "lastModified": 1794537146,
+        "narHash": "sha256-Wpz/7x/YWnDIBu7yj6ixe8j6fIMsidd9Y+o1PqPF3iM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "177d0540942fb205af6993b1d5fa0b57799e09f8",
+        "rev": "d5cc6833999746cffdfe0598f7bc801a57b887a9",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "177d0540942fb205af6993b1d5fa0b57799e09f8",
+        "rev": "d5cc6833999746cffdfe0598f7bc801a57b887a9",
         "type": "github"
       }
     },
@@ -822,17 +822,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794427500,
-        "narHash": "sha256-GzZl7htNxqeQjVR2QWYPjo6aHBA8l803e5XSex/9fyY=",
+        "lastModified": 1794601794,
+        "narHash": "sha256-V6gTUwGAVzaXH8tOM71SBbScZcmATBmq0e5a6Jj69W0=",
         "ref": "tested",
-        "rev": "5f2faeac46550297c6468759075410a9a4d911d8",
-        "revCount": 1096,
+        "rev": "77d1ea83acaa75cbf6cc625f7d93736f4f980388",
+        "revCount": 1114,
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "5f2faeac46550297c6468759075410a9a4d911d8",
+        "rev": "77d1ea83acaa75cbf6cc625f7d93736f4f980388",
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       }
@@ -875,17 +875,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1794487241,
-        "narHash": "sha256-c9SDfZ3wpAK9OUzABVv76FzgzgNH7XD9vahL/w4S030=",
+        "lastModified": 1794744121,
+        "narHash": "sha256-XGLIJ+tADvnnOcKj8NaipQweFSYhqKqcWgQNxaRCeWk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "4ef59078fac51206439b82dcd0096bb23fa8ac9d",
+        "rev": "563fda2058a4ca6d11e48938f5d1a712a341606b",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "4ef59078fac51206439b82dcd0096bb23fa8ac9d",
+        "rev": "563fda2058a4ca6d11e48938f5d1a712a341606b",
         "type": "github"
       }
     },
@@ -1037,17 +1037,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794303164,
-        "narHash": "sha256-UZMtOt43/HRVssXPSuPv8t11Toq9+CjyWUfYQ3tqGVE=",
+        "lastModified": 1794733384,
+        "narHash": "sha256-VaXNWDU+9dXckN4BlZbrcYTTd9pIscLeiknbhHX4+lk=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "89750a2ef1c6a44db9f4251b16c23deffdcfddff",
+        "rev": "67f1944c7c99d8dbb57fa3d83043bc0a92cbcc56",
         "type": "github"
       },
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "89750a2ef1c6a44db9f4251b16c23deffdcfddff",
+        "rev": "67f1944c7c99d8dbb57fa3d83043bc0a92cbcc56",
         "type": "github"
       }
     },
@@ -1058,18 +1058,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1794384501,
-        "narHash": "sha256-CPYSOiDW0pVNNmdROj9o1Gw96NLvDeol78J5Y33bv6U=",
+        "lastModified": 1794606123,
+        "narHash": "sha256-Na29wIhRGQJjxWyrUGqjeO2A6hLq0VhN7iFNBxqp37Y=",
         "ref": "tested",
-        "rev": "189ef9fab43f98c7f38525cb0f5ed044f1e273df",
-        "revCount": 3642,
+        "rev": "cc05396249f5ffc986199932c198b8db9d4f74de",
+        "revCount": 3654,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "189ef9fab43f98c7f38525cb0f5ed044f1e273df",
+        "rev": "cc05396249f5ffc986199932c198b8db9d4f74de",
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
