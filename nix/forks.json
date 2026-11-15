@@ -1,7 +1,7 @@
 {
   "paneru": {
     "repository": "https://github.com/dweee/paneru",
-    "revision": "70da1567cab8fc3581f51506ed911bd3208a4ebe",
+    "revision": "77d1ea83acaa75cbf6cc625f7d93736f4f980388",
     "branch": "flakey",
     "packages": [
       "paneru",

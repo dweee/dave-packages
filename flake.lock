@@ -731,17 +731,17 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1794386569,
-        "narHash": "sha256-x9sADJvoVG0L6RejZB+/BB4YiGZFBZrfTlhF4uBq1tQ=",
+        "lastModified": 1794537146,
+        "narHash": "sha256-Wpz/7x/YWnDIBu7yj6ixe8j6fIMsidd9Y+o1PqPF3iM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "d4f25a3e562008648d45bcf2d70bcc7422cad84e",
+        "rev": "d5cc6833999746cffdfe0598f7bc801a57b887a9",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "d4f25a3e562008648d45bcf2d70bcc7422cad84e",
+        "rev": "d5cc6833999746cffdfe0598f7bc801a57b887a9",
         "type": "github"
       }
     },
@@ -822,17 +822,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794601263,
-        "narHash": "sha256-sV7oXlH6JAlehDmZbE+PTbBM38qTLsNoMhhPOq3+d9k=",
+        "lastModified": 1794601794,
+        "narHash": "sha256-V6gTUwGAVzaXH8tOM71SBbScZcmATBmq0e5a6Jj69W0=",
         "ref": "tested",
-        "rev": "70da1567cab8fc3581f51506ed911bd3208a4ebe",
-        "revCount": 1106,
+        "rev": "77d1ea83acaa75cbf6cc625f7d93736f4f980388",
+        "revCount": 1114,
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "70da1567cab8fc3581f51506ed911bd3208a4ebe",
+        "rev": "77d1ea83acaa75cbf6cc625f7d93736f4f980388",
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       }
@@ -875,17 +875,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1794707594,
-        "narHash": "sha256-DWI3t8Mj4v+8b7DOWJZOFzEgPTf8j1j1ypHb4c6EZrk=",
+        "lastModified": 1794744121,
+        "narHash": "sha256-XGLIJ+tADvnnOcKj8NaipQweFSYhqKqcWgQNxaRCeWk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a73729ec60d489d7e4855f291c4812b877447d76",
+        "rev": "563fda2058a4ca6d11e48938f5d1a712a341606b",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "a73729ec60d489d7e4855f291c4812b877447d76",
+        "rev": "563fda2058a4ca6d11e48938f5d1a712a341606b",
         "type": "github"
       }
     },
@@ -1037,17 +1037,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1794646145,
-        "narHash": "sha256-rpqDyUM/d5fACYB8W+wKxxO57ICWjjalzb2X25oFFkY=",
+        "lastModified": 1794733384,
+        "narHash": "sha256-VaXNWDU+9dXckN4BlZbrcYTTd9pIscLeiknbhHX4+lk=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "5b87ee0513c29127a01ad06e9cb362ea5ce91e78",
+        "rev": "67f1944c7c99d8dbb57fa3d83043bc0a92cbcc56",
         "type": "github"
       },
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "5b87ee0513c29127a01ad06e9cb362ea5ce91e78",
+        "rev": "67f1944c7c99d8dbb57fa3d83043bc0a92cbcc56",
         "type": "github"
       }
     },

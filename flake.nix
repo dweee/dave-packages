@@ -1,7 +1,7 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/d4f25a3e562008648d45bcf2d70bcc7422cad84e";
+    nixpkgs.url = "github:nixos/nixpkgs/d5cc6833999746cffdfe0598f7bc801a57b887a9";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/a374d3cd9165e5f3e04d9db2d10a56698cbeefe9";
       flake = false;
@@ -45,10 +45,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/5b87ee0513c29127a01ad06e9cb362ea5ce91e78";
+      url = "github:oxalica/rust-overlay/67f1944c7c99d8dbb57fa3d83043bc0a92cbcc56";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/a73729ec60d489d7e4855f291c4812b877447d76";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/563fda2058a4ca6d11e48938f5d1a712a341606b";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -67,7 +67,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=70da1567cab8fc3581f51506ed911bd3208a4ebe";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=77d1ea83acaa75cbf6cc625f7d93736f4f980388";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
