@@ -13,6 +13,15 @@ for (const command of ["bin/rea", "bin/rea-agents", "lib/rea-agents/scripts/rea.
   assert.equal(execFileSync(join(out, command), ["--version"], { env, encoding: "utf8" }).trim(), "6.7.0");
 }
 
+// REA enumerates processes before launching a provider. Exercise this separately
+// so an absent ps is not misreported by the provider as a missing Java runtime.
+if (process.platform === "darwin") {
+  const listing = execFileSync(join(out, "libexec/rea-node"), ["-e",
+    "process.stdout.write(require('node:child_process').execFileSync('ps', ['-axo', 'pid=,ppid=,pgid=,uid=,stat=,command='], {encoding:'utf8'}))"],
+    { env, encoding: "utf8", maxBuffer: 4 * 1024 * 1024 });
+  assert.match(listing, /\s*\d+\s+\d+\s+\d+\s+\d+\s+\S+\s+\S+/);
+}
+
 // Exercise the installed stdio boundary, including the dispatcher's own PATH.
 const child = spawn(join(out, "bin/rea"), ["mcp"], { env, stdio: ["pipe", "pipe", "pipe"] });
 let stderr = "";
