@@ -66,8 +66,8 @@ skills normally.
   inherit the same defaults, including absolute Nix prlimit paths for bounded
   EVM, firmware, JavaScript, signal and packet operations.
 - On Darwin the package supplies the Swift compiler and macOS SDK needed by
-  REA's owned-process token reader, plus a launcher for the host's fixed
-  `/bin/ps` process table utility. No ambient Xcode or PATH tools are required.
+  REA's owned-process token reader, plus nixpkgs' packaged BSD
+  `ps` process table utility (adv_cmds). No ambient Xcode or PATH tools are required.
 - Browser/Electron runtime observation still requires an explicitly selected
   browser or target application. ADB operations need a reachable device, its
   authorization and host USB permissions. Installing ADB does not start a daemon.

@@ -3,7 +3,7 @@
 {
   lib,
   stdenv,
-  writeShellScriptBin,
+  darwin,
   swift,
   apple-sdk,
   fetchurl,
@@ -106,11 +106,6 @@ let
       hash = "sha256-YgM8GjWmWKxOZcahR3+9XO2Xyfu9v8rNgxKn/2oL35Y=";
     };
   });
-  # Darwin's BSD ps is part of the host OS. Expose only that fixed command,
-  # rather than adding ambient /bin or /usr/bin to the analysis PATH.
-  darwinProcessTools = writeShellScriptBin "ps" ''
-    exec /bin/ps "$@"
-  '';
   apktoolSupported = lib.elem stdenv.hostPlatform.system [
     "x86_64-linux"
     "aarch64-darwin"
@@ -167,7 +162,7 @@ in
     binutils
     rizin
   ]
-  ++ lib.optionals stdenv.hostPlatform.isDarwin [ darwinProcessTools ]
+  ++ lib.optionals stdenv.hostPlatform.isDarwin [ darwin.ps ]
   ++ lib.optional apktoolSupported apktool
   ++ lib.optionals stdenv.hostPlatform.isLinux [
     gdb
