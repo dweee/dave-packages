@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/5b87ee0513c29127a01ad06e9cb362ea5ce91e78";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/7e8db5ec21183cbeab90ccad24d10e118cc7dc62";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/a73729ec60d489d7e4855f291c4812b877447d76";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +57,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/f5e1fb8f1185cb51ef6d433e27ab7b60f54cd0e0";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/c9620070e884d55c5b5566e3fd46611ee24c4d3b";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
