@@ -3,6 +3,8 @@
 {
   lib,
   stdenv,
+  swift,
+  apple-sdk,
   fetchurl,
   fetchFromGitHub,
   wabt,
@@ -115,6 +117,12 @@ let
     REA_ILSPY_CMD_PATH = lib.getExe ilspycmd;
     REA_OBJDUMP_COMMAND = "${binutils}/bin/objdump";
     REA_RIZIN_COMMAND = lib.getExe rizin;
+  }
+  // lib.optionalAttrs stdenv.hostPlatform.isDarwin {
+    # Owned subprocesses (including JADX) compile REA's Darwin token reader.
+    # xcrun cannot discover a compiler in an isolated Nix environment.
+    REA_DARWIN_SWIFTC_PATH = "${swift}/bin/swiftc";
+    SDKROOT = apple-sdk.sdkroot;
   }
   // lib.optionalAttrs apktoolSupported { REA_APKTOOL_COMMAND = lib.getExe apktool; }
   // lib.optionalAttrs stdenv.hostPlatform.isLinux {
