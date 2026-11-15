@@ -10,6 +10,7 @@ name: Retry unacquired runners
     - GeoIP updates
     - Horizon updates
     - Input and manual version monitoring
+    - Maintained package source updates
     - PR automation checks
     - Preserve package backups
     - Verified release channels
