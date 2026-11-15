@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { spawn, execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { createInterface } from "node:readline";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const out = process.argv[2];
@@ -28,7 +30,7 @@ lines.on("line", (line) => {
 });
 function request(id, method, params) {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`${method} timed out: ${stderr}`)), 20_000);
+    const timer = setTimeout(() => reject(new Error(`${method} timed out: ${stderr}`)), method === "tools/call" ? 180_000 : 20_000);
     pending.set(id, { resolve, timer });
     child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", id, method, params })}\n`);
   });
@@ -44,7 +46,14 @@ try {
   const catalog = await request(2, "tools/list", {});
   assert.equal(catalog.error, undefined, JSON.stringify(catalog));
   assert.ok(catalog.result.tools.length > 0);
-  console.log(`MCP initialize and tools/list passed (${catalog.result.tools.length} tools)`);
+  const android = await request(3, "tools/call", {
+    name: "search_android_classes",
+    arguments: { path: process.argv[3], query: "io.appium.android.apis.ApiDemos" },
+  });
+  assert.equal(android.error, undefined, JSON.stringify(android));
+  assert.notEqual(android.result.isError, true, JSON.stringify(android));
+  assert.match(JSON.stringify(android.result), /io\.appium\.android\.apis\.ApiDemos/);
+  console.log(`MCP initialize, tools/list and Android class search passed (${catalog.result.tools.length} tools)`);
 } finally {
   child.stdin.end();
   child.kill("SIGTERM");
@@ -70,3 +79,57 @@ await new Promise((resolve, reject) => {
   });
 });
 console.log("CLI aliases, direct dispatcher, and native PTY passed");
+
+// Obtain the actual installed child environment, with no ambient tools/settings.
+// This also exercises the native Darwin interpreter wrapper.
+const cleanEnv = Object.fromEntries(Object.entries(env).filter(([key]) =>
+  !key.startsWith("REA_") && key !== "JAVA_HOME"));
+const wrappedNode = join(out, "libexec/rea-node");
+const runtime = JSON.parse(execFileSync(wrappedNode,
+  ["-e", "console.log(JSON.stringify(process.env))"], { env: cleanEnv, encoding: "utf8" }));
+for (const [name, value] of Object.entries(runtime)) {
+  if (name.startsWith("REA_") && (name.endsWith("COMMAND") || name.endsWith("PATH") || name === "REA_JADX_MCP_JAR")) {
+    assert.ok(value.startsWith("/nix/store/"), `${name}: ${value}`);
+  }
+}
+const override = "/caller-supplied/jadx.jar";
+assert.equal(execFileSync(wrappedNode,
+  ["-p", "process.env.REA_JADX_MCP_JAR"],
+  { env: { ...cleanEnv, REA_JADX_MCP_JAR: override }, encoding: "utf8" }).trim(), override);
+assert.match(execFileSync(join(runtime.JAVA_HOME, "bin/java"), ["--list-modules"],
+  { env: runtime, encoding: "utf8" }), /jdk\.compiler@/);
+
+function analyze(command, args = []) {
+  const output = execFileSync(join(out, "bin/rea"), [command, ...args, "--json"],
+    { env: { ...cleanEnv, REA_LOG_LEVEL: "silent", REA_JADX_HEAP_MIB: "1024", REA_JADX_ACTIVE_PROCESSOR_COUNT: "2" }, encoding: "utf8", timeout: 180_000, maxBuffer: 16 * 1024 * 1024 });
+  const result = JSON.parse(output);
+  assert.equal(result.error, undefined, output);
+  assert.equal(result.code, undefined, output);
+  return result;
+}
+const apk = process.argv[3];
+assert.ok(apk, "Android APK fixture is required");
+const classes = analyze("search-android-classes", [apk, "io.appium.android.apis.ApiDemos"]);
+assert.match(JSON.stringify(classes), /io\.appium\.android\.apis\.ApiDemos/);
+assert.match(JSON.stringify(analyze("inspect-android-method", [apk, "io.appium.android.apis.ApiDemos", "onCreate"])), /super\.onCreate/);
+if (runtime.REA_APKTOOL_COMMAND) analyze("inspect-apktool-client");
+if (process.platform === "linux") {
+  analyze("inspect-pcap-client");
+  assert.match(execFileSync(runtime.REA_SIGROK_COMMAND, ["--version"],
+    { env: runtime, encoding: "utf8" }), /^sigrok-cli 0\.7\.2/);
+}
+console.log("Packaged tools, caller override, Android class/method, Apktool and packet clients passed");
+
+const workspace = mkdtempSync(join(tmpdir(), "rea-tools-"));
+try {
+  const wasm = join(workspace, "empty.wasm");
+  writeFileSync(wasm, Buffer.from([0, 97, 115, 109, 1, 0, 0, 0]));
+  analyze("inspect-wasm-artifact", [wasm]);
+  if (runtime.REA_PWNTOOLS_PYTHON) {
+    const versions = JSON.parse(execFileSync(runtime.REA_PWNTOOLS_PYTHON,
+      ["-c", "import json, importlib.metadata as m; print(json.dumps({n:m.version(n) for n in ['pwntools','pyelftools','unicorn']}))"],
+      { env: runtime, encoding: "utf8" }));
+    assert.deepEqual(versions, { pwntools: "4.15.0", pyelftools: "0.33", unicorn: "2.1.2" });
+  }
+} finally { rmSync(workspace, { recursive: true, force: true }); }
+console.log("Strict WABT and Python dependency profiles passed");
