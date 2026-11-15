@@ -226,10 +226,6 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.aarch64-darwin.schildi-revenge",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.aarch64-darwin.slopbro",
         "visibility": "public"
       },

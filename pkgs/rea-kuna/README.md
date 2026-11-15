@@ -19,7 +19,10 @@ Explicit `GHIDRA_INSTALL_DIR`, `JAVA_HOME`, `REA_KUNA_COMMAND` and
 `REA_ANALYSIS_PROVIDER` settings override the defaults. The launcher aligns
 `NIX_GHIDRAHOME` with the selected Ghidra directory so an inherited stock module
 root cannot silently select another backend. REA 6.7 expects Ghidra 12.1.x;
-the catalog lock currently supplies 12.1.4 and JDK 21.
+the composition pins Ghidra 12.1.4 with JDK 21 independently of the catalog's
+Ghidra 12.2/JDK 25. The stock `ghidra-kuna` package retains its current version.
+`nix build .#checks.x86_64-linux.rea-ghidra-headless` verifies the compatible
+engine with the real Kuna decompiler and compiles/runs the recovered C.
 
 Register the launcher's absolute `bin/rea` executable with `args: ["mcp"]` in a
 client's stdio MCP configuration. For package updates, point the client at a

@@ -182,6 +182,10 @@
         self.packages.${system}
         // {
           kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
+          rea-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix {
+            ghidra-kuna = (pkgsFor system).rea-kuna.ghidra-kuna;
+            openjdk25 = (pkgsFor system).jdk21;
+          };
         }
         // import ./pkgs/horizon/checks.nix {
           inherit self inputs system;
