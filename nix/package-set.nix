@@ -24,6 +24,7 @@ let
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
+    glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
     handy = inputs.handy.packages.${system}.handy;
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;

@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/67f1944c7c99d8dbb57fa3d83043bc0a92cbcc56";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/897476105004ac2f5e033e15e446f6215f56ff7b";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/2ffc76d4c18e6013ac014b4480d1c763f3845a25";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +57,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/c9620070e884d55c5b5566e3fd46611ee24c4d3b";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/9d1001801db6023d5ce07707fea6af75de260d3f";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -182,6 +182,10 @@
         self.packages.${system}
         // {
           kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
+          rea-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix {
+            ghidra-kuna = (pkgsFor system).rea-kuna.ghidra-kuna;
+            openjdk25 = (pkgsFor system).jdk21;
+          };
         }
         // import ./pkgs/horizon/checks.nix {
           inherit self inputs system;

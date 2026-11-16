@@ -124,9 +124,10 @@ jobs:
       if: ${{ matrix.package == 'ghidra-kuna' || matrix.package == 'rea-kuna' }}
       env:
         TARGET_SYSTEM: ${{ matrix.system }}
+        HEADLESS_CHECK: ${{ matrix.package == 'rea-kuna' && 'rea-ghidra-headless' || 'kuna-ghidra-headless' }}
       run: |
-        python3 ci/public-closure.py ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless"
-        nix build ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless" --no-update-lock-file --no-write-lock-file --no-link -L
+        python3 ci/public-closure.py ".#checks.$TARGET_SYSTEM.$HEADLESS_CHECK"
+        nix build ".#checks.$TARGET_SYSTEM.$HEADLESS_CHECK" --no-update-lock-file --no-write-lock-file --no-link -L
     - name: Verify MCP protocol and SDK compatibility checks
       if: ${{ matrix.package == 'gdb-mcp' || matrix.package == 'ghidra-mcp' }}
       env:
@@ -151,7 +152,7 @@ jobs:
     - name: Save selected runtime closures independently of cache publication
       timeout-minutes: 15
       env:
-        ATTIC_MAX_CLOSURE_MIB: ${{ matrix.package == 'yaas' && (vars.ATTIC_YAAS_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
+        ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.ATTIC_REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'yaas' && (vars.ATTIC_YAAS_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
       run: python3 ci/transfer-attic.py export --directory attic-transfer --manifest cache-outputs.txt
       id: cache_transfer
       if: ${{ always() && !cancelled() && hashFiles('cache-outputs.txt') != '' }}
@@ -210,7 +211,7 @@ jobs:
     - name: Import data without running any package programs
       timeout-minutes: 15
       env:
-        ATTIC_MAX_CLOSURE_MIB: ${{ matrix.package == 'yaas' && (vars.ATTIC_YAAS_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
+        ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.ATTIC_REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'yaas' && (vars.ATTIC_YAAS_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
       run: python3 ci/transfer-attic.py import --directory attic-transfer
     - name: Publish to Niks3 with GitHub OIDC and verify S3 integrity
       run: python3 ci/push-niks3.py --outputs attic-transfer/outputs.txt

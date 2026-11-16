@@ -33,7 +33,7 @@ because it differs from REA's direct dispatcher path. Those checks do not launch
 the registered MCP or read the linked skill to validate it. Do not run setup to
 replace these managed paths. `rea doctor --provider ghidra` checks the configured
 engine independently; the package install check and
-`nix build .#checks.x86_64-linux.kuna-ghidra-headless` exercise the actual MCP,
+`nix build .#checks.x86_64-linux.rea-ghidra-headless` exercise the actual MCP,
 native helpers, and decompiled code. Clients discover the version-matched linked
 skills normally.
 
@@ -54,9 +54,28 @@ skills normally.
 - Optional Frida is excluded because its npm installer downloads an additional
   native runtime outside the dependency lock. Frida instrumentation is unavailable
   in this build. Other native npm helpers are patched for the Nix runtime.
-- Browser automation, Android, firmware, network capture and specialized native
-  analyzers each require their own caller-supplied tools. A successful MCP
-  handshake does not establish that these optional backends are available.
+- The package supplies the caller tools for Android (jadx-headless-mcp 0.7.1
+  JAR, full JDK 21 and ADB), ILSpy, GNU objdump, Rizin and WABT 1.0.42.
+  Apktool is included on Linux x64 and Apple Silicon, where nixpkgs supplies
+  its aapt dependency.
+  On Linux it also supplies GDB, Binwalk 3.1.0, Unblob 26.6.4, Wireshark CLI,
+  sigrok-cli 0.7.2 with libsigrokdecode, and mitmdump 12.2.3. On Linux x64 an
+  isolated Python supplies pwntools 4.15.0, pyelftools 0.33 and Unicorn 2.1.2.
+  `runtime-tools.nix` records the paths and strict-version overrides. Explicit
+  caller settings take precedence. All CLI aliases, direct dispatcher and MCP
+  inherit the same defaults, including absolute Nix prlimit paths for bounded
+  EVM, firmware, JavaScript, signal and packet operations.
+- On Darwin the package supplies the Swift compiler and macOS SDK needed by
+  REA's owned-process token reader, plus nixpkgs' packaged BSD
+  `ps` process table utility (adv_cmds). No ambient Xcode or PATH tools are required.
+- Browser/Electron runtime observation still requires an explicitly selected
+  browser or target application. ADB operations need a reachable device, its
+  authorization and host USB permissions. Installing ADB does not start a daemon.
+- Wakaru source recovery and the optional pwndbg core-context supplement remain
+  externally supplied. There are no compatible packages in the pinned nixpkgs;
+  pwntools core/layout inspection works independently. Hopper, IDA and JEB need
+  separately supplied licensed engines. Frida remains excluded as described
+  above. These are explicit limits, not capabilities established by a handshake.
 
 REA's own code is MIT licensed. Its retained third-party notices apply to bundled
 material; independent engines retain their own licenses.
@@ -64,7 +83,10 @@ material; independent engines retain their own licenses.
 Packaging follows the process-wrapper, updater-layout and native-PTY findings in
 [upstream draft Nix support PR #4096](https://github.com/morluto/rea/pull/4096).
 The install check exercises both CLI aliases, the direct dispatcher, MCP
-`initialize`/`tools/list`, and native PTY creation with no ambient PATH tools.
+`initialize`/`tools/list`, native PTY creation, caller overrides, the full Java
+compiler module, real Android class search and method decompilation against
+upstream's hashed Appium ApiDemos APK, Apktool and Linux packet client discovery,
+with no ambient PATH tools. The APK is inspected statically and never run.
 
 Validated on x86_64 NixOS and aarch64-darwin: source build and install checks pass, the server lists
 207 MCP tools, and the generated skill contains all seven workflow/reference

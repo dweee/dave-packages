@@ -1,8 +1,10 @@
 {
   lib,
+  callPackage,
   stdenv,
   buildNpmPackage,
   fetchFromGitHub,
+  fetchurl,
   nodejs_24,
   autoPatchelfHook,
   makeWrapper,
@@ -10,6 +12,14 @@
   procps,
   util-linux,
 }:
+let
+  runtimeTools = callPackage ./runtime-tools.nix { };
+  androidFixture = fetchurl {
+    # REA's own independently hashed Android conformance target; never executed.
+    url = "https://github.com/appium/android-apidemos/releases/download/v6.0.18/ApiDemos-debug.apk";
+    sha256 = "a9eecf37b26cd084855c530db81c2bb1b91f4c1b095a04f47aa7c20e2791f686";
+  };
+in
 buildNpmPackage {
   pname = "rea";
   version = "6.7.0";
@@ -73,13 +83,14 @@ buildNpmPackage {
     } ${nodejs_24}/bin/node "$out/libexec/rea-node" \
       --prefix PATH : ${
         lib.makeBinPath (
-          [ nodejs_24 ]
+          ([ nodejs_24 ] ++ runtimeTools.paths)
           ++ lib.optionals stdenv.hostPlatform.isLinux [
             procps
             util-linux
           ]
         )
-      }
+      } \
+      ${runtimeTools.wrapperArgs}
     # All entry points, including direct registrations of the dispatcher, must
     # preserve the process-supervision prerequisites in child environments.
     sed -i '1c\#!'"$out/libexec/rea-node" "$out/lib/rea-agents/scripts/rea.mjs"
@@ -97,9 +108,11 @@ buildNpmPackage {
   doInstallCheck = true;
   installCheckPhase = ''
     runHook preInstallCheck
-    ${nodejs_24}/bin/node ${./smoke-test.mjs} "$out"
+    ${nodejs_24}/bin/node ${./smoke-test.mjs} "$out" ${androidFixture}
     runHook postInstallCheck
   '';
+
+  passthru = { inherit runtimeTools; };
 
   meta = {
     description = "CLI and stdio MCP server for evidence-based reverse engineering";
