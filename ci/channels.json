@@ -332,6 +332,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.glances",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.bitwig-theme-editor",
         "visibility": "public"
       },
@@ -743,6 +747,10 @@
     "aarch64-linux": [
       {
         "attribute": "packages.aarch64-linux.atuin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.glances",
         "visibility": "public"
       },
       {
