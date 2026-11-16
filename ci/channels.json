@@ -750,10 +750,6 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.aarch64-linux.glances",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.aarch64-linux.bitwig-theme-editor",
         "visibility": "public"
       },
