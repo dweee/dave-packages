@@ -2,7 +2,8 @@
 # Backport of nixpkgs 1ae7f1bd54 (glances 4.5.7 -> 4.5.9) until it reaches
 # nixos-unstable. 4.5.9 replaces python-jose, which nixpkgs marks insecure
 # (CVE-2026-120459, 9029e892d6), with pyjwt. Drop once the aligned nixpkgs pin
-# carries glances >= 4.5.9.
+# carries glances >= 4.5.9. Offered on x86_64-linux only: its consumers (Flakey terra
+# and faeri) are x86_64, and the aarch64-linux build failed in the tested gate.
 glances.overridePythonAttrs (old:
   assert lib.versionOlder old.version "4.5.9";
   {
