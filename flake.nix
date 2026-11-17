@@ -35,7 +35,7 @@
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
     mcp-nixos = {
-      url = "github:utensils/mcp-nixos/a0fb7ab7701d8aff179199536b7c2574ef05507a";
+      url = "github:utensils/mcp-nixos/2b0b86ceda72ec5c5d0d78ac3130ccf024f6a7ff";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/2ff7d39b901d79ee26d26f9fa32f90511eecaa0e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/6a24f0f48eb69d048f43b045dbc8af51888494da";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/254df652c649d67c53fafd2dd6b8c9955df86e1c";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
