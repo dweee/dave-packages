@@ -875,17 +875,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1794922436,
-        "narHash": "sha256-laPcGi1gjVr0+HSz7W6d/HOpooWV5WrsAm8jIZ0y61I=",
+        "lastModified": 1794957725,
+        "narHash": "sha256-h5WcGecs/jPHHpD0brf2o+UHl5QnywH233YOFJT+yDw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "de56841434cc5f5e39e0b3ff27b1a3bdf105fd70",
+        "rev": "e93f9c790d577753101f968a466998c6e0d02386",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "de56841434cc5f5e39e0b3ff27b1a3bdf105fd70",
+        "rev": "e93f9c790d577753101f968a466998c6e0d02386",
         "type": "github"
       }
     },
@@ -1058,18 +1058,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1794606123,
-        "narHash": "sha256-Na29wIhRGQJjxWyrUGqjeO2A6hLq0VhN7iFNBxqp37Y=",
+        "lastModified": 1794822566,
+        "narHash": "sha256-FJps2mYOEIV7QWKtkS38C/2SjTNTljKjGnfeYiga5D8=",
         "ref": "tested",
-        "rev": "cc05396249f5ffc986199932c198b8db9d4f74de",
-        "revCount": 3654,
+        "rev": "326a9dcdd55720e0ae5f9c26749c3ef66c0905e8",
+        "revCount": 3657,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "cc05396249f5ffc986199932c198b8db9d4f74de",
+        "rev": "326a9dcdd55720e0ae5f9c26749c3ef66c0905e8",
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
