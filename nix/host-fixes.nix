@@ -8,7 +8,8 @@ final: prev: {
   });
 
   # Vendored redlib (a4d36e95 + named MAIN FEEDS). See pkgs/redlib and
-  # docs/superpowers/specs/2026-08-12-redlib-named-feeds-design.md.
+  # docs/superpowers/specs/2026-08-12-redlib-named-feeds-design.md. Refresh the
+  # vendored tree with scripts/update-redlib-vendor.py (isolated --candidate).
   redlib = prev.callPackage ../pkgs/redlib { };
 
   # dorion 6.13.2 builds webkitgtk_4_1 with enableExperimental (WebRTC/WebXR),
