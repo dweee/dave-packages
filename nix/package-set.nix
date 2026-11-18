@@ -89,15 +89,15 @@ let
     };
     caddy-custom = prev.caddy.withPlugins {
       plugins = [
-        "github.com/caddyserver/transform-encoder@v0.0.0-20260417205707-a6a89df4bc65"
+        "github.com/caddyserver/transform-encoder@v0.0.0-20260423033309-ba4124974830"
         "github.com/caddy-dns/porkbun@v0.3.1"
         "github.com/mholt/caddy-webdav@v0.0.0-20260127042217-fa2f366b0d75"
-        "github.com/caddy-dns/njalla@v0.0.0-20250823094507-f709141f1fe6"
-        "github.com/tailscale/caddy-tailscale@v0.0.0-20260106222316-bb080c4414ac"
-        "github.com/caddyserver/cache-handler@v0.16.0"
-        "github.com/darkweak/storages/simplefs/caddy@v0.0.19"
+        "github.com/caddy-dns/njalla@v1.0.0"
+        "github.com/tailscale/caddy-tailscale@v0.0.0-20260826180304-de41b249af4f"
+        "github.com/caddyserver/cache-handler@v0.17.0"
+        "github.com/darkweak/storages/simplefs/caddy@v0.0.23"
       ];
-      hash = "sha256-8e0cAIe8TWc1xLPzt02gXIC/xTPAs9jMeLMG62z4aUc=";
+      hash = "sha256-D/pLOXEz6n56rLLRhkLBHq0AkBz/VZhW754ym92ctKc=";
     };
     matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel {
       inherit (prev) matrix-tuwunel;
