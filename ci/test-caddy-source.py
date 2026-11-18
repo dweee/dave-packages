@@ -41,4 +41,17 @@ class CaddySource(unittest.TestCase):
                 self.assertEqual(result['vendorSteps'], 1)
 
 
+    def test_tailscale_plugin_is_new_enough_for_go_1_27_netmaps(self):
+        # caddy-tailscale before 2026-08-26 pins tailscale.com v1.90.9, whose
+        # tailcfg.SSHAction json `format:nano` tag Go 1.27 rejects: every tsnet
+        # node then fails PollNetMap and Tailscale-bound vhosts go dark.
+        system = subprocess.check_output(
+            ['nix', 'eval', '--impure', '--raw', '--expr', 'builtins.currentSystem'], text=True)
+        result = evaluate('''let p=f.packages.%s.caddy-custom; in
+          builtins.match ".*github.com/tailscale/caddy-tailscale@v0.0.0-([0-9]{14})-[0-9a-f]{12}.*" p.src.buildPhase''' % system)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        stamp = json.loads(result.stdout)
+        self.assertIsNotNone(stamp, 'caddy-tailscale pseudo-version not found in the source build phase')
+        self.assertGreaterEqual(stamp[0], '20260826180304')
+
 if __name__ == '__main__': unittest.main()
