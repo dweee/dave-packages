@@ -1,13 +1,13 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
+    nixpkgs.url = "github:nixos/nixpkgs/d5cc6833999746cffdfe0598f7bc801a57b887a9";
     nix-zed-extensions = {
-      url = "github:SwornSystems/nix-zed-extensions/8aba0ab32a726cb9ee228123c9ef4c4f967e79b5";
+      url = "github:SwornSystems/nix-zed-extensions/a374d3cd9165e5f3e04d9db2d10a56698cbeefe9";
       flake = false;
     };
     mcp-nix = {
-      url = "github:felixdorn/mcp-nix/01302a8ea726c59d521c194937ea9bb5c803d25a";
+      url = "github:felixdorn/mcp-nix/d9cfbbf0cb80e1bb55c58b7bbbcab9040dddb560";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.pyproject-nix.follows = "pyproject-nix";
       inputs.uv2nix.follows = "uv2nix";
@@ -23,19 +23,19 @@
       inputs.pyproject-nix.follows = "pyproject-nix";
     };
     pyproject-build-systems = {
-      url = "github:pyproject-nix/build-system-pkgs/947b2b0c973de462b19577715f04ba8d6f48ed7e";
+      url = "github:pyproject-nix/build-system-pkgs/bdbc5f8dd2ad6136bb2ccecb14f6ec343965b194";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.pyproject-nix.follows = "pyproject-nix";
       inputs.uv2nix.follows = "uv2nix";
     };
     # Retain native fork toolchains so catalog updates reuse their CI outputs.
     handy = {
-      url = "github:dweee/Handy/d5f4c5b5bfdda3a58a6512fc7331ff40bc18facd";
+      url = "github:dweee/Handy/b3230de199e1e6880c204002d27543a63608def6";
     };
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
     mcp-nixos = {
-      url = "github:utensils/mcp-nixos/2e88096695bef9c41c5fa9157211d52a45d9a913";
+      url = "github:utensils/mcp-nixos/a0fb7ab7701d8aff179199536b7c2574ef05507a";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
@@ -45,10 +45,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/7fcafdf6f0761462d68012aba6a627be3f008d68";
+      url = "github:oxalica/rust-overlay/67f1944c7c99d8dbb57fa3d83043bc0a92cbcc56";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/554703fb0d4d7ec96fdc4f7a31e8c29648bde145";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/563fda2058a4ca6d11e48938f5d1a712a341606b";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,32 +57,34 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/f20c85dac2eef06564ebc27729264f4f75ae7e1c";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/c9620070e884d55c5b5566e3fd46611ee24c4d3b";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=8a8ea7b8111100b655c53b386f9a868cdae0900e";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=037279521417aba9d1d672e7f6623d947a577ebd";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=4e1e4f144fe980dd55a8755e63886150e2ba4cbf";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=77d1ea83acaa75cbf6cc625f7d93736f4f980388";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
-    tabrix = { url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=90bd73baf5fafdebb2cc0fa31c0cd26002600578"; };
+    tabrix = {
+      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=cd9092c6756333328bd956fde804c88ac32a967e";
+    };
     rekordbox-mcp = {
-      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=dc3e239ee37b1830c621b1141eee25ddd53646f6";
+      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=d7407c17520afcaf28614db97c04b55cde101e07";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kuna = {
-      url = "github:dweee/kuna/6df1a5c3de87d61968db89df1201fd722d62ef3c";
+      url = "github:dweee/kuna/5ed5c9df944bb2873c3c2e527407f1e9aaee2d85";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=a01cf51d1796c0c3883ac5c770af430b45a3c840&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=cc05396249f5ffc986199932c198b8db9d4f74de&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
@@ -94,7 +96,11 @@
       flake = false;
     };
     ghidra-mcp = {
-      url = "github:bethington/ghidra-mcp/8cd2078e10b9ba28b188cb84ce5b9051a904b995";
+      url = "github:dweee/ghidra-mcp/86961ca288f2832e649e8ff371a4176ae1cc1535";
+      flake = false;
+    };
+    wiicompiled = {
+      url = "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&rev=0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac&submodules=1";
       flake = false;
     };
     gdb-mcp = {
@@ -180,12 +186,60 @@
         self.packages.${system}
         // {
           kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
+          rea-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix {
+            ghidra-kuna = (pkgsFor system).rea-kuna.ghidra-kuna;
+            openjdk25 = (pkgsFor system).jdk21;
+          };
         }
         // import ./pkgs/horizon/checks.nix {
           inherit self inputs system;
           pkgs = pkgsFor system;
         }
+        // (
+          let
+            mcpStdioSmoke = (pkgsFor system).callPackage ./nix/mcp-stdio-smoke.nix { };
+            available = name: self.packages.${system} ? ${name};
+          in
+          nixpkgs.lib.optionalAttrs (available "gdb-mcp") {
+            gdb-mcp-stdio = mcpStdioSmoke {
+              package = self.packages.${system}.gdb-mcp;
+              tools = [
+                "dbg_start"
+                "dbg_terminate"
+                "dbg_raw_command"
+              ];
+            };
+          }
+          // nixpkgs.lib.optionalAttrs (available "ghidra-mcp") {
+            ghidra-mcp-compatibility = (pkgsFor system).callPackage ./pkgs/ghidra-mcp/compatibility-test.nix {
+              extension = self.packages.${system}.ghidra-mcp.extension;
+            };
+            ghidra-mcp-stdio = mcpStdioSmoke {
+              package = self.packages.${system}.ghidra-mcp;
+              # Static tools only; schema tools need a running Ghidra.
+              tools = [
+                "connect_instance"
+                "list_instances"
+                "import_file"
+              ];
+            };
+          }
+        )
       );
+      devShells.x86_64-linux.package-updates =
+        let
+          pkgs = pkgsFor "x86_64-linux";
+        in
+        pkgs.mkShell {
+          packages = [
+            pkgs.git
+            pkgs.gh
+            pkgs.python3
+            pkgs.nix-update
+            pkgs.nix-prefetch-git
+            pkgs.yq-go
+          ];
+        };
       formatter = nixpkgs.lib.genAttrs systems (system: (pkgsFor system).nixfmt);
     };
 }

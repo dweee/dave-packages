@@ -133,14 +133,22 @@ who reaches it join under any name. A public server should stay in online mode.
 
 `update.py` pins all three channels in `sources.json`: source revisions and hashes, the vendored
 crates' hashes, the launcher and Nightly archives from upstream's `SHA256SUMS`, and the
-horizon-mixins commit the launcher uses. `.github/workflows/horizon-updates.yml` runs it every
-six hours and opens a review PR; `update.py --check` reports candidates to the version monitor.
+horizon-mixins commit the launcher uses. `.github/workflows/package-updates.yml` runs it every
+six hours with the other maintained handlers and reuses one guarded review PR;
+`horizon-updates.yml` is a manual entry point to that same workflow. Publication requires
+the repository automation identity (`UPDATE_TOKEN` when the workflow token cannot open PRs); `update.py --check` reports candidates to the version monitor.
 
 ```sh
 python3 pkgs/horizon/update.py                    # all channels
 python3 pkgs/horizon/update.py --channel head     # one
 python3 pkgs/horizon/update.py --check            # report only
 ```
+
+The publisher preserves existing PR ancestry and active checks, never closes older PRs
+automatically, and dispatches the normal native checks only as needed. Snapshot flags
+`--write-snapshot FILE`, `--snapshot FILE` and `--apply` let preparation replay one
+frozen API/raw-content selection. This keeps expiring Nightly pins current; it does
+not provide permanent retention of upstream assets.
 
 ## Toward nixpkgs
 

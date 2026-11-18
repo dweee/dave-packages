@@ -1,0 +1,16 @@
+--- a/tests/src/unit/test_listen_sockets.py
++++ b/tests/src/unit/test_listen_sockets.py
+@@ -65 +65,2 @@
+-        taken.bind(("127.0.0.1", 0))
++        # Occupy the same wildcard address; Darwin permits loopback/wildcard overlap.
++        taken.bind(("0.0.0.0", 0))
+@@ -198 +199,2 @@
+-        taken.bind(("::1", 0))
++        # Occupy the same wildcard address; Darwin permits loopback/wildcard overlap.
++        taken.bind(("::", 0))
+--- a/tests/src/unit/test_embedded_listen.py
++++ b/tests/src/unit/test_embedded_listen.py
+@@ -131 +131,2 @@
+-        taken.bind(("127.0.0.1", 0))
++        # Occupy the same wildcard address; Darwin permits loopback/wildcard overlap.
++        taken.bind(("0.0.0.0", 0))

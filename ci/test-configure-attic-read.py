@@ -136,22 +136,23 @@ class PrivateReadTests(unittest.TestCase):
         self.assertNotIn(token, result.stdout + result.stderr)
         self.assertNotIn("Traceback", result.stderr)
 
-    def test_native_workflows_bind_pull_step_and_cleanup_before_export(self):
+    def test_native_workflows_use_trusted_oidc_and_cleanup_before_export(self):
         for name in ("darwin-actions.yml", "others-actions.yml"):
             text = Path(__file__).resolve().parents[1].joinpath(".github/workflows", name).read_text()
             build = text.split("\n  publish:\n")[0]
-            step = build.split("      - name: Configure pull-only cache reads", 1)[1].split("      - name:", 1)[0]
-            for condition in ("github.event_name == 'pull_request'", "github.event.pull_request.head.repo.full_name == github.repository",
-                              "github.actor == github.repository_owner", "vars.ATTIC_APPROVED_PR_SHA != ''",
-                              "github.event.pull_request.head.sha == vars.ATTIC_APPROVED_PR_SHA"):
+            step = build.split("    - name: Configure read-only Niks3 access with GitHub OIDC", 1)[1].split("    - name:", 1)[0]
+            for condition in ("github.event_name == 'push'", "github.event_name == 'workflow_dispatch'",
+                              "github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"):
                 self.assertIn(condition, step)
-            self.assertIn("ATTIC_PULL_TOKEN: ${{ secrets.ATTIC_PULL_TOKEN }}", step)
-            self.assertIn("--pr-read", step)
-            self.assertNotIn("secrets.ATTIC_TOKEN", step)
-            cleanup = build.index("--cleanup")
+            self.assertNotIn("pull_request", step)
+            self.assertIn("ci/configure-niks3.py --oidc", step)
+            self.assertIn("id-token: write", build)
+            for credential in ("secrets.ATTIC_TOKEN", "secrets.ATTIC_PULL_TOKEN", "secrets.FLAKEY_NIKS3_READ_NETRC"):
+                self.assertNotIn(credential, text)
+            cleanup = build.index("ci/configure-niks3.py --cleanup")
             self.assertLess(build.index("kuna-ghidra-headless"), cleanup)
             self.assertLess(cleanup, build.index("ci/transfer-attic.py export"))
-            self.assertIn("if: ${{ always() }}", build[build.rindex("      - name:", 0, cleanup):cleanup])
+            self.assertIn("if: ${{ always() }}", build[build.rindex("    - name:", 0, cleanup):cleanup])
             self.assertIn('nix build "$target"', build)
 
     def test_netrc_is_private_and_token_does_not_enter_nix_config(self):
