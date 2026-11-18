@@ -18,30 +18,30 @@ def evaluate(body):
 
 
 class CaddySource(unittest.TestCase):
-    def test_immutable_json_fix_preserves_toolchain_and_install_checks(self):
+    def test_upstream_toolchain_install_checks_and_single_vendor_step(self):
         result = evaluate('''let p=f.packages.x86_64-linux.caddy-custom; in {
           go=p.go.version; baseGo=f.inputs.nixpkgs.legacyPackages.x86_64-linux.caddy.go.version; checks=p.doInstallCheck;
-          pinned=builtins.match ".*go get github.com/go-json-experiment/json@[0-9a-f]{40} && go mod vendor.*" p.src.buildPhase != null;
+          forcedJson=builtins.match ".*go get github.com/go-json-experiment/json@.*" p.src.buildPhase != null;
           vendorSteps=builtins.length (f.inputs.nixpkgs.lib.splitString "go mod vendor" p.src.buildPhase) - 1;
         }''')
         self.assertEqual(result.returncode, 0, result.stderr)
         result = json.loads(result.stdout)
         self.assertTrue(result['checks'])
         self.assertEqual(result['go'], result['baseGo'])
-        self.assertTrue(result['pinned'])
+        # caddy-tailscale de41b249 brings tailscale v1.102.2 and its own current
+        # go-json-experiment; forcing an older revision could downgrade it.
+        self.assertFalse(result['forcedJson'])
         self.assertEqual(result['vendorSteps'], 1)
 
-    def test_upstream_builder_drift_fails_instead_of_omitting_transitive_pin(self):
-        result = evaluate('''let pkgs = import f.inputs.nixpkgs {
-          system="x86_64-linux";
-          overlays=[(final: prev: { caddy = prev.caddy // {
-            withPlugins = args: (prev.caddy.withPlugins args).overrideAttrs (old: {
-              src = old.src.overrideAttrs { buildPhase="upstream changed the vendoring phase"; };
-            });
-          }; }) f.overlays.default];
-        }; in pkgs.caddy-custom.src.drvPath''')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertTrue('assertion' in result.stderr or 'not equal' in result.stderr, result.stderr)
-
+    def test_tailscale_plugin_is_new_enough_for_go_1_27_netmaps(self):
+        # caddy-tailscale before 2026-08-26 pins tailscale.com v1.90.9, whose
+        # tailcfg.SSHAction json `format:nano` tag Go 1.27 rejects: every tsnet
+        # node then fails PollNetMap and Tailscale-bound vhosts go dark.
+        result = evaluate('''let p=f.packages.x86_64-linux.caddy-custom; in
+          builtins.match ".*github.com/tailscale/caddy-tailscale@v0.0.0-([0-9]{14})-[0-9a-f]{12}.*" p.src.buildPhase''')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        stamp = json.loads(result.stdout)
+        self.assertIsNotNone(stamp, 'caddy-tailscale pseudo-version not found in the source build phase')
+        self.assertGreaterEqual(stamp[0], '20260826180304')
 
 if __name__ == '__main__': unittest.main()
