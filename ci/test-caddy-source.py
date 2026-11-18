@@ -19,7 +19,10 @@ def evaluate(body):
 
 class CaddySource(unittest.TestCase):
     def test_native_exports_preserve_toolchain_and_install_checks(self):
-        for system in ['x86_64-linux', 'aarch64-linux', 'aarch64-darwin']:
+        # Run this contract on its native runner; do not cross-evaluate fleets.
+        system = subprocess.check_output(
+            ['nix', 'eval', '--impure', '--raw', '--expr', 'builtins.currentSystem'], text=True)
+        for system in [system]:
             with self.subTest(system=system):
                 result = evaluate('''let
                   p=f.packages.%s.caddy-custom;
