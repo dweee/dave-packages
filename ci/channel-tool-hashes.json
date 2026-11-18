@@ -1,9 +1,18 @@
 {
-  "release-channel.py": "61a002b6a3efbdb69985a041db56927e264f5b99b9551f870962024734f93931",
-  "test-release-channel.py": "f8f52d077aa9177dbb34797d7ff79b111378e1313668ce017c44b5884a061beb",
-  "update-inputs.py": "ebcb43ac7cd25684ea22d4b47facebe90607885b8734a46c1331b8441d7b7795",
+  "release-channel.py": "b4cd444d28542e7ec3b221c6ceb97c62d6326e7ffc68f61754c8c2eb06faa1df",
+  "test-release-channel.py": "55342ee67f737385aed136ac8317a39708ddc3c1897af03465df22dfe29559e2",
+  "update-inputs.py": "ce66ee5c77a8b731cee10390c4123b9e467cb376e2443343fdf724baaecfb66f",
   "update-monitor.py": "ff1867c18ef4f549a0d7f84eb828f6a3e44b1575d4d42113bca770ff06e09c74",
-  "test-update-automation.py": "2f0a8dd99cce09038d30d64003de9cfc73138d8157537ee6c4394117fc38d90f",
-  "automation-forge.py": "7e46b08b6ef6f44eb72fb94adb10ec180aa6cccc7d038ce6f93b5ca7c8982874",
-  "configure-attic-read.py": "f681b28c5252dfbb57c1ed46411b7411f1878351d54545c16be88707c5d2475e"
+  "test-update-automation.py": "1487178f309969a8e54202cc685772512cff404bdd6ccc189abd759a49bb3f3c",
+  "automation-forge.py": "8ebf23498e89f4e8e9f12bbe54670d6bea8b1322334ec7deebef0a0994fdfdfd",
+  "configure-attic-read.py": "4b663ae0e073327dbcdcdaabef23a58a0a241f2f0fcfe3fd5f351b9242cbf669",
+  "configure-niks3.py": "f1690b26b7e2762c083f34c8473d19873de9958ef376a78be46006b1073d4dc8",
+  "push-niks3.py": "0679c09c9a3023b650997ccc703265aa11c9fd2b346c70578e966307ea13f860",
+  "test-push-niks3.py": "ca2239a09fb2fb9862eb36d5b83cb93781b707771fc28b566fba8f1e999e0c37",
+  "niks3-oidc-token.py": "58569dc6c6d05232300aae7d03848c66f8678f832d51a1a5326f034da41b2e5f",
+  "install-niks3.sh": "55a2f49ee72b9cc24485b31710ecade5cb53f29116bf6141ebf879faeeb852a8",
+  "retain-build-outputs.py": "ff39fa6b6aac595e1ed2fc667aeb537974a3c7313a4745126b923f2627bdeaac",
+  "test-retain-build-outputs.py": "ad509eb232aba1f80fe8f6ca22e8e463f845d798adea2454d354de86d3e6a190",
+  "transfer-attic.py": "fa14e38d5c823c5ac53335b8f895f88f3f4792e8b4c1a265c6c032d1797404b2",
+  "test-transfer-attic.py": "4109eadfea1086cc07f6a15da97a13e904df4e2276bb112be55d7020d415a1ed"
 }

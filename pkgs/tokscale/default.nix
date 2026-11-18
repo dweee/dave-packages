@@ -5,6 +5,7 @@
   pkg-config,
   openssl,
   sqlite,
+  zstd,
   versionCheckHook,
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
@@ -23,7 +24,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
   cargoHash = "sha256-Oh57ILq8GYWMXW5Ok/xhGnALHJx00bD+fmv7qoMU37w=";
 
   nativeBuildInputs = [pkg-config];
-  buildInputs = [openssl sqlite];
+  # The pinned Cargo hook selects system zstd; zstd-sys requests --static.
+  buildInputs = [openssl sqlite (zstd.override {enableStatic = true;})];
 
   env.OPENSSL_NO_VENDOR = true;
 

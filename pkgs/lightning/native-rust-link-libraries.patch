@@ -1,0 +1,31 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1685,9 +1685,13 @@
+ # `cmake -B build` never requires the Rust toolchain.
+ # ---------------------------------------------------------------------------
+ if(ENABLE_RUST_SDK_BACKEND)
+-    # No find_package(SQLite3): the Rust staticlib bundles SQLite (matrix-sdk
+-    # `bundled-sqlite`), and linking the system library too would put two
+-    # SQLite implementations in one process.
++    # Nix's Cargo hooks select system AWS-LC and SQLite. A Rust staticlib
++    # cannot propagate those native dependencies to the final C++ link.
++    # Keep the one system SQLite provider (including FTS5), and keep AWS-LC
++    # headers out of the C++ OpenSSL 3 signature-verification compilation.
++    find_package(PkgConfig REQUIRED)
++    pkg_check_modules(LIGHTNING_AWS_LC REQUIRED IMPORTED_TARGET aws-lc)
++    find_package(SQLite3 REQUIRED)
+ 
+     find_program(CARGO_EXECUTABLE cargo)
+     if(NOT CARGO_EXECUTABLE)
+@@ -1736,6 +1740,11 @@
+     set_target_properties(matrix-client-rust PROPERTIES
+         IMPORTED_LOCATION ${_rust_staticlib}
+         INTERFACE_INCLUDE_DIRECTORIES "${_rust_dir}/include"
++    )
++    set_property(TARGET matrix-client-rust APPEND PROPERTY
++        INTERFACE_LINK_LIBRARIES
++            "$<LINK_ONLY:PkgConfig::LIGHTNING_AWS_LC>"
++            "$<LINK_ONLY:SQLite::SQLite3>"
+     )
+ 
+     message(STATUS "Rust SDK backend enabled (cargo profile: ${_cargo_profile}); initial E2EE gate open")

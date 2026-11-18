@@ -90,8 +90,8 @@ in
             }'
       ''
       + lib.optionalString stdenv.hostPlatform.isLinux ''
-        # GitHub-hosted Linux runners have no swap. An uncapped Gradle daemon gets
-        # the runner service SIGTERM (exit 143) before Nix reports the failure.
+        # Linux runners have limited swap. Bound Gradle so its JVM does not
+        # compound the memory used while Nix processes the dependency graph.
         # Kotlin compiles inside this one bounded JVM (see gradleFlags): a separate
         # 1 GiB Kotlin daemon cannot compile :common, and metadata compilation
         # exhausts a 384 MiB metaspace. The gradle hook splits gradleFlags on
