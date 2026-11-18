@@ -146,3 +146,11 @@ metadata; application forks retain their own licenses and author history.
 
 Every successful build retains a downloadable Nix closure archive for one day,
 independently of Attic publication.
+
+## Generation 2 refresh (2026-11-18)
+
+The custom Caddy binary is exported on Apple Silicon Darwin as well as Linux,
+using the plugin graph from PR #134. YAAS follows upstream master at the exact
+2026-11-15 revision; its maintained updater refreshes the nested Cargo hash and
+checks the generated Flutter lock. Native builds and tested-channel promotion
+remain required before fleet adoption.

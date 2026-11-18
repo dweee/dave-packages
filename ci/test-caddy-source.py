@@ -18,30 +18,24 @@ def evaluate(body):
 
 
 class CaddySource(unittest.TestCase):
-    def test_immutable_json_fix_preserves_toolchain_and_install_checks(self):
-        result = evaluate('''let p=f.packages.x86_64-linux.caddy-custom; in {
-          go=p.go.version; baseGo=f.inputs.nixpkgs.legacyPackages.x86_64-linux.caddy.go.version; checks=p.doInstallCheck;
-          pinned=builtins.match ".*go get github.com/go-json-experiment/json@[0-9a-f]{40} && go mod vendor.*" p.src.buildPhase != null;
-          vendorSteps=builtins.length (f.inputs.nixpkgs.lib.splitString "go mod vendor" p.src.buildPhase) - 1;
-        }''')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        result = json.loads(result.stdout)
-        self.assertTrue(result['checks'])
-        self.assertEqual(result['go'], result['baseGo'])
-        self.assertTrue(result['pinned'])
-        self.assertEqual(result['vendorSteps'], 1)
-
-    def test_upstream_builder_drift_fails_instead_of_omitting_transitive_pin(self):
-        result = evaluate('''let pkgs = import f.inputs.nixpkgs {
-          system="x86_64-linux";
-          overlays=[(final: prev: { caddy = prev.caddy // {
-            withPlugins = args: (prev.caddy.withPlugins args).overrideAttrs (old: {
-              src = old.src.overrideAttrs { buildPhase="upstream changed the vendoring phase"; };
-            });
-          }; }) f.overlays.default];
-        }; in pkgs.caddy-custom.src.drvPath''')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertTrue('assertion' in result.stderr or 'not equal' in result.stderr, result.stderr)
+    def test_native_exports_preserve_toolchain_and_install_checks(self):
+        for system in ['x86_64-linux', 'aarch64-linux', 'aarch64-darwin']:
+            with self.subTest(system=system):
+                result = evaluate('''let
+                  p=f.packages.%s.caddy-custom;
+                  base=f.inputs.nixpkgs.legacyPackages.%s.caddy;
+                in {
+                  go=p.go.version; baseGo=base.go.version;
+                  checks=p.doInstallCheck;
+                  manualPin=builtins.match ".*go get github.com/go-json-experiment/json@.*" p.src.buildPhase != null;
+                  vendorSteps=builtins.length (f.inputs.nixpkgs.lib.splitString "go mod vendor" p.src.buildPhase) - 1;
+                }''' % (system, system))
+                self.assertEqual(result.returncode, 0, result.stderr)
+                result = json.loads(result.stdout)
+                self.assertTrue(result['checks'])
+                self.assertEqual(result['go'], result['baseGo'])
+                self.assertFalse(result['manualPin'])
+                self.assertEqual(result['vendorSteps'], 1)
 
 
 if __name__ == '__main__': unittest.main()

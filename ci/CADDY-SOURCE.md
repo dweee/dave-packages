@@ -7,13 +7,11 @@ The `fixedOutputHashes` inventory in `ci/tracking-inputs.json` identifies this
 additional review/build obligation; a successful no-build input check is not a
 source-hash or native build proof.
 
-The source currently pins `go-json-experiment/json` to upstream merge commit
-`dc5f05c800f19f9b0114acbbd240674f16b2762f` ([upstream PR203](https://github.com/go-json-experiment/json/pull/203)).
-The older shim brought by Tailscale aliases `SkipFunc` and `DiscardUnknownMembers`,
-which were removed from Go's JSON-v2 API. This changes that one transitive module,
-keeps JSON-v2 enabled, and leaves Caddy, Go and all plugin specifications intact.
-The recipe fails closed if the upstream vendoring step changes instead of silently
-omitting this pin.
+The Tailscale plugin now supplies tailscale.com v1.102.2 and its compatible
+JSON-v2 dependency. The previous manual go-json-experiment override is removed;
+review the module versions in the measured source whenever plugins change.
+Darwin and both Linux systems export this build with the inherited Go toolchain
+and native install checks enabled.
 
 For a refresh, keep the already selected flake inputs and plugin versions fixed:
 
@@ -26,7 +24,7 @@ For a refresh, keep the already selected flake inputs and plugin versions fixed:
    accepted merely because another CI run printed it.
 3. Build the source again with the measured hash. Inspect its complete `go.mod`,
    `go.sum` and `vendor/modules.txt`: Caddy and all seven plugin versions must match,
-   the exact JSON compatibility revision must resolve to its expected pseudo-version,
+   the JSON compatibility dependency must match the reviewed Tailscale graph,
    and every replacement or additional transitive change must be explained. Keep
    those records and the source NAR identity as review evidence.
 4. Update only the recipe's measured hash metadata. Run
