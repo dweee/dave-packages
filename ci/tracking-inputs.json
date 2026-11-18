@@ -91,10 +91,12 @@
   },
   "fixedOutputHashes": {
     "files": [
-      "nix/package-set.nix"
+      "nix/package-set.nix",
+      "pkgs/jellarr/default.nix"
     ],
     "packages": [
-      "caddy-custom"
+      "caddy-custom",
+      "jellarr"
     ]
   }
 }
