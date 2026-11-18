@@ -16,6 +16,9 @@
     "handy": {
       "source": "github:dweee/Handy/tested"
     },
+    "jellarr": {
+      "source": "github:venkyr77/jellarr"
+    },
     "kopuz": {
       "source": "git+https://github.com/dweee/kopuz.git?ref=tested"
     },

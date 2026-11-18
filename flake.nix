@@ -99,6 +99,11 @@
       url = "github:dweee/ghidra-mcp/86961ca288f2832e649e8ff371a4176ae1cc1535";
       flake = false;
     };
+    # Jellarr's own flake: consumers take its NixOS module from this same pin.
+    jellarr = {
+      url = "github:venkyr77/jellarr/de530bc0117eb4018598a67245e748623a6ce6dc";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     wiicompiled = {
       url = "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&rev=0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac&submodules=1";
       flake = false;
@@ -146,6 +151,9 @@
     in
     {
       overlays.default = overlay;
+      # Mopidy 4 and its extensions (nix/mopidy-4.nix), including mopidyPackages,
+      # for consumers that build Mopidy environments from their own package set.
+      overlays.mopidy-4 = import ./nix/mopidy-4.nix;
       # Deliberately excluded from packages/checks and every public artifact matrix.
       # Only the trusted cache-only workflow evaluates these unfree closures.
       cacheOnlyPackages = nixpkgs.lib.genAttrs systems (
