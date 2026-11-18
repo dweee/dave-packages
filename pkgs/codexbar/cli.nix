@@ -12,21 +12,15 @@
   procps,
   sqlite,
   which,
+  gh,
+  nix,
+  python3,
+  writeShellApplication,
 }:
 let
   pname = "codexbar-cli";
-  version = "0.83.0";
-
-  assets = {
-    x86_64-linux = {
-      name = "CodexBarCLI-v${version}-linux-x86_64.tar.gz";
-      hash = "sha256-4njrChttYgtchMFX37FoYKgkd69uxzMLa2+1x/Jym1s=";
-    };
-    aarch64-linux = {
-      name = "CodexBarCLI-v${version}-linux-aarch64.tar.gz";
-      hash = "sha256-uxKJfJNVVfq6lR0MAm9CKRKpIdh9shKVwwKIqkcAQrU=";
-    };
-  };
+  pin = lib.importJSON ./cli-pin.json;
+  inherit (pin) version assets;
 
   asset =
     assets.${stdenv.hostPlatform.system}
@@ -98,6 +92,20 @@ stdenv.mkDerivation {
     done
     runHook postInstallCheck
   '';
+
+  passthru.updateScript = [
+    (lib.getExe (writeShellApplication {
+      name = "update-codexbar-cli";
+      runtimeInputs = [
+        gh
+        nix
+        python3
+      ];
+      text = ''
+        exec python3 ${./update.py} --pin-file pkgs/codexbar/cli-pin.json --apply "$@"
+      '';
+    }))
+  ];
 
   meta = {
     description = "CLI for AI coding-provider usage limits";

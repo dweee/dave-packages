@@ -110,6 +110,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.lightning-matrix-client",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.mcp-nix",
         "visibility": "public"
       },
@@ -222,10 +226,6 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.aarch64-darwin.schildi-revenge",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.aarch64-darwin.slopbro",
         "visibility": "public"
       },
@@ -320,11 +320,19 @@
       {
         "attribute": "cacheOnlyPackages.aarch64-darwin.stemlab",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-darwin.retro-rewind-pack",
+        "visibility": "cache-only"
       }
     ],
     "x86_64-linux": [
       {
         "attribute": "packages.x86_64-linux.atuin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.glances",
         "visibility": "public"
       },
       {
@@ -481,6 +489,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.lightning-matrix-client",
         "visibility": "public"
       },
       {
@@ -726,6 +738,14 @@
       {
         "attribute": "cacheOnlyPackages.x86_64-linux.stemlab",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.x86_64-linux.blackglass",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.retro-rewind-pack",
+        "visibility": "cache-only"
       }
     ],
     "aarch64-linux": [
@@ -851,6 +871,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.lightning-matrix-client",
         "visibility": "public"
       },
       {
@@ -1039,6 +1063,14 @@
       },
       {
         "attribute": "cacheOnlyPackages.aarch64-linux.keyguard",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.aarch64-linux.blackglass",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-linux.retro-rewind-pack",
         "visibility": "cache-only"
       }
     ]

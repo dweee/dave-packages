@@ -191,11 +191,16 @@ class CacheOnlyBoundary(unittest.TestCase):
 
     def test_cache_only_selection_and_native_runners(self):
         jobs = matrix.matrix("all")["include"]
-        self.assertEqual(len(jobs), 13)
+        self.assertEqual(len(jobs), 16)
         self.assertEqual({j["runner"] for j in jobs}, {"ubuntu-24.04", "ubuntu-24.04-arm", "macos-15"})
         self.assertEqual(len(matrix.matrix("keyguard")["include"]), 3)
         self.assertEqual(matrix.matrix("spotify")["include"], [
             {"system": "aarch64-darwin", "runner": "macos-15", "package": "spotify"}
+        ])
+        self.assertEqual(matrix.matrix("retro-rewind-pack")["include"], [
+            {"system": "x86_64-linux", "runner": "ubuntu-24.04", "package": "retro-rewind-pack"},
+            {"system": "aarch64-linux", "runner": "ubuntu-24.04-arm", "package": "retro-rewind-pack"},
+            {"system": "aarch64-darwin", "runner": "macos-15", "package": "retro-rewind-pack"},
         ])
         with self.assertRaises(ValueError): matrix.matrix("wiicompiled-disc-rmcp01")
 

@@ -5,17 +5,20 @@
     "ffmpeg-full-rocm",
     "nvidia-580",
     "keyguard",
-    "stemlab"
+    "stemlab",
+    "retro-rewind-pack"
   ],
   "aarch64-linux": [
     "veracrypt",
     "ffmpeg-full",
-    "keyguard"
+    "keyguard",
+    "retro-rewind-pack"
   ],
   "aarch64-darwin": [
     "ffmpeg-full",
     "keyguard",
     "spotify",
-    "stemlab"
+    "stemlab",
+    "retro-rewind-pack"
   ]
 }

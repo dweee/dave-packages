@@ -106,8 +106,8 @@ def main():
     args = parser.parse_args()
     try:
         mib = int(os.environ.get("ATTIC_MAX_CLOSURE_MIB") or "2048")
-        if not 1 <= mib <= 8192:
-            raise ValueError("Closure transfer limit must be between 1 and 8192 MiB")
+        if not 1 <= mib <= 16384:
+            raise ValueError("Closure transfer limit must be between 1 and 16384 MiB")
         if args.manifest is not None:
             if args.mode != 'export':
                 raise ValueError('Only export selects a source manifest')
