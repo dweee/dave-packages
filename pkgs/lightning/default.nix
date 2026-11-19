@@ -15,7 +15,7 @@
   source =
     (builtins.fetchTree {
       type = "github";
-      owner = "Mizerd";
+      owner = "lightning-matrix";
       repo = "lightning";
       rev = pin.revision;
       narHash = pin.hash;

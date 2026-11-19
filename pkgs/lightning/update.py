@@ -8,7 +8,7 @@ import re
 import subprocess
 from urllib.request import Request, urlopen
 
-REPOSITORY = "Mizerd/lightning"
+REPOSITORY = "lightning-matrix/lightning"
 SHA = re.compile(r"[0-9a-f]{40}")
 SRI = re.compile(r"sha256-[A-Za-z0-9+/]{43}=")
 SEMVER = re.compile(r"\d+\.\d+\.\d+")
@@ -73,7 +73,7 @@ def prefetch(revision, version):
         "nix", "flake", "prefetch", "--json", f"github:{REPOSITORY}/{revision}"
     ], text=True, timeout=600))
     locked = fetched["locked"]
-    if (locked.get("type") != "github" or locked.get("owner") != "Mizerd"
+    if (locked.get("type") != "github" or locked.get("owner") != "lightning-matrix"
             or locked.get("repo") != "lightning" or locked.get("rev") != revision
             or locked.get("narHash") != fetched.get("hash") or not SRI.fullmatch(fetched["hash"])):
         raise ValueError("Nix prefetch differs from the selected immutable source")
