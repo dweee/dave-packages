@@ -65,6 +65,10 @@ let
     paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { pcre = final.pcre2; };
 
     inherit (fixes) redlib dorion;
+    jellarr = final.callPackage ../pkgs/jellarr { src = inputs.jellarr; };
+    gpu-screen-recorder-ui = prev.gpu-screen-recorder-ui.overrideAttrs (
+      import ../pkgs/gpu-screen-recorder-ui { inherit (final) dbus lib; }
+    );
     jetbrains-jdk-patched = prev.jetbrains.jdk-no-jcef-21.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [ ../pkgs/keyguard/jdk-8312488-jpackage-exit-crash.patch ];
       preBuild = (old.preBuild or "") + ''

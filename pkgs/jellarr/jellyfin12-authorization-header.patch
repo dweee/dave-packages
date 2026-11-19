@@ -1,0 +1,21 @@
+diff --git a/src/api/client.ts b/src/api/client.ts
+--- a/src/api/client.ts
++++ b/src/api/client.ts
+@@ -13,10 +13,16 @@ export function makeClient(baseUrl: string, apiKey: string): Client<paths> {
+       const headers: Headers = new Headers(request.headers);
+       headers.set("X-Emby-Token", apiKey);
+       headers.set(
+         "X-Emby-Authorization",
+         'MediaBrowser Client="jellarr", Device="cli", Version="0.1.0"',
+       );
++      // Jellyfin 12 ignores X-Emby-Token and returns 401 with an empty body
++      // for authenticated routes. openapi-fetch then leaves error/data unset.
++      headers.set(
++        "Authorization",
++        `MediaBrowser Client="jellarr", Device="cli", Version="0.1.0", Token="${apiKey}"`,
++      );
+       return new Request(request, { headers });
+     },
+   });
+ 
+   return client;

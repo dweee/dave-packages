@@ -98,6 +98,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | gdb-mcp | yes | yes | yes |
 | ghidra-mcp | yes | yes | yes |
 | ghidra-kuna | yes | yes | yes |
+| gpu-screen-recorder-ui | - | yes | yes |
 | horizon | yes | yes | yes |
 | horizon-bin | yes | yes | - |
 | horizon-git | yes | yes | yes |
@@ -111,6 +112,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | horizon-server-unstable | yes | yes | yes |
 | horizon-unstable | yes | yes | yes |
 | infrared | yes | yes | yes |
+| jellarr | - | yes | yes |
 | kuna | yes | yes | yes |
 | kopuz | yes | yes | yes |
 | lg-webos-dashboard | yes | yes | yes |

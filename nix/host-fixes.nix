@@ -7,8 +7,8 @@ final: prev: {
       (old.stripExclude or [ ]) ++ prev.lib.optionals prev.stdenv.hostPlatform.isDarwin [ "favicon.ico" ];
   });
 
-  # Vendored redlib (a4d36e95 + named MAIN FEEDS). See pkgs/redlib and
-  # docs/superpowers/specs/2026-08-12-redlib-named-feeds-design.md.
+  # Vendored redlib (a4d36e95 + named MAIN FEEDS). Refresh the vendored tree
+  # with scripts/update-redlib-vendor.py; review steps are in pkgs/redlib/README.md.
   redlib = prev.callPackage ../pkgs/redlib { };
 
   # dorion 6.13.2 builds webkitgtk_4_1 with enableExperimental (WebRTC/WebXR),
