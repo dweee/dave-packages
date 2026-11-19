@@ -932,17 +932,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1795114260,
-        "narHash": "sha256-8hSDPpfWLHOwkEDiRkntAlLLMlEXQXb4xQinaGG35gs=",
+        "lastModified": 1795129210,
+        "narHash": "sha256-6QFILi6XorIQNsc5JK5zBxgp2M8LAW0ikTntsug00TY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "c2f8666f37ca6ba54f03c3e029ddaa1de5182d3d",
+        "rev": "175f3d6aac65a4eb643792331f785753dfc6d93a",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "c2f8666f37ca6ba54f03c3e029ddaa1de5182d3d",
+        "rev": "175f3d6aac65a4eb643792331f785753dfc6d93a",
         "type": "github"
       }
     },

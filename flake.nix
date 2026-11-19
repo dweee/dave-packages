@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/85d4adbbd952fcaf89fed3cb4ba540a4770d6e64";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/c2f8666f37ca6ba54f03c3e029ddaa1de5182d3d";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/175f3d6aac65a4eb643792331f785753dfc6d93a";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
