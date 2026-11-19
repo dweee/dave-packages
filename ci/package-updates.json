@@ -1,6 +1,10 @@
 {
   "version": 1,
   "handlers": {
+    "geoip": {
+      "script": "scripts/update-geoip.py",
+      "files": ["pkgs/byparr/geoip.json", "pkgs/trawl/geoip.json"]
+    },
     "codexbar-cli": {
       "script": "pkgs/codexbar/update.py",
       "files": ["pkgs/codexbar/cli-pin.json"]
@@ -16,6 +20,25 @@
     "blackglass": {
       "script": "pkgs/blackglass/update.py",
       "files": ["pkgs/blackglass/pin.json"]
+    },
+    "lightning": {
+      "script": "pkgs/lightning/update.py",
+      "files": ["pkgs/lightning/pin.json"]
+    },
+    "horizon": {
+      "script": "pkgs/horizon/update.py",
+      "files": ["pkgs/horizon/sources.json"]
+    }
+  },
+  "inputHandlers": {
+    "wiicompiled": {
+      "script": "pkgs/wiicompiled/update.py",
+      "files": [
+        "flake.nix",
+        "flake.lock",
+        "nix/forks.json"
+      ],
+      "publication": "ci/automation-forge.py inputs"
     }
   }
 }

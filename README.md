@@ -65,6 +65,11 @@ forks, including the Kuna packaging fork. `nix/forks.json` and `flake.lock` reco
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
 
+HA-MCP's compatibility source lives in `dweee/ha-mcp`, preserving v9.1.0
+upstream ancestry. The catalog retains its recipe, native test matrix and cache
+publication; `pkgs/ha-mcp/default.nix` pins the fork's compatibility patch and hash
+while preserving nixpkgs' release source and bundled skill content.
+
 ## CI and binary cache
 
 `.github/workflows/darwin-actions.yml` builds native Apple Silicon packages;
@@ -93,6 +98,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | gdb-mcp | yes | yes | yes |
 | ghidra-mcp | yes | yes | yes |
 | ghidra-kuna | yes | yes | yes |
+| gpu-screen-recorder-ui | - | yes | yes |
 | horizon | yes | yes | yes |
 | horizon-bin | yes | yes | - |
 | horizon-git | yes | yes | yes |
@@ -106,6 +112,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | horizon-server-unstable | yes | yes | yes |
 | horizon-unstable | yes | yes | yes |
 | infrared | yes | yes | yes |
+| jellarr | - | yes | yes |
 | kuna | yes | yes | yes |
 | kopuz | yes | yes | yes |
 | lg-webos-dashboard | yes | yes | yes |
@@ -141,3 +148,11 @@ metadata; application forks retain their own licenses and author history.
 
 Every successful build retains a downloadable Nix closure archive for one day,
 independently of Attic publication.
+
+## Generation 2 refresh (2026-11-18)
+
+The custom Caddy binary is exported on Apple Silicon Darwin as well as Linux,
+using the plugin graph from PR #134. YAAS follows upstream master at the exact
+2026-11-15 revision; its maintained updater refreshes the nested Cargo hash and
+checks the generated Flutter lock. Native builds and tested-channel promotion
+remain required before fleet adoption.

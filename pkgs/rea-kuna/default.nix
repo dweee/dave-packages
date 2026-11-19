@@ -1,11 +1,28 @@
 {
   lib,
+  callPackage,
+  fetchzip,
+  ghidra-bin,
   writeShellApplication,
   rea,
   kuna,
-  ghidra-kuna,
   jdk21,
 }:
+let
+  # REA 6.7 accepts 12.1.x; the catalog's 12.2 requires a different bridge/JDK.
+  ghidraForRea = (ghidra-bin.override { openjdk25 = jdk21; }).overrideAttrs {
+    version = "12.1.4";
+    versiondate = "20260921";
+    src = fetchzip {
+      url = "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip";
+      hash = "sha256-ZD4Vs1i7BMvrneAbAiOc7F9iBj64Rbom+PaVO//TzK8=";
+    };
+  };
+  ghidra-kuna = callPackage ../ghidra-kuna {
+    ghidra = ghidraForRea;
+    openjdk25 = jdk21;
+  };
+in
 (writeShellApplication {
   name = "rea";
   runtimeInputs = [

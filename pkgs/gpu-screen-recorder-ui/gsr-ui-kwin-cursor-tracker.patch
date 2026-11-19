@@ -1,0 +1,210 @@
+diff --git a/include/CursorTracker/CursorTrackerDrm.hpp b/include/CursorTracker/CursorTrackerDrm.hpp
+index f2e1a78..c8e3c0d 100644
+--- a/include/CursorTracker/CursorTrackerDrm.hpp
++++ b/include/CursorTracker/CursorTrackerDrm.hpp
+@@ -21,6 +21,7 @@ namespace gsr {
+         bool update_gpu(int drm_fd);
+     private:
+         std::vector<int> drm_fds; // One for every gpu, the monitor that the cursor is on can be connected to any gpu
++        std::vector<int> drm_card_indices; // The N in /dev/dri/cardN for every entry in |drm_fds|
+         int latest_drm_fd = -1; // The gpu that the monitor that the cursor is on is connected to
+         mgl::vec2i latest_cursor_position; // Position of the cursor within the monitor
+         int latest_crtc_id = -1;
+diff --git a/include/CursorTracker/CursorTrackerKwin.hpp b/include/CursorTracker/CursorTrackerKwin.hpp
+new file mode 100644
+index 0000000..1fc0016
+--- /dev/null
++++ b/include/CursorTracker/CursorTrackerKwin.hpp
+@@ -0,0 +1,26 @@
++#pragma once
++
++#include "CursorTracker.hpp"
++
++struct wl_display;
++
++namespace gsr {
++    // Asks KWin which output is active (by default the active output follows the mouse)
++    // instead of walking the planes of every gpu over DRM like CursorTrackerDrm does.
++    // Every DRM ioctl runtime-resumes the gpu, so polling all gpus keeps a laptop dGPU
++    // that has no display connected from ever suspending.
++    class CursorTrackerKwin : public CursorTracker {
++    public:
++        static bool is_supported();
++
++        CursorTrackerKwin(struct wl_display *wayland_dpy);
++        CursorTrackerKwin(const CursorTrackerKwin&) = delete;
++        CursorTrackerKwin& operator=(const CursorTrackerKwin&) = delete;
++        ~CursorTrackerKwin() = default;
++
++        void update() override {}
++        std::optional<CursorInfo> get_latest_cursor_info() override;
++    private:
++        struct wl_display *wayland_dpy = nullptr;
++    };
++}
+diff --git a/meson.build b/meson.build
+index bfac165..4f0cd2c 100644
+--- a/meson.build
++++ b/meson.build
+@@ -43,6 +43,7 @@ src = [
+     'src/CursorTracker/CursorTrackerHyprland.cpp',
+     'src/CursorTracker/CursorTrackerNiri.cpp',
+     'src/CursorTracker/CursorTrackerSway.cpp',
++    'src/CursorTracker/CursorTrackerKwin.cpp',
+     'src/RegionSelector/RegionSelectorX11.cpp',
+     'src/RegionSelector/RegionSelectorWayland.cpp',
+     'src/DesktopEnvironment/DesktopEnvironmentX11.cpp',
+diff --git a/src/CursorTracker/CursorTrackerDrm.cpp b/src/CursorTracker/CursorTrackerDrm.cpp
+index e71b377..cbb24bb 100644
+--- a/src/CursorTracker/CursorTrackerDrm.cpp
++++ b/src/CursorTracker/CursorTrackerDrm.cpp
+@@ -5,6 +5,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <fcntl.h>
++#include <glob.h>
+ #include <xf86drm.h>
+ #include <xf86drmMode.h>
+ 
+@@ -56,6 +57,32 @@ namespace gsr {
+     }
+ 
+     // A drm device that doesn't do hardware accelerated rendering (llvmpipe for example) has no render node
++    // Reads the connector state from sysfs, which doesn't touch (or wake) the gpu.
++    // Returns true when unsure, so that the cursor is still tracked.
++    static bool drm_card_has_connected_connector(int card_index) {
++        char pattern[128];
++        snprintf(pattern, sizeof(pattern), "/sys/class/drm/card%d-*/status", card_index);
++
++        glob_t glob_result;
++        if(glob(pattern, 0, nullptr, &glob_result) != 0)
++            return true;
++
++        bool connected = false;
++        for(size_t i = 0; i < glob_result.gl_pathc && !connected; ++i) {
++            FILE *file = fopen(glob_result.gl_pathv[i], "rb");
++            if(!file)
++                continue;
++
++            char status[32];
++            if(fgets(status, sizeof(status), file))
++                connected = strncmp(status, "connected", 9) == 0; // "disconnected" and "unknown" don't match
++            fclose(file);
++        }
++
++        globfree(&glob_result);
++        return connected;
++    }
++
+     static bool drm_fd_is_hardware_accelerated_gpu(int drm_fd) {
+         drmVersion *ver = drmGetVersion(drm_fd);
+         if(!ver)
+@@ -290,6 +317,7 @@ namespace gsr {
+             drmSetClientCap(drm_fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
+             drmSetClientCap(drm_fd, DRM_CLIENT_CAP_ATOMIC, 1);
+             drm_fds.push_back(drm_fd);
++            drm_card_indices.push_back(i);
+         }
+ 
+         if(drm_fds.empty())
+@@ -303,8 +331,13 @@ namespace gsr {
+     }
+ 
+     void CursorTrackerDrm::update() {
+-        for(const int drm_fd : drm_fds) {
+-            if(update_gpu(drm_fd))
++        for(size_t i = 0; i < drm_fds.size(); ++i) {
++            // The cursor can't be on a gpu without a connected display. Skip it without any ioctl:
++            // every DRM ioctl runtime-resumes the gpu, and at this poll rate a laptop dGPU would never suspend.
++            if(!drm_card_has_connected_connector(drm_card_indices[i]))
++                continue;
++
++            if(update_gpu(drm_fds[i]))
+                 return;
+         }
+     }
+diff --git a/src/CursorTracker/CursorTrackerKwin.cpp b/src/CursorTracker/CursorTrackerKwin.cpp
+new file mode 100644
+index 0000000..99bf839
+--- /dev/null
++++ b/src/CursorTracker/CursorTrackerKwin.cpp
+@@ -0,0 +1,50 @@
++#include "../../include/CursorTracker/CursorTrackerKwin.hpp"
++#include "../../include/Process.hpp"
++#include "../../include/WindowUtils.hpp"
++
++namespace gsr {
++    static bool get_kwin_active_output_name(std::string &name) {
++        const char *args[] = { "dbus-send", "--session", "--print-reply=literal", "--dest=org.kde.KWin", "/KWin", "org.kde.KWin.activeOutputName", nullptr };
++        std::string output;
++        if(exec_program_on_host_get_stdout(args, output, false) != 0)
++            return false;
++
++        // --print-reply=literal prints the string indented, for example "   eDP-1\n"
++        const size_t start_index = output.find_first_not_of(" \t\n");
++        if(start_index == std::string::npos)
++            return false;
++
++        const size_t end_index = output.find_last_not_of(" \t\n");
++        name = output.substr(start_index, end_index - start_index + 1);
++        return true;
++    }
++
++    // static
++    bool CursorTrackerKwin::is_supported() {
++        std::string name;
++        return get_kwin_active_output_name(name);
++    }
++
++    CursorTrackerKwin::CursorTrackerKwin(struct wl_display *wayland_dpy) : wayland_dpy(wayland_dpy) {
++
++    }
++
++    std::optional<CursorInfo> CursorTrackerKwin::get_latest_cursor_info() {
++        std::string monitor_name;
++        if(!get_kwin_active_output_name(monitor_name))
++            return std::nullopt;
++
++        // KWin doesn't expose the cursor position over D-Bus, use the center of the active output
++        mgl::vec2i position{0, 0};
++        if(wayland_dpy) {
++            for(const Monitor &monitor : get_monitors_wayland(wayland_dpy)) {
++                if(monitor.name == monitor_name) {
++                    position = monitor.position + monitor.size / 2;
++                    break;
++                }
++            }
++        }
++
++        return CursorInfo{ position, std::move(monitor_name) };
++    }
++}
+diff --git a/src/Overlay.cpp b/src/Overlay.cpp
+index 351eb01..01fe149 100644
+--- a/src/Overlay.cpp
++++ b/src/Overlay.cpp
+@@ -23,6 +23,7 @@
+ #include "../include/GlobalHotkeys/GlobalHotkeysLinux.hpp"
+ #include "../include/CursorTracker/CursorTrackerX11.hpp"
+ #include "../include/CursorTracker/CursorTrackerDrm.hpp"
++#include "../include/CursorTracker/CursorTrackerKwin.hpp"
+ #include "../include/CursorTracker/CursorTrackerHyprland.hpp"
+ #include "../include/CursorTracker/CursorTrackerNiri.hpp"
+ #include "../include/CursorTracker/CursorTrackerSway.hpp"
+@@ -599,6 +600,7 @@ namespace gsr {
+             const bool is_hyprland = xdg_current_desktop && strstr(xdg_current_desktop, "Hyprland");
+             const bool is_niri = xdg_current_desktop && strstr(xdg_current_desktop, "niri");
+             const bool is_sway = xdg_current_desktop && strstr(xdg_current_desktop, "sway");
++            const bool is_kde = xdg_current_desktop && strstr(xdg_current_desktop, "KDE");
+ 
+             if(is_hyprland && CursorTrackerHyprland::is_supported())
+                 cursor_tracker = std::make_unique<CursorTrackerHyprland>();
+@@ -606,6 +608,8 @@ namespace gsr {
+                 cursor_tracker = std::make_unique<CursorTrackerNiri>();
+             else if(is_sway && CursorTrackerSway::is_supported())
+                 cursor_tracker = std::make_unique<CursorTrackerSway>();
++            else if((is_kwin || is_kde) && CursorTrackerKwin::is_supported())
++                cursor_tracker = std::make_unique<CursorTrackerKwin>(wayland_dpy);
+             else
+                 cursor_tracker = std::make_unique<CursorTrackerDrm>(wayland_dpy);
+ 

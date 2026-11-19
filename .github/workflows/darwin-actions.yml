@@ -7,9 +7,9 @@ name: Dave packages darwin
   workflow_dispatch:
     inputs:
       package:
-        description: Package attribute, or all for the complete native matrix
+        description: Package attribute, all for the complete native matrix, or changed for this branch's own changes (all on the default branch)
         required: true
-        default: all
+        default: changed
         type: string
 permissions:
   contents: read
@@ -37,6 +37,7 @@ jobs:
         python3 ci/test-configure-attic-read.py
         python3 ci/test-cache-only.py
         python3 ci/test-public-source.py
+        python3 ci/test-retain-build-outputs.py
     - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
       with:
         source-tag: v3.24.1
@@ -105,13 +106,24 @@ jobs:
           echo "Package build: ${SECONDS}s"
           cat outputs.txt
         } >> "$GITHUB_STEP_SUMMARY"
+    - name: Validate Lightning runtime libraries and upstream contracts
+      if: ${{ matrix.package == 'lightning-matrix-client' }}
+      env:
+        TARGET_SYSTEM: ${{ matrix.system }}
+      run: |
+        set -euo pipefail
+        package=$(head -n1 outputs.txt)
+        source=$(nix eval --raw ".#packages.$TARGET_SYSTEM.lightning-matrix-client.source" --no-update-lock-file --no-write-lock-file)
+        version=$(nix eval --raw ".#packages.$TARGET_SYSTEM.lightning-matrix-client.version" --no-update-lock-file --no-write-lock-file)
+        python3 pkgs/lightning/check.py --package "$package" --source "$source" --version "$version"
     - name: Verify the composed headless decompiler
       if: ${{ matrix.package == 'ghidra-kuna' || matrix.package == 'rea-kuna' }}
       env:
         TARGET_SYSTEM: ${{ matrix.system }}
+        HEADLESS_CHECK: ${{ matrix.package == 'rea-kuna' && 'rea-ghidra-headless' || 'kuna-ghidra-headless' }}
       run: |
-        python3 ci/public-closure.py ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless"
-        nix build ".#checks.$TARGET_SYSTEM.kuna-ghidra-headless" --no-update-lock-file --no-write-lock-file --no-link -L
+        python3 ci/public-closure.py ".#checks.$TARGET_SYSTEM.$HEADLESS_CHECK"
+        nix build ".#checks.$TARGET_SYSTEM.$HEADLESS_CHECK" --no-update-lock-file --no-write-lock-file --no-link -L
     - name: Verify MCP protocol and SDK compatibility checks
       if: ${{ matrix.package == 'gdb-mcp' || matrix.package == 'ghidra-mcp' }}
       env:
@@ -136,7 +148,7 @@ jobs:
     - name: Save selected runtime closures independently of cache publication
       timeout-minutes: 15
       env:
-        ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
+        ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.ATTIC_REA_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
       run: python3 ci/transfer-attic.py export --directory attic-transfer --manifest cache-outputs.txt
       id: cache_transfer
       if: ${{ always() && !cancelled() && hashFiles('cache-outputs.txt') != '' }}
@@ -165,7 +177,7 @@ jobs:
     timeout-minutes: 240
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
     - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -195,7 +207,7 @@ jobs:
     - name: Import data without running any package programs
       timeout-minutes: 15
       env:
-        ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
+        ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.ATTIC_REA_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
       run: python3 ci/transfer-attic.py import --directory attic-transfer
     - name: Publish to Niks3 with GitHub OIDC and verify S3 integrity
       run: python3 ci/push-niks3.py --outputs attic-transfer/outputs.txt

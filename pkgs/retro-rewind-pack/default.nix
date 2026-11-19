@@ -30,8 +30,8 @@ stdenvNoCC.mkDerivation {
     inherit (pin) hash;
   };
   nativeBuildInputs = [ unzip ];
-  preferLocalBuild = true;
-  allowSubstitutes = false;
+  # Served from the private niks3 cache instead of re-downloading the CDN zip.
+  allowSubstitutes = true;
   dontFixup = true;
   unpackPhase = ''
     runHook preUnpack
