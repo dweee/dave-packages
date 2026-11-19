@@ -30,6 +30,9 @@ runCommand "ghidra-kuna-${ghidra.version}"
     cp -a --reflink=auto ${ghidra}/. "$out/"
     chmod -R u+w "$out"
     target="$out/lib/ghidra/Ghidra/Features/Decompiler/os/${platform}/decompile"
+    # Release bundles can omit native binaries for this host (notably 12.1
+    # on Apple Silicon). Kuna supplies the native executable for that platform.
+    mkdir -p "$(dirname "$target")"
     rm -f "$target"
     ln -s ${kuna}/bin/kuna_ghidra "$target"
     rm -f "$out/lib/ghidra/support/launch.sh"

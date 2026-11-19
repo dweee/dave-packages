@@ -18,6 +18,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.caddy-custom",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.cursaves",
         "visibility": "public"
       },
@@ -107,6 +111,10 @@
       },
       {
         "attribute": "packages.aarch64-darwin.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.lightning-matrix-client",
         "visibility": "public"
       },
       {
@@ -332,6 +340,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.glances",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.bitwig-theme-editor",
         "visibility": "public"
       },
@@ -485,6 +497,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.lightning-matrix-client",
         "visibility": "public"
       },
       {
@@ -734,6 +750,14 @@
       {
         "attribute": "cacheOnlyPackages.x86_64-linux.retro-rewind-pack",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.x86_64-linux.gpu-screen-recorder-ui",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.jellarr",
+        "visibility": "public"
       }
     ],
     "aarch64-linux": [
@@ -859,6 +883,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.lightning-matrix-client",
         "visibility": "public"
       },
       {
@@ -1056,6 +1084,14 @@
       {
         "attribute": "cacheOnlyPackages.aarch64-linux.retro-rewind-pack",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.aarch64-linux.gpu-screen-recorder-ui",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.jellarr",
+        "visibility": "public"
       }
     ]
   },

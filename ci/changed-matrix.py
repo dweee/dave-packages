@@ -87,6 +87,24 @@ def changed(family, package, base, head):
                 subprocess.run(['git', 'worktree', 'remove', '--force', str(tree)], cwd=ROOT, check=True)
 
 
+def dispatched(family, package, ref, default_branch, head='HEAD'):
+    """Select a dispatched run: one package, everything, or a branch's own changes.
+
+    Update automation dispatches its PR checks because a PR opened by the workflow
+    token starts no pull_request run. Building the whole matrix for each such PR
+    took hours and kept the routine PR from being refreshed, so `changed` compares
+    the branch with its merge base, like a pull_request run. On the default branch
+    `changed` keeps the complete matrix that publication and backups rely on.
+    """
+    if package != 'changed':
+        return load_matrix(family, package)
+    if ref == 'refs/heads/' + default_branch:
+        return load_matrix(family, 'all')
+    base = subprocess.check_output(['git', 'merge-base', 'refs/remotes/origin/' + default_branch, head],
+                                   cwd=ROOT, text=True).strip()
+    revision = subprocess.check_output(['git', 'rev-parse', head], cwd=ROOT, text=True).strip()
+    return changed(family, 'all', base, revision)
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('family', choices=['darwin', 'others', 'cache-only'])
@@ -94,14 +112,18 @@ def main():
     args = parser.parse_args()
     event = json.loads(Path(os.environ['GITHUB_EVENT_PATH']).read_text())
     kind = os.environ['GITHUB_EVENT_NAME']
+    package = args.package
+    if kind != 'workflow_dispatch' and package == 'changed':
+        package = 'all'  # Push and PR runs already select their own changes.
     if kind == 'workflow_dispatch':
-        result = load_matrix(args.family, args.package)
+        result = dispatched(args.family, package, os.environ.get('GITHUB_REF', ''),
+                            event['repository']['default_branch'])
     elif kind == 'pull_request':
         # Compare the tested merge result with its base branch: only the PR's effect.
-        result = changed(args.family, args.package, event['pull_request']['base']['sha'],
+        result = changed(args.family, package, event['pull_request']['base']['sha'],
                          os.environ['GITHUB_SHA'])
     elif kind == 'push':
-        result = changed(args.family, args.package, event['before'], event['after'])
+        result = changed(args.family, package, event['before'], event['after'])
     else:
         raise ValueError('Unsupported event: ' + kind)
     print(json.dumps(result, separators=(',', ':')))

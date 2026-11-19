@@ -10,7 +10,7 @@ let
   t3code = import ../pkgs/t3code { inherit inputs system; };
   fixes = import ./host-fixes.nix final prev;
   mopidy = import ./mopidy-4.nix final prev;
-  wii = import ../pkgs/wiicompiled/source/nix/overlay.nix ../pkgs/wiicompiled/source final prev;
+  wii = import (inputs.wiicompiled + "/nix/overlay.nix") inputs.wiicompiled final prev;
   avfSystem = inputs.nixpkgs.lib.nixosSystem {
     system = "aarch64-linux";
     modules = [
@@ -24,6 +24,7 @@ let
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
+    glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
     handy = inputs.handy.packages.${system}.handy;
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;
@@ -64,6 +65,10 @@ let
     paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { pcre = final.pcre2; };
 
     inherit (fixes) redlib dorion;
+    jellarr = final.callPackage ../pkgs/jellarr { src = inputs.jellarr; };
+    gpu-screen-recorder-ui = prev.gpu-screen-recorder-ui.overrideAttrs (
+      import ../pkgs/gpu-screen-recorder-ui { inherit (final) dbus lib; }
+    );
     jetbrains-jdk-patched = prev.jetbrains.jdk-no-jcef-21.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [ ../pkgs/keyguard/jdk-8312488-jpackage-exit-crash.patch ];
       preBuild = (old.preBuild or "") + ''
@@ -96,26 +101,36 @@ let
     };
     caddy-custom = prev.caddy.withPlugins {
       plugins = [
-        "github.com/caddyserver/transform-encoder@v0.0.0-20260417205707-a6a89df4bc65"
+        "github.com/caddyserver/transform-encoder@v0.0.0-20260423033309-ba4124974830"
         "github.com/caddy-dns/porkbun@v0.3.1"
         "github.com/mholt/caddy-webdav@v0.0.0-20260127042217-fa2f366b0d75"
-        "github.com/caddy-dns/njalla@v0.0.0-20250823094507-f709141f1fe6"
-        "github.com/tailscale/caddy-tailscale@v0.0.0-20260106222316-bb080c4414ac"
-        "github.com/caddyserver/cache-handler@v0.16.0"
-        "github.com/darkweak/storages/simplefs/caddy@v0.0.19"
+        "github.com/caddy-dns/njalla@v1.0.0"
+        "github.com/tailscale/caddy-tailscale@v0.0.0-20260826180304-de41b249af4f"
+        "github.com/caddyserver/cache-handler@v0.17.0"
+        "github.com/darkweak/storages/simplefs/caddy@v0.0.23"
       ];
-      hash = "sha256-H6SwdJRitkNp4e4GMoVCtKiW601M8MBSyHSmRT689H0=";
+      hash = "sha256-D/pLOXEz6n56rLLRhkLBHq0AkBz/VZhW754ym92ctKc=";
     };
+    lightning-matrix-client = final.qt6.callPackage ../pkgs/lightning { };
     matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel {
       inherit (prev) matrix-tuwunel;
     };
     mlx-audio-separator = final.callPackage ../pkgs/mlx-audio-separator { };
-    pumpkin = inputs.pumpkin-nixpkgs.legacyPackages.${system}.pumpkin.overrideAttrs (old: {
-      # Rust 1.99 needs more compiler stack for Pumpkin's generated registry data.
-      env = (old.env or { }) // {
-        RUST_MIN_STACK = "33554432";
-      };
-    });
+    pumpkin =
+      let
+        pumpkinPkgs = inputs.pumpkin-nixpkgs.legacyPackages.${system};
+      in
+      pumpkinPkgs.pumpkin.overrideAttrs (old: {
+        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pumpkinPkgs.pkg-config ];
+        # zstd-sys probes the system library with pkg-config's static mode.
+        buildInputs = (old.buildInputs or [ ]) ++ [
+          (pumpkinPkgs.zstd.override { enableStatic = true; })
+        ];
+        # Rust 1.99 needs more compiler stack for Pumpkin's generated registry data.
+        env = (old.env or { }) // {
+          RUST_MIN_STACK = "33554432";
+        };
+      });
     pumpkin-voice = final.callPackage ../pkgs/pumpkin-voice/nix/package.nix { };
     pumpkin-tpsbar = final.callPackage ../pkgs/pumpkin-tpsbar/nix/package.nix { };
     pumpkin-java-multiversion = final.callPackage ../pkgs/pumpkin-java-multiversion/nix/package.nix { };

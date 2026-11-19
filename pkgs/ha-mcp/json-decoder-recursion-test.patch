@@ -1,0 +1,11 @@
+--- a/tests/src/unit/test_tool_dispatch.py
++++ b/tests/src/unit/test_tool_dispatch.py
+@@ -1,0 +2,2 @@
++
++from unittest.mock import patch
+@@ -10 +12,4 @@
+-    assert coerce_proxy_arguments(nested) is None
++    # Exercise the parser rejection contract independently of the interpreter
++    # JSON decoder's version-dependent nesting limit.
++    with patch("ha_mcp.tool_dispatch.json.loads", side_effect=RecursionError):
++        assert coerce_proxy_arguments(nested) is None

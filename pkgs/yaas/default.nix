@@ -6,6 +6,7 @@
   fetchFromGitHub,
   flutter347,
   lib,
+  libgit2,
   makeDesktopItem,
   mpv-unwrapped,
   nix-update,
@@ -16,19 +17,21 @@
   writeShellApplication,
   p7zip,
   protobuf,
+  pkg-config,
   rinf_cli,
   rustPlatform,
   stdenvNoCC,
   writeText,
+  zstd,
 }: let
   pname = "yaas";
-  version = "0-unstable-2026-10-29";
+  version = "0-unstable-2026-11-15";
 
   src = fetchFromGitHub {
     owner = "skrimix";
     repo = "yaas";
-    rev = "40e061d718b95aadd73caf1f8d81753e001c3885";
-    hash = "sha256-JTEmMyALJWKL5o/0J0C9DRkSIFd+EGeOKI5bx58D5Ks=";
+    rev = "bd5af43edd413534a1495fe23df5ac559d9a0f32";
+    hash = "sha256-YCD4h+hcv/6Xs79JgHFDht1pmInsF8tT/vQNVAtdbCk=";
   };
 
   rustDep = rustPlatform.buildRustPackage {
@@ -36,7 +39,10 @@
 
     buildAndTestSubdir = "native/hub";
 
-    cargoHash = "sha256-k551dTlNoMaav/XlBUWxBi6cfmCPVx9xiMrbNeJ3lVA=";
+    cargoHash = "sha256-tL6nxE0pJOu0lLhhOhWVmdbTK2pTyJy7gTC7lsCY8l0=";
+
+    nativeBuildInputs = [pkg-config];
+    buildInputs = [libgit2 (zstd.override {enableStatic = true;})];
 
     doCheck = false;
 
