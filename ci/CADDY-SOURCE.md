@@ -17,6 +17,8 @@ tailscale.com v1.102.2, which already depends on a compatible `go-json-experimen
 at runtime: every tsnet node failed PollNetMap and Tailscale-bound vhosts went dark
 (terra, 2026-11-17). `ci/test-caddy-source.py` keeps the caddy-tailscale
 pseudo-version at or after that fix and asserts no forced JSON revision.
+Darwin and both Linux systems export this build with the inherited Go toolchain
+and native install checks enabled.
 
 For a refresh, keep the already selected flake inputs and plugin versions fixed:
 

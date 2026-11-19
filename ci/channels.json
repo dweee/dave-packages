@@ -18,6 +18,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.caddy-custom",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.cursaves",
         "visibility": "public"
       },
