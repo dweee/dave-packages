@@ -74,7 +74,7 @@ class Lightning(unittest.TestCase):
         source.mkdir()
         (source / "CMakeLists.txt").write_text("project(lightning VERSION 0.10.5)")
         f = {"hash": "sha256-" + "B" * 43 + "=", "storePath": str(source),
-             "locked": {"type": "github", "owner": "Mizerd", "repo": "lightning", "rev": "b" * 40, "narHash": "sha256-" + "B" * 43 + "="}}
+             "locked": {"type": "github", "owner": "lightning-matrix", "repo": "lightning", "rev": "b" * 40, "narHash": "sha256-" + "B" * 43 + "="}}
         with patch.object(u.subprocess, "check_output", return_value=json.dumps(f)):
             self.assertEqual(u.prefetch("b" * 40, "0.10.5"), f["hash"])
             with self.assertRaises(ValueError):

@@ -243,7 +243,17 @@
             pkgs.git
             pkgs.gh
             pkgs.python3
-            pkgs.nix-update
+            # nix-update 1.16 reads metadata.path with legacy Nix commands.
+            # Nix 2.35 metadata may name a Git source that is not materialized;
+            # prefetch copies it before nix-instantiate/nix-build consume it.
+            (pkgs.nix-update.overrideAttrs (old: {
+              postPatch = (old.postPatch or "") + ''
+                substituteInPlace nix_update/options.py \
+                  --replace-fail '["nix", "flake", "metadata", "--json"]' \
+                  '["nix", "flake", "prefetch", "--json", "."]' \
+                  --replace-fail 'metadata.get("path")' 'metadata.get("storePath")'
+              '';
+            }))
             pkgs.nix-prefetch-git
             pkgs.yq-go
           ];

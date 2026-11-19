@@ -4,8 +4,8 @@
 # (CVE-2026-120459, 9029e892d6), with pyjwt. Drop once the aligned nixpkgs pin
 # carries glances >= 4.5.9. Offered on x86_64-linux only: its consumers (Flakey terra
 # and faeri) are x86_64, and the aarch64-linux build failed in the tested gate.
+if lib.versionAtLeast glances.version "4.5.9" then glances else
 glances.overridePythonAttrs (old:
-  assert lib.versionOlder old.version "4.5.9";
   {
     version = "4.5.9";
     src = fetchFromGitHub {
