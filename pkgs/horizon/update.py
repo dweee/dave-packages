@@ -154,7 +154,17 @@ def source_pin(kind, current, rev, version, system, repo=REPO, **extra):
 
 def mixins_rev(rev):
     text = fetch(f'https://raw.githubusercontent.com/{REPO}/{rev}/launcher/src/native_mods.rs', raw=True).decode()
-    return re.search(r'MIXINS_REV: &str = "([0-9a-f]{40})"', text).group(1)
+    literal = re.findall(r'\bMIXINS_REV: &str = "([0-9a-f]{40})";', text)
+    if len(literal) == 1:
+        return literal[0]
+    # New launchers re-export the shared mod-package tool pin. Read it from
+    # the same immutable launcher commit, never from a moving branch.
+    if re.search(r'\bMIXINS_REV: &str = horizon_platform::mod_package::mixins_tool::REV;', text):
+        shared = fetch(f'https://raw.githubusercontent.com/{REPO}/{rev}/crates/horizon-mod-package/src/mixins_tool.rs', raw=True).decode()
+        literal = re.findall(r'\bpub const REV: &str = "([0-9a-f]{40})";', shared)
+        if len(literal) == 1:
+            return literal[0]
+    raise ValueError('Unsupported Horizon mixins revision declaration')
 
 
 def nightly_source(release):
