@@ -1,6 +1,6 @@
 # Lightning
 
-`pin.json` records the stable `Mizerd/lightning` release, exact source commit and
+`pin.json` records the stable `lightning-matrix/lightning` release, exact source commit and
 Nix source NAR hash. The wrapper imports that immutable source's Qt 6 recipe with
 `builtins.fetchTree`; it adds system AWS-LC and portable Darwin app packaging.
 It preserves the upstream Cargo lock, Rust backend, LTO settings and package test
