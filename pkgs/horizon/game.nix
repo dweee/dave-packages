@@ -176,9 +176,20 @@ rustPlatform.buildRustPackage (finalAttrs: {
   doInstallCheck = true;
   installCheckPhase = ''
     runHook preInstallCheck
-    $out/bin/horizon-server --version
-    $out/libexec/horizon/horizon-prepare --version
-    $out/libexec/horizon/${game} --help | grep -q -- --resources
+    # Horizon refuses to start below a 144 MiB stack hard limit
+    # (GuestStackUnavailable). Some builders, such as GitHub's aarch64-linux
+    # runners, cap the sandbox at 64 MiB and cannot raise it.
+    stack_hard=$(ulimit -Hs)
+    if [ "$stack_hard" = unlimited ] || [ "$stack_hard" -ge 147456 ]; then
+      $out/bin/horizon-server --version
+      $out/libexec/horizon/horizon-prepare --version
+      $out/libexec/horizon/${game} --help | grep -q -- --resources
+    else
+      echo "installCheck: stack hard limit $stack_hard KiB < 147456 KiB; checking executables only"
+      test -x $out/bin/horizon-server
+      test -x $out/libexec/horizon/horizon-prepare
+      test -x $out/libexec/horizon/${game}
+    fi
     runHook postInstallCheck
   '';
 
