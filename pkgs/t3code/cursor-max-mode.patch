@@ -260,3 +260,28 @@ diff --git a/packages/provider-cursor/src/server/sdk.ts b/packages/provider-curs
    const start = performance.now();
    sdk = requireCursorSdk("@cursor/sdk") as typeof import("@cursor/sdk");
    if (process.env.T3CODE_STARTUP_PROFILE_DIR) {
+diff --git a/packages/provider-cursor/src/server/sdk.test.ts b/packages/provider-cursor/src/server/sdk.test.ts
+--- a/packages/provider-cursor/src/server/sdk.test.ts
++++ b/packages/provider-cursor/src/server/sdk.test.ts
+@@ -9,11 +9,18 @@
+     ConfigurationError: SdkError,
+   };
+   const sqlite = { SqliteLocalAgentStore: {} };
+-  const requireSdk = vi.fn((id: string) => (id === "@cursor/sdk" ? sdk : sqlite));
+-  return { sdk, sqlite, requireSdk };
++  const requireSdk = Object.assign(
++    vi.fn((id: string) => (id === "@cursor/sdk" ? sdk : sqlite)),
++    { resolve: vi.fn(() => "/cursor/sdk.js") },
++  );
++  const requireDependency = vi.fn(() => ({ proto3: { util: { initPartial: vi.fn() } } }));
++  return { sdk, sqlite, requireSdk, requireDependency };
+ });
+
+-vi.mock("node:module", () => ({ createRequire: () => fixture.requireSdk }));
++vi.mock("node:module", () => ({
++  createRequire: (from: string | URL) =>
++    String(from) === "/cursor/sdk.js" ? fixture.requireDependency : fixture.requireSdk,
++}));
+
+ describe("Cursor disk modules", () => {
+   it("loads on demand, shares exports across callers, and leaves SQLite unloaded", async () => {
