@@ -108,6 +108,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # horizon_core::release: what --version, crash reports and the title say.
     HORIZON_VERSION = pin.release or "";
     HORIZON_NIGHTLY = pin.nightly or "";
+    # Source archives omit .git; upstream build.rs accepts this exact identity.
+    HORIZON_GAME_BUILD_ID = pin.rev;
   };
 
   # Native mods are applied after cargoSetupHook has checked Cargo.lock
