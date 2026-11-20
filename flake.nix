@@ -1,9 +1,9 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/04906337b6d53e8bb0eaf0470ae9f070a4d4eb55";
+    nixpkgs.url = "github:nixos/nixpkgs/0bb8272318b4ca41bf0edc6224df3e3e3046b70d";
     nix-zed-extensions = {
-      url = "github:SwornSystems/nix-zed-extensions/99c912741eda650e39a3e45e9eeb03704416af06";
+      url = "github:SwornSystems/nix-zed-extensions/8d338ca70f5a269bf2edf885fce8ae2f43442778";
       flake = false;
     };
     mcp-nix = {
@@ -39,16 +39,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
-    t3-code.url = "github:LisaScheers/t3-code-nix/a63a7a785b9ad73e160c6782b3042e6eefa4d098";
+    t3-code.url = "github:LisaScheers/t3-code-nix/01f5a274575a60f467fb4bad2a58f4561ce9c1ba";
     nixos-jellyfin = {
       url = "github:matt1432/nixos-jellyfin/2b464890ce33c84b5affdcfa98ed62b03f0d3fe0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/85d4adbbd952fcaf89fed3cb4ba540a4770d6e64";
+      url = "github:oxalica/rust-overlay/a5c999945da3991d7aa3cc2a6075cfd22bd387e9";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/175f3d6aac65a4eb643792331f785753dfc6d93a";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/c8fe2d78b0617d8f6e52041e57d90a6ffe0573ac";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,7 +57,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/10e8df08ad828225575f448e6b49ae092132d9a8";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/ffdb35a774334ae2f1aca81817f5f5519edbadd5";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
