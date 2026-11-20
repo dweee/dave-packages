@@ -58,7 +58,7 @@ let
     checkPhase = ''
       runHook preCheck
       T3CODE_STAGE_RUNTIME_SCRIPT=${./stage-runtime.mjs} node --test ${./stage-runtime.test.mjs}
-      pnpm --dir packages/provider-cursor exec vp test run src/server/sdk.test.ts
+      pnpm --dir packages/provider-cursor exec vp test run src/server/sdk.test.ts src/server/cursor-max-mode.test.ts
       runHook postCheck
     '';
     passthru = (old.passthru or { }) // {
