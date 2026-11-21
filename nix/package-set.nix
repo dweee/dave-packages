@@ -21,6 +21,15 @@ let
   cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
   horizon = final.callPackage ../pkgs/horizon { };
   definitions = {
+    llama-cpp-inkling = import ../pkgs/llama-cpp-inkling {
+      pkgs = prev;
+      upstream = inputs.llama-cpp-inkling;
+    };
+    llama-cpp-inkling-vulkan = import ../pkgs/llama-cpp-inkling {
+      pkgs = prev;
+      upstream = inputs.llama-cpp-inkling;
+      useVulkan = true;
+    };
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };

@@ -1,6 +1,10 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
+    llama-cpp-inkling = {
+      url = "github:ggml-org/llama.cpp/29b52d398b294509746ec0a3f28948a3107c0213";
+      flake = false;
+    };
     nixpkgs.url = "github:nixos/nixpkgs/0bb8272318b4ca41bf0edc6224df3e3e3046b70d";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/8d338ca70f5a269bf2edf885fce8ae2f43442778";
