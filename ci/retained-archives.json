@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "releases": {
+    "58ef022038c936b8b47e16bccca1310597a67c71": {
+      "x86_64-linux": "/nix/store/jipk25wwiqf2pnzgv21gv8kw2fakdms3-retained-dave-packages-58ef0220-x86_64-linux",
+      "aarch64-darwin": "/nix/store/7kylhx0d3r0lbkvl2fn3ab988xx8qkgw-retained-dave-packages-58ef0220-aarch64-darwin"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+name: Horizon updates
+# Scheduled Horizon maintenance runs with the other handlers in package-updates.yml.
+# Keep this manual entry point; use the same guarded publisher and routine PR.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+jobs:
+  update:
+    uses: ./.github/workflows/package-updates.yml
+    secrets: inherit

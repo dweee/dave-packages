@@ -47,7 +47,7 @@ in
       mkdir -p "$HOME"
     '';
     pythonImportsCheck = ["mlx_audio_separator" "mlx_audio_io" "mlx_spectro"];
-    makeWrapperArgs = ["--prefix PATH : ${lib.makeBinPath [ffmpeg]}"];
+    makeWrapperArgs = ["--prefix" "PATH" ":" "${lib.makeBinPath [ffmpeg]}"];
     passthru = {inherit python;};
     meta = {
       description = "MLX-native audio stem separation for Apple Silicon";

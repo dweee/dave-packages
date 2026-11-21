@@ -78,7 +78,7 @@ in
       tqdm
     ];
     nativeBuildInputs = [makeWrapper];
-    makeWrapperArgs = ["--prefix PATH : ${lib.makeBinPath [ffmpeg]}"];
+    makeWrapperArgs = ["--prefix" "PATH" ":" "${lib.makeBinPath [ffmpeg]}"];
     pythonImportsCheck = ["audio_separator.separator" "audio_separator.separator.architectures.demucs_separator"];
     meta = {
       description = "Local music stem separation backend for StemLab";

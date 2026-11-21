@@ -11,10 +11,13 @@
       "source": "github:birdeclipse/gdb-mcp"
     },
     "ghidra-mcp": {
-      "source": "github:bethington/ghidra-mcp/v6.0.0"
+      "source": "github:dweee/ghidra-mcp/flakey"
     },
     "handy": {
       "source": "github:dweee/Handy/tested"
+    },
+    "jellarr": {
+      "source": "github:venkyr77/jellarr"
     },
     "kopuz": {
       "source": "git+https://github.com/dweee/kopuz.git?ref=tested"
@@ -81,6 +84,19 @@
     },
     "virby": {
       "source": "github:quinneden/virby-nix-darwin"
+    },
+    "wiicompiled": {
+      "source": "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&submodules=1"
     }
+  },
+  "fixedOutputHashes": {
+    "files": [
+      "nix/package-set.nix",
+      "pkgs/jellarr/default.nix"
+    ],
+    "packages": [
+      "caddy-custom",
+      "jellarr"
+    ]
   }
 }

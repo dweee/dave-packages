@@ -10,7 +10,7 @@ let
   t3code = import ../pkgs/t3code { inherit inputs system; };
   fixes = import ./host-fixes.nix final prev;
   mopidy = import ./mopidy-4.nix final prev;
-  wii = import ../pkgs/wiicompiled/source/nix/overlay.nix ../pkgs/wiicompiled/source final prev;
+  wii = import (inputs.wiicompiled + "/nix/overlay.nix") inputs.wiicompiled final prev;
   avfSystem = inputs.nixpkgs.lib.nixosSystem {
     system = "aarch64-linux";
     modules = [
@@ -19,6 +19,7 @@ let
     ];
   };
   cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
+  horizon = final.callPackage ../pkgs/horizon { };
   definitions = {
     llama-cpp-inkling = import ../pkgs/llama-cpp-inkling {
       pkgs = prev;
@@ -32,21 +33,28 @@ let
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
+    glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
     handy = inputs.handy.packages.${system}.handy;
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;
       upstream = inputs.mcp-nixos;
     };
     inherit (t3code) t3code-nightly t3code-server-nightly;
-    chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { };
+    # nixpkgs removed `pcre`; the audio.nix recipes still take it as an argument.
+    chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { pcre = final.pcre2; };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
-    chow-kick = (final.callPackage "${inputs.audio}/chow/chow-kick.nix" { }).overrideAttrs (old: {
-      patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
-      # The pinned chowdsp_wdf subproject still declares CMake 3.1 policies.
-      cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
-    });
+    chow-kick =
+      (final.callPackage "${inputs.audio}/chow/chow-kick.nix" {
+        pcre = final.pcre2;
+        gtk2-x11 = null;
+      }).overrideAttrs
+        (old: {
+          patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
+          # The pinned chowdsp_wdf subproject still declares CMake 3.1 policies.
+          cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
+        });
     chow-tape-model =
-      (final.callPackage "${inputs.audio}/chow/chow-tape-model.nix" { }).overrideAttrs
+      (final.callPackage "${inputs.audio}/chow/chow-tape-model.nix" { pcre = final.pcre2; }).overrideAttrs
         (old: {
           # The bundled RTNeural still declares CMake 3.1 policies.
           cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
@@ -57,15 +65,19 @@ let
           '';
         });
     chow-multitool =
-      (final.callPackage "${inputs.audio}/chow/chow-multitool.nix" { }).overrideAttrs
+      (final.callPackage "${inputs.audio}/chow/chow-multitool.nix" { pcre = final.pcre2; }).overrideAttrs
         (old: {
           patches = (old.patches or [ ]) ++ [ ../pkgs/chow/rectangle-dimensions.patch ];
           cmakeFlags = (old.cmakeFlags or [ ]) ++ [ "-DCMAKE_POLICY_VERSION_MINIMUM=3.5" ];
         });
-    papu = final.callPackage "${inputs.audio}/vst/papu.nix" { };
-    paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { };
+    papu = final.callPackage "${inputs.audio}/vst/papu.nix" { pcre = final.pcre2; };
+    paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { pcre = final.pcre2; };
 
     inherit (fixes) redlib dorion;
+    jellarr = final.callPackage ../pkgs/jellarr { src = inputs.jellarr; };
+    gpu-screen-recorder-ui = prev.gpu-screen-recorder-ui.overrideAttrs (
+      import ../pkgs/gpu-screen-recorder-ui { inherit (final) dbus lib; }
+    );
     jetbrains-jdk-patched = prev.jetbrains.jdk-no-jcef-21.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [ ../pkgs/keyguard/jdk-8312488-jpackage-exit-crash.patch ];
       preBuild = (old.preBuild or "") + ''
@@ -98,21 +110,36 @@ let
     };
     caddy-custom = prev.caddy.withPlugins {
       plugins = [
-        "github.com/caddyserver/transform-encoder@v0.0.0-20260417205707-a6a89df4bc65"
+        "github.com/caddyserver/transform-encoder@v0.0.0-20260423033309-ba4124974830"
         "github.com/caddy-dns/porkbun@v0.3.1"
         "github.com/mholt/caddy-webdav@v0.0.0-20260127042217-fa2f366b0d75"
-        "github.com/caddy-dns/njalla@v0.0.0-20250823094507-f709141f1fe6"
-        "github.com/tailscale/caddy-tailscale@v0.0.0-20260106222316-bb080c4414ac"
-        "github.com/caddyserver/cache-handler@v0.16.0"
-        "github.com/darkweak/storages/simplefs/caddy@v0.0.19"
+        "github.com/caddy-dns/njalla@v1.0.0"
+        "github.com/tailscale/caddy-tailscale@v0.0.0-20260826180304-de41b249af4f"
+        "github.com/caddyserver/cache-handler@v0.17.0"
+        "github.com/darkweak/storages/simplefs/caddy@v0.0.23"
       ];
-      hash = "sha256-8e0cAIe8TWc1xLPzt02gXIC/xTPAs9jMeLMG62z4aUc=";
+      hash = "sha256-D/pLOXEz6n56rLLRhkLBHq0AkBz/VZhW754ym92ctKc=";
     };
+    lightning-matrix-client = final.qt6.callPackage ../pkgs/lightning { };
     matrix-tuwunel = final.callPackage ../pkgs/matrix-tuwunel {
       inherit (prev) matrix-tuwunel;
     };
     mlx-audio-separator = final.callPackage ../pkgs/mlx-audio-separator { };
-    pumpkin = inputs.pumpkin-nixpkgs.legacyPackages.${system}.pumpkin;
+    pumpkin =
+      let
+        pumpkinPkgs = inputs.pumpkin-nixpkgs.legacyPackages.${system};
+      in
+      pumpkinPkgs.pumpkin.overrideAttrs (old: {
+        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pumpkinPkgs.pkg-config ];
+        # zstd-sys probes the system library with pkg-config's static mode.
+        buildInputs = (old.buildInputs or [ ]) ++ [
+          (pumpkinPkgs.zstd.override { enableStatic = true; })
+        ];
+        # Rust 1.99 needs more compiler stack for Pumpkin's generated registry data.
+        env = (old.env or { }) // {
+          RUST_MIN_STACK = "33554432";
+        };
+      });
     pumpkin-voice = final.callPackage ../pkgs/pumpkin-voice/nix/package.nix { };
     pumpkin-tpsbar = final.callPackage ../pkgs/pumpkin-tpsbar/nix/package.nix { };
     pumpkin-java-multiversion = final.callPackage ../pkgs/pumpkin-java-multiversion/nix/package.nix { };
@@ -132,6 +159,8 @@ let
     spank = final.callPackage ../pkgs/spank { };
     tokscale = final.callPackage ../pkgs/tokscale { };
     wheelwizard = final.callPackage ../pkgs/wheelwizard { };
+    retro-rewind-pack = final.callPackage ../pkgs/retro-rewind-pack { };
+    blackglass = final.callPackage ../pkgs/blackglass { };
     cursaves = final.callPackage ../pkgs/cursaves { };
     bitwig-theme-editor = final.callPackage ../pkgs/bitwig-theme-editor { };
     pyrekordbox = final.python3Packages.callPackage ../pkgs/pyrekordbox { };
@@ -140,13 +169,13 @@ let
     eel-extension = final.callPackage ../pkgs/eel-extension { };
     slopbro = final.callPackage ../pkgs/slopbro { };
     lg-webos-dashboard = final.callPackage ../pkgs/lg-webos-mqtt { };
-    matter-linux-ota-provider = final.callPackage ../pkgs/matter-linux-ota-provider { };
     byparr = final.callPackage ../pkgs/byparr { };
     openghub = final.callPackage ../pkgs/openghub { };
     yaas = final.callPackage ../pkgs/yaas { };
     trawl = final.callPackage ../pkgs/trawl { };
     sable-desktop = final.callPackage ../pkgs/sable-desktop { };
     sable-desktop-legacy = final.callPackage ../pkgs/sable-desktop-legacy { };
+    qobuzify = final.callPackage ../pkgs/qobuzify { };
     codexbar-cli = final.callPackage ../pkgs/codexbar/cli.nix { };
     codexbar-plasmoid = final.callPackage ../pkgs/codexbar/plasmoid.nix { };
     photogimp = final.callPackage ../pkgs/photogimp { };
@@ -158,8 +187,20 @@ let
       kernelModuleMakeFlags = final.linuxPackages.kernelModuleMakeFlags;
     };
     schildi-revenge = inputs.schildi-revenge.packages.${system}.schildi-revenge;
-    slskd-mcp = final.callPackage ../pkgs/slskd-mcp { src = inputs.slskd-mcp; };
-    prowlarr-mcp = final.callPackage ../pkgs/prowlarr-mcp { src = inputs.prowlarr-mcp; };
+    slskd-mcp = final.callPackage ../pkgs/slskd-mcp {
+      pythonPackages = import ../pkgs/mcp-nixos/python.nix {
+        pkgs = final;
+        upstream = inputs.mcp-nixos;
+      };
+      src = inputs.slskd-mcp;
+    };
+    prowlarr-mcp = final.callPackage ../pkgs/prowlarr-mcp {
+      pythonPackages = import ../pkgs/mcp-nixos/python.nix {
+        pkgs = final;
+        upstream = inputs.mcp-nixos;
+      };
+      src = inputs.prowlarr-mcp;
+    };
     ghidra-mcp = final.callPackage ../pkgs/ghidra-mcp { src = inputs.ghidra-mcp; };
     kuna = inputs.kuna.packages.${system}.kuna;
     rea = final.callPackage ../pkgs/rea { };
@@ -171,7 +212,8 @@ let
     paneru-lua = inputs.paneru.packages.${system}.paneru-lua;
     tabrix = inputs.tabrix.packages.${system}.tabrix;
     tabrix-extension = inputs.tabrix.packages.${system}.tabrix-extension;
-  };
+  }
+  // horizon.packages;
 in
 lib.genAttrs (platforms.${system} or [ ]) (
   name:
@@ -185,6 +227,8 @@ lib.genAttrs (platforms.${system} or [ ]) (
 
 // {
   wiicompiled-nodtool = wii.wiicompiled-nodtool;
+  # Every channel and variant, for the Horizon modules (pkgs/horizon/modules).
+  horizonPackages = horizon;
 }
 // lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
   inherit (fixes) spotify;

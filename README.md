@@ -46,6 +46,17 @@ the strip tool mistakes its ICO header for COFF and corrupts/expands the icon.
 Spicetify inherits the exclusion. This unfree package is exposed through
 `cacheOnlyPackages.aarch64-darwin.spotify`, outside public runtime exports.
 
+## Horizon
+
+`horizon` (the game), `horizon-server` (its dedicated server, aarch64 Linux
+included) and `horizon-launcher` build from source in three channels: no suffix
+for the newest dated Nightly, `-unstable` for the rolling Nightly and `-git` for
+upstream main. `-bin` packages wrap upstream's prebuilt x86 Linux and macOS
+archives. `nixosModules.horizon`, `darwinModules.horizon` and
+`homeManagerModules.horizon` configure the launcher, the game and a declarative
+server, with content mods, datapacks and native mods. See
+[the package notes](pkgs/horizon/README.md).
+
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and
@@ -53,6 +64,11 @@ larger changes live in the Kopuz, Paneru, Tabrix, Rekordbox MCP and SchildiChat 
 forks, including the Kuna packaging fork. `nix/forks.json` and `flake.lock` record their exact source revisions.
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
+
+HA-MCP's compatibility source lives in `dweee/ha-mcp`, preserving v9.1.0
+upstream ancestry. The catalog retains its recipe, native test matrix and cache
+publication; `pkgs/ha-mcp/default.nix` pins the fork's compatibility patch and hash
+while preserving nixpkgs' release source and bundled skill content.
 
 ## CI and binary cache
 
@@ -82,11 +98,24 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | gdb-mcp | yes | yes | yes |
 | ghidra-mcp | yes | yes | yes |
 | ghidra-kuna | yes | yes | yes |
+| gpu-screen-recorder-ui | - | yes | yes |
+| horizon | yes | yes | yes |
+| horizon-bin | yes | yes | - |
+| horizon-git | yes | yes | yes |
+| horizon-launcher | yes | yes | yes |
+| horizon-launcher-bin | yes | yes | - |
+| horizon-launcher-git | yes | yes | yes |
+| horizon-mixins | yes | yes | yes |
+| horizon-server | yes | yes | yes |
+| horizon-server-bin | yes | yes | - |
+| horizon-server-git | yes | yes | yes |
+| horizon-server-unstable | yes | yes | yes |
+| horizon-unstable | yes | yes | yes |
 | infrared | yes | yes | yes |
+| jellarr | - | yes | yes |
 | kuna | yes | yes | yes |
 | kopuz | yes | yes | yes |
 | lg-webos-dashboard | yes | yes | yes |
-| matter-linux-ota-provider | - | yes | yes |
 | mermaid-filter | yes | yes | yes |
 | modcheck | - | yes | yes |
 | openghub | - | yes | yes |
@@ -119,3 +148,11 @@ metadata; application forks retain their own licenses and author history.
 
 Every successful build retains a downloadable Nix closure archive for one day,
 independently of Attic publication.
+
+## Generation 2 refresh (2026-11-18)
+
+The custom Caddy binary is exported on Apple Silicon Darwin as well as Linux,
+using the plugin graph from PR #134. YAAS follows upstream master at the exact
+2026-11-15 revision; its maintained updater refreshes the nested Cargo hash and
+checks the generated Flutter lock. Native builds and tested-channel promotion
+remain required before fleet adoption.

@@ -61,10 +61,11 @@
     camoufoxAssets.${stdenv.hostPlatform.system}
     or (throw "camoufox-bin: unsupported system ${stdenv.hostPlatform.system}");
 
+  # Upstream keeps only its two newest daily releases: scripts/update-geoip.py keeps this pin current.
+  geoipPin = lib.importJSON ./geoip.json;
   geoip = fetchurl {
     name = "GeoLite2-City.mmdb";
-    url = "https://github.com/P3TERX/GeoLite.mmdb/releases/download/2026.10.16/GeoLite2-City.mmdb";
-    hash = "sha256-eYcyhpqIv9qYuaFfhwVk6opaaWl1R2cXWXgZX9+HOC0=";
+    inherit (geoipPin) url hash;
   };
 
   ublockOrigin = fetchurl {
@@ -172,7 +173,8 @@ in
 
     # CAMOUFOX_INSTALL_DIR is this output; camoufox-js execs $out/camoufox-bin (ELF, not a wrapper).
     passthru = {
-      geoipRelease = "2026.10.16";
+      geoipRelease = geoipPin.release;
+      inherit geoip;
       ublockVersion = "1.73.0";
     };
 
