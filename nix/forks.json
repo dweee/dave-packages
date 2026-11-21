@@ -33,7 +33,7 @@
   },
   "schildi-revenge": {
     "repository": "https://github.com/dweee/schildi-revenge",
-    "revision": "f83fc4f695ddceda18eda99f66aa741de50c8f2a",
+    "revision": "019b74e8fc9339f314d8ef7797468e5447914c76",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"
@@ -69,7 +69,7 @@
     ],
     "ci_owner": "application fork",
     "private": false,
-    "revision": "b3230de199e1e6880c204002d27543a63608def6"
+    "revision": "b2f592d4252cd4296d5f18db637536de0a499048"
   },
   "wiicompiled": {
     "repository": "https://github.com/dweee/Wiicompiled",

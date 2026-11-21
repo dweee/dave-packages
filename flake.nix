@@ -1,7 +1,7 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/0bb8272318b4ca41bf0edc6224df3e3e3046b70d";
+    nixpkgs.url = "github:nixos/nixpkgs/2786a2a72088ecf32aea5b3ec52099e6a7cff78f";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/898bc0f07436ef200354b40ba9554c2161c8675f";
       flake = false;
@@ -30,7 +30,7 @@
     };
     # Retain native fork toolchains so catalog updates reuse their CI outputs.
     handy = {
-      url = "github:dweee/Handy/b3230de199e1e6880c204002d27543a63608def6";
+      url = "github:dweee/Handy/b2f592d4252cd4296d5f18db637536de0a499048";
     };
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/52db20539ec0ba063479d66092992d9efcf456ff";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/b4086cdae3a9da6085c6098fc380ae6056fb6b96";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/01ea1cc3d065cc7c239ac59d0189cc00ec98d6a6";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -84,7 +84,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=f83fc4f695ddceda18eda99f66aa741de50c8f2a&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=019b74e8fc9339f314d8ef7797468e5447914c76&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
@@ -96,7 +96,7 @@
       flake = false;
     };
     ghidra-mcp = {
-      url = "github:dweee/ghidra-mcp/86961ca288f2832e649e8ff371a4176ae1cc1535";
+      url = "github:dweee/ghidra-mcp/2ef97b699efadedae6ff4c5ea4263ec60e5f629e";
       flake = false;
     };
     # Jellarr's own flake: consumers take its NixOS module from this same pin.
