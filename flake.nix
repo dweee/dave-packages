@@ -3,7 +3,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/0bb8272318b4ca41bf0edc6224df3e3e3046b70d";
     nix-zed-extensions = {
-      url = "github:SwornSystems/nix-zed-extensions/8d338ca70f5a269bf2edf885fce8ae2f43442778";
+      url = "github:SwornSystems/nix-zed-extensions/898bc0f07436ef200354b40ba9554c2161c8675f";
       flake = false;
     };
     mcp-nix = {
@@ -39,16 +39,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
-    t3-code.url = "github:LisaScheers/t3-code-nix/01f5a274575a60f467fb4bad2a58f4561ce9c1ba";
+    t3-code.url = "github:LisaScheers/t3-code-nix/797a44640f2670f65df4971b86c700996fc53ea1";
     nixos-jellyfin = {
       url = "github:matt1432/nixos-jellyfin/2b464890ce33c84b5affdcfa98ed62b03f0d3fe0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/a5c999945da3991d7aa3cc2a6075cfd22bd387e9";
+      url = "github:oxalica/rust-overlay/52db20539ec0ba063479d66092992d9efcf456ff";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/c8fe2d78b0617d8f6e52041e57d90a6ffe0573ac";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/b4086cdae3a9da6085c6098fc380ae6056fb6b96";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,34 +57,34 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/ffdb35a774334ae2f1aca81817f5f5519edbadd5";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/9809224771ee430621d9747e6fac7fbc7d61618d";
     darwin = {
       url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=037279521417aba9d1d672e7f6623d947a577ebd";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=85401a9345b46149ed06ad272d2533f8f021d4d0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=b55832adfeb6705e2e0ccd2259793c214d60befa";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=27a92e5abf2aa299aace42b177f43a877b918e17";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
     tabrix = {
-      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=78d2b633385355547c869b6ced8b1e99b039012e";
+      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=24e20b017f0ef3c34de75e9c93c502ede0859541";
     };
     rekordbox-mcp = {
-      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=429a2cf0409c37e1b5c75f1b0ac0159236fd6cf3";
+      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=01198a79d0dfd74cbc1f5a8e0b88184e49aa0ed8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kuna = {
-      url = "github:dweee/kuna/5ed5c9df944bb2873c3c2e527407f1e9aaee2d85";
+      url = "github:dweee/kuna/6cc1f99dc4a59e6070643e01baebec0dfd72435b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=d0b375d44ad4f69bb137642271f0b7e0f556eb29&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=f83fc4f695ddceda18eda99f66aa741de50c8f2a&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
