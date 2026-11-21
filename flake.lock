@@ -397,6 +397,23 @@
         "type": "github"
       }
     },
+    "llama-cpp-inkling": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795212067,
+        "narHash": "sha256-6CcMhIEw2JzuQgAZqk0RnGuIXZ7/g4ofjLbQu9LRQAE=",
+        "owner": "ggml-org",
+        "repo": "llama.cpp",
+        "rev": "29b52d398b294509746ec0a3f28948a3107c0213",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ggml-org",
+        "repo": "llama.cpp",
+        "rev": "29b52d398b294509746ec0a3f28948a3107c0213",
+        "type": "github"
+      }
+    },
     "mcp-nix": {
       "inputs": {
         "nixpkgs": [
@@ -940,6 +957,7 @@
         "handy": "handy",
         "kopuz": "kopuz",
         "kuna": "kuna",
+        "llama-cpp-inkling": "llama-cpp-inkling",
         "mcp-nix": "mcp-nix",
         "mcp-nixos": "mcp-nixos",
         "nix-cachyos-kernel": "nix-cachyos-kernel",

@@ -1,6 +1,10 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
+    llama-cpp-inkling = {
+      url = "github:ggml-org/llama.cpp/29b52d398b294509746ec0a3f28948a3107c0213";
+      flake = false;
+    };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/5bf9d7730cda9bedc88c309b47f8d0e93b426b05";
@@ -72,7 +76,9 @@
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
-    tabrix = { url = "git+https://github.com/dweee/tabrix?ref=flakey"; };
+    tabrix = {
+      url = "git+https://github.com/dweee/tabrix?ref=flakey";
+    };
     rekordbox-mcp = {
       url = "git+https://github.com/dweee/rekordbox-mcp?ref=flakey";
       inputs.nixpkgs.follows = "nixpkgs";
