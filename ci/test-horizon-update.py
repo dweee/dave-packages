@@ -76,6 +76,21 @@ class Horizon(unittest.TestCase):
         self.assertIn('git+file://', expression)
         self.assertNotIn('getFlake "path:', expression)
 
+    def test_mixins_literal_and_shared_pin_use_the_selected_commit(self):
+        revision = 'a' * 40
+        pin = 'b' * 40
+        root = f'https://raw.githubusercontent.com/{u.REPO}/{revision}/'
+        with patch.object(u, 'fetch', return_value=f'const MIXINS_REV: &str = "{pin}";'.encode()):
+            self.assertEqual(u.mixins_rev(revision), pin)
+        delegated = b'pub const MIXINS_REV: &str = horizon_platform::mod_package::mixins_tool::REV;'
+        with patch.object(u, 'fetch', side_effect=[delegated, f'pub const REV: &str = "{pin}";'.encode()]) as fetch:
+            self.assertEqual(u.mixins_rev(revision), pin)
+            self.assertEqual(fetch.call_args_list[-1].args[0], root + 'crates/horizon-mod-package/src/mixins_tool.rs')
+        for responses in [[b'unknown declaration'], [delegated, b'pub const REV: &str = "main";']]:
+            with self.subTest(responses=responses), patch.object(u, 'fetch', side_effect=responses):
+                with self.assertRaisesRegex(ValueError, 'Unsupported Horizon mixins'):
+                    u.mixins_rev(revision)
+
     def test_binary_assets_keep_only_published_supported_pairs(self):
         asset = {'name': 'SHA256SUMS', 'browser_download_url': 'https://example.invalid/sums'}
         with patch.object(u, 'fetch', return_value=('00' * 32 + '  horizon-linux-x86_64.tar.gz\n').encode()):

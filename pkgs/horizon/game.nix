@@ -52,6 +52,10 @@ let
   linuxDesktop = stdenv.hostPlatform.isLinux && !headless;
   # The server folder names the game horizon-engine (xtask package-server).
   game = if headless then "horizon-engine" else "horizon-client";
+  # game-build.yml builds the official client with Horizon's integrations;
+  # its headless build uses horizon-game's horizon-client binary instead.
+  gamePackage = if headless then "horizon-game" else "horizon-official";
+  gameBinary = if headless then "horizon-client" else "horizon-official";
   programs = [
     "horizon-prepare"
     "horizon-server"
@@ -85,14 +89,17 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   # game-build.yml's build: the release builds of exactly these programs.
   cargoBuildFlags = [
-    "--package=horizon-client"
-    "--bin=horizon-client"
+    "--package=${gamePackage}"
+    "--bin=${gameBinary}"
     "--package=horizon-prepare"
     "--bin=horizon-prepare"
     "--package=horizon-server"
     "--bin=horizon-server"
   ]
-  ++ lib.optional (!headless) "--bin=horizon-ctl";
+  ++ lib.optionals (!headless) [
+    "--package=horizon-client-lib"
+    "--bin=horizon-ctl"
+  ];
 
   # The server build: no audio or controllers, so no libasound or libudev.
   buildNoDefaultFeatures = headless;
@@ -101,6 +108,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
     # horizon_core::release: what --version, crash reports and the title say.
     HORIZON_VERSION = pin.release or "";
     HORIZON_NIGHTLY = pin.nightly or "";
+    # Source archives omit .git; upstream build.rs accepts this exact identity.
+    HORIZON_GAME_BUILD_ID = pin.rev;
   };
 
   # Native mods are applied after cargoSetupHook has checked Cargo.lock
@@ -127,14 +136,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
       if sed -n '/^\[features\]/,/^\[/p' crates/horizon-client/Cargo.toml | grep -q '^mods *='; then
         cargoBuildFlags+=(--features=horizon-client/mods)
       fi
-    ''
-    # Upstream 42a5981e set autobins = false in horizon-client and declared
-    # horizon-ctl in horizon-client-lib; older pins still have it in
-    # horizon-client. Select the package that declares it, as game-build.yml does.
-    + lib.optionalString (!headless) ''
-      if grep -qs '^name *= *"horizon-ctl"' crates/horizon-client-lib/Cargo.toml; then
-        cargoBuildFlags+=(--package=horizon-client-lib)
-      fi
     '';
 
   # The parity harnesses need a prepared vanilla tree, which the sandbox lacks.
@@ -149,7 +150,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     folder="$out/libexec/horizon"
     mkdir -p "$folder" "$out/bin"
 
-    install -Dm755 "$release/horizon-client" "$folder/${game}"
+    install -Dm755 "$release/${gameBinary}" "$folder/${game}"
     for program in ${lib.escapeShellArgs programs}; do
       install -Dm755 "$release/$program" "$folder/$program"
     done
@@ -175,9 +176,20 @@ rustPlatform.buildRustPackage (finalAttrs: {
   doInstallCheck = true;
   installCheckPhase = ''
     runHook preInstallCheck
-    $out/bin/horizon-server --version
-    $out/libexec/horizon/horizon-prepare --version
-    $out/libexec/horizon/${game} --help | grep -q -- --resources
+    # Horizon refuses to start below a 144 MiB stack hard limit
+    # (GuestStackUnavailable). Some builders, such as GitHub's aarch64-linux
+    # runners, cap the sandbox at 64 MiB and cannot raise it.
+    stack_hard=$(ulimit -Hs)
+    if [ "$stack_hard" = unlimited ] || [ "$stack_hard" -ge 147456 ]; then
+      $out/bin/horizon-server --version
+      $out/libexec/horizon/horizon-prepare --version
+      $out/libexec/horizon/${game} --help | grep -q -- --resources
+    else
+      echo "installCheck: stack hard limit $stack_hard KiB < 147456 KiB; checking executables only"
+      test -x $out/bin/horizon-server
+      test -x $out/libexec/horizon/horizon-prepare
+      test -x $out/libexec/horizon/${game}
+    fi
     runHook postInstallCheck
   '';
 
