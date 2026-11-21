@@ -1,9 +1,9 @@
-diff --git a/packages/provider-cursor/src/server/sdk.test.ts b/packages/provider-cursor/src/server/sdk.test.ts
+diff --git a/packages/provider-cursor/src/server/cursor-max-mode.test.ts b/packages/provider-cursor/src/server/cursor-max-mode.test.ts
 new file mode 100644
 index 000000000000..587f3591a639
 --- /dev/null
-+++ b/packages/provider-cursor/src/server/sdk.test.ts
-@@ -0,0 +1,205 @@
++++ b/packages/provider-cursor/src/server/cursor-max-mode.test.ts
+@@ -0,0 +1,206 @@
 +import * as NodeServices from "@effect/platform-node/NodeServices";
 +import { describe, expect, it } from "@effect/vitest";
 +import * as HostProcess from "@t3tools/shared/HostProcess";
@@ -31,7 +31,8 @@ index 000000000000..587f3591a639
 +  });
 +}
 +const dir = mkdtempSync(join(tmpdir(), "cursor-sdk-model-"));
-+const { createAgentPlatform } = await import(${JSON.stringify(cursorSdkUrl)});
++const { loadCursorSdk } = await import(${JSON.stringify(cursorSdkUrl)});
++const { createAgentPlatform } = loadCursorSdk();
 +
 +if (mode === "sdk-model-requests") {
 +  const { JsonlLocalAgentStore } = sdkRequire("@cursor/sdk");
@@ -210,49 +211,77 @@ index 000000000000..587f3591a639
 +  );
 +});
 diff --git a/packages/provider-cursor/src/server/sdk.ts b/packages/provider-cursor/src/server/sdk.ts
-index 602a0d0d2fd4..62f2e9c48622 100644
 --- a/packages/provider-cursor/src/server/sdk.ts
 +++ b/packages/provider-cursor/src/server/sdk.ts
-@@ -4,6 +4,42 @@ import * as NodeModule from "node:module";
- // Cursor's Webpack chunks and local helpers must stay beside the SDK entry.
- // createRequire also loads that disk-backed package from a Node SEA executable.
- const requireCursorSdk = NodeModule.createRequire(import.meta.url);
-+
-+// The SDK omits RequestedModel.maxMode and exposes no way to set it. Cursor's
-+// current context tiers above 300K require Max Mode, as in its CLI. Patch only
-+// that message in the SDK's own disk-backed protobuf runtime, before loading
-+// the SDK. Remove this workaround when ModelSelection supports Max Mode.
-+// https://github.com/pingdotgg/t3code/issues/15788
-+const requireCursorSdkDependency = NodeModule.createRequire(
-+  requireCursorSdk.resolve("@cursor/sdk"),
-+);
-+const { proto3 } = requireCursorSdkDependency("@bufbuild/protobuf") as {
-+  proto3: {
-+    util: {
-+      initPartial: (
-+        source: unknown,
-+        target: {
-+          getType: () => { typeName: string };
-+          maxMode?: boolean;
-+          parameters?: ReadonlyArray<{ id: string; value: string }>;
-+        },
-+      ) => void;
+@@ -6,8 +6,46 @@
+ let sdk: typeof import("@cursor/sdk") | undefined;
+ let sqlite: typeof import("@cursor/sdk/sqlite") | undefined;
+
++function installCursorMaxMode(): void {
++  // The SDK omits RequestedModel.maxMode and exposes no way to set it. Cursor's
++  // current context tiers above 300K require Max Mode, as in its CLI. Patch only
++  // that message in the SDK's own disk-backed protobuf runtime, before loading
++  // the SDK. Remove this workaround when ModelSelection supports Max Mode.
++  // https://github.com/pingdotgg/t3code/issues/15788
++  const requireCursorSdkDependency = NodeModule.createRequire(
++    requireCursorSdk.resolve("@cursor/sdk"),
++  );
++  const { proto3 } = requireCursorSdkDependency("@bufbuild/protobuf") as {
++    proto3: {
++      util: {
++        initPartial: (
++          source: unknown,
++          target: {
++            getType: () => { typeName: string };
++            maxMode?: boolean;
++            parameters?: ReadonlyArray<{ id: string; value: string }>;
++          },
++        ) => void;
++      };
 +    };
 +  };
-+};
-+const initPartial = proto3.util.initPartial;
-+proto3.util.initPartial = function (source, target) {
-+  initPartial.call(this, source, target);
-+  if (target.getType().typeName !== "agent.v1.RequestedModel" || target.maxMode) {
-+    return;
-+  }
-+  const context = target.parameters?.find((parameter) => parameter.id === "context")?.value ?? "";
-+  const tier = /^(\d+(?:\.\d+)?)([km])$/i.exec(context);
-+  if (tier && Number(tier[1]) * (tier[2]?.toLowerCase() === "m" ? 1_000_000 : 1_000) > 300_000) {
-+    target.maxMode = true;
-+  }
-+};
++  const initPartial = proto3.util.initPartial;
++  proto3.util.initPartial = function (source, target) {
++    initPartial.call(this, source, target);
++    if (target.getType().typeName !== "agent.v1.RequestedModel" || target.maxMode) {
++      return;
++    }
++    const context = target.parameters?.find((parameter) => parameter.id === "context")?.value ?? "";
++    const tier = /^(\d+(?:\.\d+)?)([km])$/i.exec(context);
++    if (tier && Number(tier[1]) * (tier[2]?.toLowerCase() === "m" ? 1_000_000 : 1_000) > 300_000) {
++      target.maxMode = true;
++    }
++  };
++}
 +
- export const {
-   Agent,
-   AuthenticationError,
+ export function loadCursorSdk(): typeof import("@cursor/sdk") {
+   if (sdk !== undefined) return sdk;
++  installCursorMaxMode();
+   const start = performance.now();
+   sdk = requireCursorSdk("@cursor/sdk") as typeof import("@cursor/sdk");
+   if (process.env.T3CODE_STARTUP_PROFILE_DIR) {
+diff --git a/packages/provider-cursor/src/server/sdk.test.ts b/packages/provider-cursor/src/server/sdk.test.ts
+--- a/packages/provider-cursor/src/server/sdk.test.ts
++++ b/packages/provider-cursor/src/server/sdk.test.ts
+@@ -9,11 +9,18 @@
+     ConfigurationError: SdkError,
+   };
+   const sqlite = { SqliteLocalAgentStore: {} };
+-  const requireSdk = vi.fn((id: string) => (id === "@cursor/sdk" ? sdk : sqlite));
+-  return { sdk, sqlite, requireSdk };
++  const requireSdk = Object.assign(
++    vi.fn((id: string) => (id === "@cursor/sdk" ? sdk : sqlite)),
++    { resolve: vi.fn(() => "/cursor/sdk.js") },
++  );
++  const requireDependency = vi.fn(() => ({ proto3: { util: { initPartial: vi.fn() } } }));
++  return { sdk, sqlite, requireSdk, requireDependency };
+ });
+
+-vi.mock("node:module", () => ({ createRequire: () => fixture.requireSdk }));
++vi.mock("node:module", () => ({
++  createRequire: (from: string | URL) =>
++    String(from) === "/cursor/sdk.js" ? fixture.requireDependency : fixture.requireSdk,
++}));
+
+ describe("Cursor disk modules", () => {
+   it("loads on demand, shares exports across callers, and leaves SQLite unloaded", async () => {
