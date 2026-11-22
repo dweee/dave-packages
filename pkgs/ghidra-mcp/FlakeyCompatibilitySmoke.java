@@ -33,10 +33,10 @@ public class FlakeyCompatibilitySmoke extends GhidraScript {
             manager.addDataType(structure, DataTypeConflictHandler.DEFAULT_HANDLER);
         } finally { currentProgram.endTransaction(transaction, true); }
         var service = new DataTypeService(provider, new DirectThreadingStrategy());
-        Response deleted = service.deleteDataType("FlakeyCompatibilityDeleteProbe", false, "");
+        Response deleted = service.deleteDataType("FlakeyCompatibilityDeleteProbe", false, currentProgram);
         if (!(deleted instanceof Response.Ok) || manager.getDataType("/FlakeyCompatibilityDeleteProbe") != null)
             throw new AssertionError("Deletion did not remove the scratch type: " + deleted.toJson());
-        if (!(service.deleteDataType("FlakeyCompatibilityDeleteProbe", false, "") instanceof Response.Err))
+        if (!(service.deleteDataType("FlakeyCompatibilityDeleteProbe", false, currentProgram) instanceof Response.Err))
             throw new AssertionError("Missing type deletion must remain an error");
         var choices = ServiceUtils.languageVariantChoices(currentProgram);
         if (choices.isEmpty() || ServiceUtils.variantEnumerationFailed(currentProgram))
