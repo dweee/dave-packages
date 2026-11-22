@@ -1,13 +1,14 @@
-# WiiCompiled source ownership
+# WiiCompiled packaging
 
-The catalog imports `nix/overlay.nix` from the immutable, submodule-enabled
-`wiicompiled` non-flake input. Source, recipes, GPL notices and bundled dependency
-licenses belong to the public `dweee/Wiicompiled` fork's reviewed `flakey` branch.
-The catalog uses its own locked nixpkgs; owner builds do not prove catalog builds.
+The non-flake `wiicompiled` input fetches patchzyy/Wiicompiled with submodules.
+The frozen upstream revision is `ffbde831317c2a3fc7841f53e7244db83f024ff2`;
+its Aurora gitlink is `33067e34a17ca680eb961d9e0f3d48ddb22a7d7f`.
+`portable-baseline.patch` selects reproducible CPU targets for the native
+library and the runtime shipped with the setup programs.
 
-Only translator, native-prebuilt, setup and Linux setup-unwrapped are public
-roots. Nodtool is a transitive setup dependency, not a public root. No disc,
-translation or game outputs are admitted here.
+The public catalog provides the setup and translator tools and the native
+dependency bundle on x86-64 Linux, ARM Linux and Apple Silicon.
+The unwrapped setup is also available on both Linux architectures.
 
 Run `python3 pkgs/wiicompiled/update.py --check` for canonical-owner discovery,
 or use `--write-snapshot FILE` followed by `--snapshot FILE --apply` in a clean
