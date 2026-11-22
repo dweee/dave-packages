@@ -49,6 +49,8 @@ jobs:
           experimental-features = nix-command flakes parallel-eval
           eval-cores = 2
           accept-flake-config = false
+    - name: Validate FreeBSD overlays
+      run: nix build .#checks.x86_64-linux.freebsd-overlays --no-update-lock-file --no-write-lock-file --no-link -L
     - name: Test derivation selection
       run: python3 ci/test-changed-matrix.py
     - id: matrix

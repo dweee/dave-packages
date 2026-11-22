@@ -198,6 +198,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.pared",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.prismlauncher",
         "visibility": "public"
       },

@@ -4,6 +4,11 @@ import argparse
 import json
 from pathlib import Path
 
+RUNNER_OVERRIDES = {
+    ("aarch64-darwin", "pared"): "xcode-27",
+}
+
+
 def matrix(family, selected="all"):
     nix_dir = Path(__file__).resolve().parents[1] / "nix"
     inventory = json.loads((nix_dir / "platforms.json").read_text())
@@ -19,7 +24,7 @@ def matrix(family, selected="all"):
     wanted = [system for system in inventory if (system.endswith("-darwin")) == (family == "darwin")]
     if selected != "all" and not any(selected in inventory[system] for system in wanted):
         raise ValueError("Selected package is unavailable for this workflow family")
-    jobs = [{"system": system, "runner": runners[system], "package": package}
+    jobs = [{"system": system, "runner": RUNNER_OVERRIDES.get((system, package), runners[system]), "package": package}
             for system in wanted for package in inventory[system]
             if selected == "all" or package == selected]
     for job in jobs:

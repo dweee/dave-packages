@@ -10,7 +10,10 @@ let
   t3code = import ../pkgs/t3code { inherit inputs system; };
   fixes = import ./host-fixes.nix final prev;
   mopidy = import ./mopidy-4.nix final prev;
-  wii = import (inputs.wiicompiled + "/nix/overlay.nix") inputs.wiicompiled final prev;
+  wii = import ../pkgs/wiicompiled/packages.nix {
+    inherit final;
+    root = /. + builtins.unsafeDiscardStringContext inputs.wiicompiled.outPath;
+  };
   avfSystem = inputs.nixpkgs.lib.nixosSystem {
     system = "aarch64-linux";
     modules = [
@@ -56,6 +59,12 @@ let
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
     glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
+    pared = (inputs.pared.packages.${system}.pared).overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ../pkgs/pared/gui-state-test.patch ];
+      preCheck = (old.preCheck or "") + ''
+        swiftc -typecheck Sources/Pared/gui/components/components.swift Tests/gui-state/gui-state.swift
+      '';
+    });
     handy = inputs.handy.packages.${system}.handy;
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;

@@ -107,7 +107,8 @@ class InventoryTests(unittest.TestCase):
         runners = {'aarch64-darwin': 'macos-15', 'x86_64-linux': 'ubuntu-24.04', 'aarch64-linux': 'ubuntu-24.04-arm'}
         for family in ('darwin', 'others'):
             for job in real.matrix(family)['include']:
-                self.assertEqual(job['runner'], runners[job['system']])
+                expected_runner = 'xcode-27' if job['package'] == 'pared' else runners[job['system']]
+                self.assertEqual(job['runner'], expected_runner)
                 self.assertEqual(job['system'].endswith('-darwin'), family == 'darwin')
 
 
