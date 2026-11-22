@@ -11,9 +11,11 @@
   makeBinaryWrapper,
   procps,
   util-linux,
+  # See runtime-tools.nix: false uses the Mac's xcrun swiftc at runtime.
+  bundleDarwinSwift ? true,
 }:
 let
-  runtimeTools = callPackage ./runtime-tools.nix { };
+  runtimeTools = callPackage ./runtime-tools.nix { inherit bundleDarwinSwift; };
   androidFixture = fetchurl {
     # REA's own independently hashed Android conformance target; never executed.
     url = "https://github.com/appium/android-apidemos/releases/download/v6.0.18/ApiDemos-debug.apk";
