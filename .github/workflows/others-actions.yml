@@ -57,8 +57,7 @@ jobs:
       run: |
         matrix=$(python3 ci/changed-matrix.py others --package "$SELECTED_PACKAGE")
         echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
-        # Windows setup includes the Microsoft Visual C++ redistributable.
-        publish_matrix=$(jq -c '.include |= map(select(.package != "mkw-recomp-windows"))' <<< "$matrix")
+        publish_matrix=$(jq -c '.include |= map(select(.build_only != true))' <<< "$matrix")
         echo "publish_matrix=$publish_matrix" >> "$GITHUB_OUTPUT"
         echo "has_publish_jobs=$(jq -r '.include | length > 0' <<< "$publish_matrix")" >> "$GITHUB_OUTPUT"
   build:
@@ -178,7 +177,7 @@ jobs:
         ATTIC_MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.ATTIC_REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'yaas' && (vars.ATTIC_YAAS_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.ATTIC_T3_MAX_CLOSURE_MIB || '8192') || (vars.ATTIC_MAX_CLOSURE_MIB || '4096') }}
       run: python3 ci/transfer-attic.py export --directory attic-transfer --manifest cache-outputs.txt
       id: cache_transfer
-      if: ${{ always() && !cancelled() && matrix.package != 'mkw-recomp-windows' && hashFiles('cache-outputs.txt') != '' }}
+      if: ${{ always() && !cancelled() && !matrix.build_only && hashFiles('cache-outputs.txt') != '' }}
     - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
       with:
         name: nix-${{ matrix.system }}-${{ matrix.package }}-${{ github.sha }}

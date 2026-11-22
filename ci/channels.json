@@ -428,6 +428,14 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.hookshot",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.hookshot-windows",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.horizon",
         "visibility": "public"
       },
@@ -521,6 +529,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.modcheck",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mkw-recomp",
         "visibility": "public"
       },
       {
@@ -907,6 +919,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.modcheck",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mkw-recomp",
         "visibility": "public"
       },
       {

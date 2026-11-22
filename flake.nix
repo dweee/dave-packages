@@ -130,6 +130,7 @@
     let
       platforms = builtins.fromJSON (builtins.readFile ./nix/platforms.json);
       systems = builtins.attrNames platforms;
+      buildOnlyPackages = builtins.fromJSON (builtins.readFile ./nix/build-only-packages.json);
       cacheOnlyPlatforms = builtins.fromJSON (builtins.readFile ./nix/cache-only-platforms.json);
       packageOverlay = final: prev: import ./nix/package-set.nix { inherit inputs final prev; };
       overlay = nixpkgs.lib.composeManyExtensions [
@@ -205,7 +206,7 @@
       );
       checks = nixpkgs.lib.genAttrs systems (
         system:
-        self.packages.${system}
+        removeAttrs self.packages.${system} (buildOnlyPackages.${system} or [ ])
         // {
           kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
           rea-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix {
