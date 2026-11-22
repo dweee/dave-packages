@@ -61,7 +61,7 @@ server, with content mods, datapacks and native mods. See
 
 The catalog owns portable recipes and small patches. Application source and
 larger changes live in the Kopuz, Paneru, Tabrix, Rekordbox MCP and SchildiChat Revenge
-forks, including the Kuna packaging fork. `nix/forks.json` and `flake.lock` record their exact source revisions.
+forks. `nix/forks.json` and `flake.lock` record their exact source revisions.
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
 

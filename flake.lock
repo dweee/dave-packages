@@ -441,24 +441,20 @@
         "url": "https://github.com/dweee/kopuz.git"
       }
     },
-    "kuna": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
+    "kuna-src": {
+      "flake": false,
       "locked": {
-        "lastModified": 1794469317,
-        "narHash": "sha256-a6vaDhIo4ObzRq6TDUqlhf3b5GGW5/aqe+bPpb46SV0=",
-        "owner": "dweee",
+        "lastModified": 1794254460,
+        "narHash": "sha256-46E680ygMKyW/7T2kH67CDuJrECmqqSKyFSCj+iNLfs=",
+        "owner": "Noelo-Lab",
         "repo": "kuna",
-        "rev": "5ed5c9df944bb2873c3c2e527407f1e9aaee2d85",
+        "rev": "9ce03fa874c298db4dc284da1bed54c6b7348d8f",
         "type": "github"
       },
       "original": {
-        "owner": "dweee",
+        "owner": "Noelo-Lab",
         "repo": "kuna",
-        "rev": "5ed5c9df944bb2873c3c2e527407f1e9aaee2d85",
+        "rev": "9ce03fa874c298db4dc284da1bed54c6b7348d8f",
         "type": "github"
       }
     },
@@ -1025,7 +1021,7 @@
         "handy": "handy",
         "jellarr": "jellarr",
         "kopuz": "kopuz",
-        "kuna": "kuna",
+        "kuna-src": "kuna-src",
         "mcp-nix": "mcp-nix",
         "mcp-nixos": "mcp-nixos",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
