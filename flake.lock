@@ -88,17 +88,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1793418699,
-        "narHash": "sha256-+RpTlcdh9KqZ+ZiLkNSTvibQWm935EcIdBzRPCTFsrQ=",
+        "lastModified": 1795309925,
+        "narHash": "sha256-xpgrKyUvEMz0yCb+zklEpOFd0VnHyH0oBYce4Umj4e8=",
         "owner": "nix-darwin",
         "repo": "nix-darwin",
-        "rev": "ff0e21a414d4547183396da1b44a66f2577b65e9",
+        "rev": "f673885103fa92c1c5b1d16b8bf2b858906809e2",
         "type": "github"
       },
       "original": {
         "owner": "nix-darwin",
         "repo": "nix-darwin",
-        "rev": "ff0e21a414d4547183396da1b44a66f2577b65e9",
+        "rev": "f673885103fa92c1c5b1d16b8bf2b858906809e2",
         "type": "github"
       }
     },
@@ -426,17 +426,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1795228616,
-        "narHash": "sha256-HvJzfupuGYFtNKJ3a6Rlr9WAzp4bj2MonirOLfE4ocg=",
+        "lastModified": 1795294725,
+        "narHash": "sha256-PSSkRbhjxPeAoxjshpDHj4YEhxnhQXdoRRsUaXoqXsU=",
         "ref": "tested",
-        "rev": "85401a9345b46149ed06ad272d2533f8f021d4d0",
-        "revCount": 1461,
+        "rev": "e2d481d58054545146a76638f601d81341dc1118",
+        "revCount": 1464,
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "85401a9345b46149ed06ad272d2533f8f021d4d0",
+        "rev": "e2d481d58054545146a76638f601d81341dc1118",
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       }
@@ -590,17 +590,17 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1795216822,
-        "narHash": "sha256-u/LuZ26daAbiBtpPN0QfBo6zPWD4iG3YRbf5Xp45mas=",
+        "lastModified": 1795299643,
+        "narHash": "sha256-ofoSHbSWiP+muOkvTD/moBIAwYeo2m4rQoAGLaW34IA=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "9809224771ee430621d9747e6fac7fbc7d61618d",
+        "rev": "3547834022c7faca65918abbd8645c855d20cc35",
         "type": "github"
       },
       "original": {
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "9809224771ee430621d9747e6fac7fbc7d61618d",
+        "rev": "3547834022c7faca65918abbd8645c855d20cc35",
         "type": "github"
       }
     },
@@ -772,11 +772,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1795188322,
-        "narHash": "sha256-W6Z8qDb/HwL7/LQ0yr2ucQQlJgCJ7yCkoSobwQjEPic=",
+        "lastModified": 1795282342,
+        "narHash": "sha256-OfaSL6VGcyf35UmRPfv4ErH7RFybQiuyLThnDzYOcbs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "bd5b7d01ccc48cbc8241bda0c3554a4cbbcbc375",
+        "rev": "4a5ea0bab25dfaa435429825c9add4c5f730b235",
         "type": "github"
       },
       "original": {
@@ -932,17 +932,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1795296756,
-        "narHash": "sha256-MK+eMrz29YRQnFUFfSBNT2zcT6K/kPvvBYcqw0SDMqs=",
+        "lastModified": 1795314019,
+        "narHash": "sha256-Mv1VOLctDeGSxK5ffJSG2OTbXL5tPtjVWFEQGRapMyM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "01ea1cc3d065cc7c239ac59d0189cc00ec98d6a6",
+        "rev": "2ce3c67a3687fca89a7342d40bfa28aff0b6a114",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "01ea1cc3d065cc7c239ac59d0189cc00ec98d6a6",
+        "rev": "2ce3c67a3687fca89a7342d40bfa28aff0b6a114",
         "type": "github"
       }
     },
@@ -1203,17 +1203,17 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1795260368,
-        "narHash": "sha256-RvdBvIInjtQg19AQEAEhEiWoHI2CsQbXOsfI7/zArf8=",
+        "lastModified": 1795304435,
+        "narHash": "sha256-fzr9MVU7bC4fD4oBnsoBmB8JT70KO9f40QMYp5ScLw8=",
         "owner": "LisaScheers",
         "repo": "t3-code-nix",
-        "rev": "797a44640f2670f65df4971b86c700996fc53ea1",
+        "rev": "f6696d0e300fef84b55aa3c655902983daffb46d",
         "type": "github"
       },
       "original": {
         "owner": "LisaScheers",
         "repo": "t3-code-nix",
-        "rev": "797a44640f2670f65df4971b86c700996fc53ea1",
+        "rev": "f6696d0e300fef84b55aa3c655902983daffb46d",
         "type": "github"
       }
     },

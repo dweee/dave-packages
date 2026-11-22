@@ -39,7 +39,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
-    t3-code.url = "github:LisaScheers/t3-code-nix/797a44640f2670f65df4971b86c700996fc53ea1";
+    t3-code.url = "github:LisaScheers/t3-code-nix/f6696d0e300fef84b55aa3c655902983daffb46d";
     nixos-jellyfin = {
       url = "github:matt1432/nixos-jellyfin/2b464890ce33c84b5affdcfa98ed62b03f0d3fe0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -48,7 +48,7 @@
       url = "github:oxalica/rust-overlay/52db20539ec0ba063479d66092992d9efcf456ff";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/01ea1cc3d065cc7c239ac59d0189cc00ec98d6a6";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/2ce3c67a3687fca89a7342d40bfa28aff0b6a114";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,13 +57,13 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/9809224771ee430621d9747e6fac7fbc7d61618d";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/3547834022c7faca65918abbd8645c855d20cc35";
     darwin = {
-      url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
+      url = "github:nix-darwin/nix-darwin/f673885103fa92c1c5b1d16b8bf2b858906809e2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=85401a9345b46149ed06ad272d2533f8f021d4d0";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=e2d481d58054545146a76638f601d81341dc1118";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
