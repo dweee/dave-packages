@@ -224,6 +224,10 @@ lib.genAttrs (platforms.${system} or [ ]) (
   # Every channel and variant, for the Horizon modules (pkgs/horizon/modules).
   horizonPackages = horizon;
 }
+# The baked game stays outside public packages, checks and CI.
+// lib.optionalAttrs (builtins.hasAttr system platforms) {
+  inherit (wii) wiicompiled;
+}
 // lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
   inherit (fixes) spotify;
 }
