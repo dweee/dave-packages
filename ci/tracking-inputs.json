@@ -86,7 +86,7 @@
       "source": "github:quinneden/virby-nix-darwin"
     },
     "wiicompiled": {
-      "source": "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&submodules=1"
+      "source": "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&submodules=1"
     }
   },
   "fixedOutputHashes": {

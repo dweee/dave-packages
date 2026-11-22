@@ -894,6 +894,43 @@
         "url": "https://github.com/dweee/paneru.git"
       }
     },
+    "pared": {
+      "inputs": {
+        "nixpkgs": [
+          "pared-nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794666482,
+        "narHash": "sha256-2zHS3C2c5wuqmkJNmvXCRhy0qi+4/TMv8uE++z+pG4I=",
+        "owner": "4evy",
+        "repo": "pared",
+        "rev": "26c34ec7df3d39924650b852e8d8aab57874e9ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "4evy",
+        "repo": "pared",
+        "rev": "26c34ec7df3d39924650b852e8d8aab57874e9ee",
+        "type": "github"
+      }
+    },
+    "pared-nixpkgs": {
+      "locked": {
+        "lastModified": 1794890597,
+        "narHash": "sha256-lME2lHoDHAaSHP3/okgiVoJ0icVEvsQH8LeU3We7tcc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "04906337b6d53e8bb0eaf0470ae9f070a4d4eb55",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "04906337b6d53e8bb0eaf0470ae9f070a4d4eb55",
+        "type": "github"
+      }
+    },
     "patchbay-src": {
       "flake": false,
       "locked": {
@@ -1051,6 +1088,8 @@
         "nixos-jellyfin": "nixos-jellyfin",
         "nixpkgs": "nixpkgs_3",
         "paneru": "paneru",
+        "pared": "pared",
+        "pared-nixpkgs": "pared-nixpkgs",
         "patchbay-src": "patchbay-src",
         "prowlarr-mcp": "prowlarr-mcp",
         "pumpkin-nixpkgs": "pumpkin-nixpkgs",
@@ -1344,21 +1383,21 @@
     "wiicompiled": {
       "flake": false,
       "locked": {
-        "lastModified": 1794522173,
-        "narHash": "sha256-m2lodbVA7c/zLDxSVIaxmK7R3Jp17IrRX3YdnMdMqf0=",
-        "ref": "flakey",
-        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
-        "revCount": 236,
+        "lastModified": 1794339804,
+        "narHash": "sha256-M90I9INpBCt4gTns/R3Idtybir1upwcvKpoJmdlRqJQ=",
+        "ref": "main",
+        "rev": "ffbde831317c2a3fc7841f53e7244db83f024ff2",
+        "revCount": 228,
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/dweee/Wiicompiled.git"
+        "url": "https://github.com/patchzyy/Wiicompiled.git"
       },
       "original": {
-        "ref": "flakey",
-        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+        "ref": "main",
+        "rev": "ffbde831317c2a3fc7841f53e7244db83f024ff2",
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/dweee/Wiicompiled.git"
+        "url": "https://github.com/patchzyy/Wiicompiled.git"
       }
     }
   },
