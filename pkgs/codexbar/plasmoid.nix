@@ -10,7 +10,7 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "codexbar-plasmoid";
-  version = "0.7.0-dave.1";
+  version = "0.7.0-dave.2";
 
   src = fetchFromGitHub {
     owner = "dweee";
@@ -19,6 +19,8 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     rev = "44800ed5bc26a6f9914fe42b4d58d98aabf98bd2";
     hash = "sha256-k2rhaV9qAnZmLqf63MKcsRbWX6zddoXbIe/P3x/TjeI=";
   };
+
+  patches = [ ./patches/summary-pace-markers.patch ];
 
   dontBuild = true;
 
