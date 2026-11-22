@@ -50,15 +50,5 @@
     ],
     "ci_owner": "application fork",
     "private": false
-  },
-  "kuna": {
-    "repository": "https://github.com/dweee/kuna",
-    "revision": "5ed5c9df944bb2873c3c2e527407f1e9aaee2d85",
-    "branch": "flakey",
-    "packages": [
-      "kuna"
-    ],
-    "ci_owner": "application fork",
-    "private": false
   }
 }

@@ -240,7 +240,7 @@ let
       src = inputs.prowlarr-mcp;
     };
     ghidra-mcp = final.callPackage ../pkgs/ghidra-mcp { src = inputs.ghidra-mcp; };
-    kuna = inputs.kuna.packages.${system}.kuna;
+    kuna = final.callPackage ../pkgs/kuna { src = inputs.kuna-src.outPath; };
     rea = final.callPackage ../pkgs/rea { };
     ghidra-kuna = final.callPackage ../pkgs/ghidra-kuna { };
     rea-kuna = final.callPackage ../pkgs/rea-kuna { };

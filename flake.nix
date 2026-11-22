@@ -87,9 +87,9 @@
       url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=429a2cf0409c37e1b5c75f1b0ac0159236fd6cf3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    kuna = {
-      url = "github:dweee/kuna/5ed5c9df944bb2873c3c2e527407f1e9aaee2d85";
-      inputs.nixpkgs.follows = "nixpkgs";
+    kuna-src = {
+      url = "github:Noelo-Lab/kuna/9ce03fa874c298db4dc284da1bed54c6b7348d8f";
+      flake = false;
     };
     schildi-revenge = {
       url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=d0b375d44ad4f69bb137642271f0b7e0f556eb29&submodules=1";
