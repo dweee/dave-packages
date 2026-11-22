@@ -25,9 +25,6 @@
     "kopuz": {
       "source": "git+https://github.com/dweee/kopuz.git?ref=tested"
     },
-    "kuna": {
-      "source": "github:dweee/kuna/tested"
-    },
     "mcp-nix": {
       "source": "github:felixdorn/mcp-nix"
     },
