@@ -208,6 +208,19 @@
       nixosModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/nixos.nix self;
       homeManagerModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/home-manager.nix self;
       darwinModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/darwin.nix self;
+      lib.wiicompiled = import ./pkgs/wiicompiled/recipes.nix;
+      nixosModules.wiicompiled = import ./pkgs/wiicompiled/module.nix {
+        inherit overlay;
+        publicPackages = self.packages;
+      };
+      homeManagerModules.wiicompiled = import ./pkgs/wiicompiled/hm-module.nix {
+        inherit overlay;
+        publicPackages = self.packages;
+      };
+      darwinModules.wiicompiled = import ./pkgs/wiicompiled/darwin-module.nix {
+        inherit overlay;
+        publicPackages = self.packages;
+      };
       nixosModules.android-avf-kernel-patches = import ./nix/android-avf/kernel-patches.nix;
       # Horizon (pkgs/horizon/README.md): the launcher, the game and a server.
       nixosModules.horizon = horizonModule ./pkgs/horizon/modules/nixos.nix;

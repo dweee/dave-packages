@@ -33,6 +33,22 @@ in
     ]
   );
 
+  # The translator sees the PAL checks and the native registration sources.
+  translate = toSource (
+    fs.unions [
+      (root + "/projects/mkwii")
+      (root + "/runtime/src")
+    ]
+  );
+
+  game = toSource (
+    fs.unions [
+      (root + "/runtime")
+      (root + "/aurora-main")
+      (root + "/Launcher/macos/publish-app.command")
+    ]
+  );
+
   setup = toSource (
     fs.unions [
       (root + "/runtime")

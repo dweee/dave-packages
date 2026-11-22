@@ -23,7 +23,6 @@
   zlib,
   src,
   wiicompiled-translator,
-  wiicompiled-nodtool,
 }:
 let
   setupUnwrapped = buildDotnetModule {
@@ -31,6 +30,12 @@ let
     version = "0.9.4";
     inherit src;
     patches = [ ./portable-baseline.patch ];
+    # Keep the automatic download of the key-bearing extractor out of setup.
+    postPatch = ''
+      substituteInPlace Launcher/WiiCompiled.Setup.Linux/DiscTool.cs \
+        --replace-fail 'nodToolBin ?? await NodToolProvider.ResolveAsync(workspace, cancellationToken)' \
+          'nodToolBin ?? throw new InvalidOperationException("Pass your local disc extractor with --disc-tool-bin.")'
+    '';
     projectFile = "Launcher/WiiCompiled.Setup.Linux/WiiCompiled.Setup.Linux.csproj";
     nugetDeps = ./nuget-deps.json;
     dotnet-sdk = dotnetCorePackages.sdk_8_0;
@@ -141,7 +146,6 @@ stdenv.mkDerivation rec {
     exec ${setupUnwrapped}/bin/WiiCompiled.Setup.Linux \
       --workspace "$cache" \
       --translator-bin ${wiicompiled-translator}/bin/Translator.Cli \
-      --disc-tool-bin ${wiicompiled-nodtool}/bin/nodtool \
       --cc ${clang}/bin/clang \
       --cxx ${clang}/bin/clang++ \
       --fuse-ld ${lld}/bin/ld.lld \

@@ -182,7 +182,6 @@ let
       wiicompiled-translator
       wiicompiled-setup
       ;
-    wiicompiled-nodtool = wii.wiicompiled-nodtool;
     wiicompiled-setup-unwrapped = wii.wiicompiled-setup.setupUnwrapped;
 
     kopuz = inputs.kopuz.packages.${system}.kopuz;
@@ -258,9 +257,12 @@ lib.genAttrs (platforms.${system} or [ ]) (
 )
 
 // {
-  wiicompiled-nodtool = wii.wiicompiled-nodtool;
   # Every channel and variant, for the Horizon modules (pkgs/horizon/modules).
   horizonPackages = horizon;
+}
+# The baked game stays outside public packages, checks and CI.
+// lib.optionalAttrs (builtins.hasAttr system platforms) {
+  inherit (wii) wiicompiled;
 }
 // lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
   inherit (fixes) spotify;
