@@ -42,6 +42,7 @@ def fixture_tree(root, platforms=PLATFORMS):
         shutil.copy(CI / name, root / 'ci' / name)
     (root / 'nix' / 'platforms.json').write_text(json.dumps(platforms))
     (root / 'nix' / 'forks.json').write_text(json.dumps(FORKS))
+    (root / 'nix' / 'build-only-packages.json').write_text('{}')
     return root
 
 
@@ -81,6 +82,12 @@ class InventoryTests(unittest.TestCase):
             self.assertNotIn('forked', [j['package'] for j in self.matrix.matrix(family)['include']])
             with self.assertRaisesRegex(ValueError, 'application fork: https://example.invalid/fork'):
                 self.matrix.matrix(family, 'forked')
+
+    def test_build_only_package_remains_in_the_build_matrix(self):
+        inventory = Path(self.directory.name) / 'nix' / 'build-only-packages.json'
+        inventory.write_text(json.dumps({'x86_64-linux': ['linux-only']}))
+        builds = self.matrix.matrix('others')['include']
+        self.assertEqual([job['package'] for job in builds if job.get('build_only')], ['linux-only'])
 
     def test_package_outside_the_family_is_rejected(self):
         with self.assertRaisesRegex(ValueError, 'unavailable'):

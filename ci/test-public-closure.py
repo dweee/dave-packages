@@ -13,7 +13,7 @@ spec.loader.exec_module(policy)
 
 class PublicClosureTests(unittest.TestCase):
     def test_forbidden_inputs_anywhere_in_derivation_closure(self):
-        for name in ["wiicompiled-disc-rmcp01", "veracrypt-1", "nvidia-x11-580.1", "nvidia-580.1-6.1", "ffmpeg-full-8", "subnetter-1"]:
+        for name in ["wiicompiled-disc-rmcp01", "mkw-recomp-nvidia-tools-12.8", "veracrypt-1", "nvidia-x11-580.1", "nvidia-580.1-6.1", "ffmpeg-full-8", "subnetter-1"]:
             graph={"/nix/store/parent.drv": {"outputs": {}, "env": {"buildInputs": "/nix/store/hidden-"+name}}}
             with self.subTest(name=name), patch.object(policy.subprocess, "run", return_value=subprocess.CompletedProcess([],0,json.dumps(graph),"")):
                 with self.assertRaises(ValueError): policy.derivation(".#packages.x86_64-linux.innocent")
