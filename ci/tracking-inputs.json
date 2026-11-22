@@ -13,9 +13,6 @@
     "ghidra-mcp": {
       "source": "github:dweee/ghidra-mcp/flakey"
     },
-    "handy": {
-      "source": "github:dweee/Handy/tested"
-    },
     "jellarr": {
       "source": "github:venkyr77/jellarr"
     },

@@ -25,7 +25,14 @@ let
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
     glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
-    handy = inputs.handy.packages.${system}.handy;
+    handy =
+      let
+        handyPkgs = import inputs.handy-nixpkgs {
+          inherit system;
+          overlays = [ inputs.bun2nix.overlays.default ];
+        };
+      in
+      handyPkgs.callPackage ../pkgs/handy { source = inputs.handy-src.outPath; };
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;
       upstream = inputs.mcp-nixos;
