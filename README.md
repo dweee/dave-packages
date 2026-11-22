@@ -57,6 +57,25 @@ archives. `nixosModules.horizon`, `darwinModules.horizon` and
 server, with content mods, datapacks and native mods. See
 [the package notes](pkgs/horizon/README.md).
 
+## FreeBSD overlays
+
+`overlays.freebsd-desktop` and `overlays.freebsd-server` apply only to FreeBSD
+targets and are kept separate from the default overlay and native package
+matrix. Consumers can import `nix/freebsd-desktop.nix` and
+`nix/freebsd-server.nix` directly against their pinned nixpkgs.
+
+The [desktop overlay](pkgs/mesa-freebsd/README.md) supports software-rendered
+Sway sessions. The server overlay adjusts restic and libfuse platform support,
+supplies the FreeBSD libraries for node exporter's devstat collector, links
+mkpasswd against gettext, enables CGO in Tailscale, and removes Caddy's systemd
+units.
+
+Run `nix build .#checks.x86_64-linux.freebsd-overlays` to check that both
+overlays are inert on Linux and evaluate the x86_64 FreeBSD cross derivations.
+The check uses NixBSD's nixpkgs revision from `nix/freebsd-overlays-check.nix`.
+Update that compatibility pin with its NixBSD counterpart. Native FreeBSD
+runtime checks are maintained separately.
+
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and
@@ -65,10 +84,9 @@ forks, including the Kuna packaging fork. `nix/forks.json` and `flake.lock` reco
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
 
-HA-MCP's compatibility source lives in `dweee/ha-mcp`, preserving v9.1.0
-upstream ancestry. The catalog retains its recipe, native test matrix and cache
-publication; `pkgs/ha-mcp/default.nix` pins the fork's compatibility patch and hash
-while preserving nixpkgs' release source and bundled skill content.
+HA-MCP uses the upstream release from nixpkgs, with local compatibility patches
+and bundled skills in `pkgs/ha-mcp`. The listener-order patch includes the
+regression test for stable IPv4-first wildcard binding.
 
 ## CI and binary cache
 
