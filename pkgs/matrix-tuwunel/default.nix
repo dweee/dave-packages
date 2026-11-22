@@ -17,7 +17,8 @@
       hash = "sha256-klBp0a9ad+TTNr5t3CDhCpM/t5Ndqw3FIxVvm6kMmvA=";
     };
     cargoHash = "sha256-f7864AwkfSnYLYuFjHLXGKmf+vZoSp4cm+ROIzXBeBw=";
-    buildFeatures = old.buildFeatures ++ ["s3_storage"];
+    cargoBuildFeatures = old.cargoBuildFeatures ++ ["s3_storage"];
+    cargoCheckFeatures = old.cargoCheckFeatures ++ ["s3_storage"];
     # cargoSetupHook makes aws-lc-sys use the system library.
     buildInputs = (old.buildInputs or []) ++ [aws-lc jemalloc];
     # Both supported Linux targets use jevmalloc's unprefixed ABI. Its
