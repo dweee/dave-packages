@@ -138,7 +138,7 @@ stdenv.mkDerivation (finalAttrs: {
         ]
       } \
       --subst-var-by libs ${lib.makeLibraryPath [ dbus ]} \
-      --subst-var-by nvidia ${lib.optionalString withNvidiaTools "${nvidia-tools}/bin"}
+      --subst-var-by nvidia ${lib.escapeShellArg (lib.optionalString withNvidiaTools "${nvidia-tools}/bin")}
     chmod +x $out/bin/mkw-recomp
     runHook postInstall
   '';
