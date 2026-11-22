@@ -1,3 +1,5 @@
+diff --git a/src/api/client/media.rs b/src/api/client/media.rs
+index 703fb6d4..fd742064 100644
 --- a/src/api/client/media.rs
 +++ b/src/api/client/media.rs
 @@ -1,6 +1,10 @@
@@ -12,7 +14,7 @@
  use reqwest::Url;
  use ruma::{
  	MilliSecondsSinceUnixEpoch, Mxc, UserId,
-@@ -24,7 +28,7 @@
+@@ -24,7 +28,7 @@ use tuwunel_service::{
  	media::{Animate, CACHE_CONTROL_IMMUTABLE, CORP_CROSS_ORIGIN, Dim, MXC_LENGTH, Media},
  };
  
@@ -21,7 +23,7 @@
  
  /// # `GET /_matrix/client/v1/media/config`
  pub(crate) async fn get_media_config_route(
-@@ -159,7 +163,7 @@
+@@ -166,7 +170,7 @@ pub(crate) async fn get_content_thumbnail_route(
  	State(services): State<crate::State>,
  	ClientIp(client): ClientIp,
  	body: Ruma<get_content_thumbnail::v1::Request>,
@@ -30,7 +32,7 @@
  	let user = body.sender_user();
  
  	let dim = Dim::from_ruma(body.width, body.height, body.method.clone())?;
-@@ -169,19 +173,36 @@
+@@ -176,19 +180,36 @@ pub(crate) async fn get_content_thumbnail_route(
  		media_id: &body.media_id,
  	};
  
@@ -68,7 +70,7 @@
  }
  
  /// # `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}`
-@@ -197,25 +218,34 @@
+@@ -204,25 +225,34 @@ pub(crate) async fn get_content_route(
  	State(services): State<crate::State>,
  	ClientIp(client): ClientIp,
  	body: Ruma<get_content::v1::Request>,
@@ -105,7 +107,7 @@
  }
  
  /// # `GET /_matrix/client/v1/media/download/{serverName}/{mediaId}/{fileName}`
-@@ -231,25 +261,34 @@
+@@ -238,25 +268,34 @@ pub(crate) async fn get_content_as_filename_route(
  	State(services): State<crate::State>,
  	ClientIp(client): ClientIp,
  	body: Ruma<get_content_as_filename::v1::Request>,
@@ -142,7 +144,7 @@
  }
  
  /// # `GET /_matrix/client/v1/media/preview_url`
-@@ -357,3 +396,15 @@
+@@ -364,3 +403,15 @@ async fn fetch_file(
  		content_disposition,
  	})
  }
@@ -158,21 +160,24 @@
 +		.insert(header::VARY, HeaderValue::from_static("Authorization"));
 +	response
 +}
---- a/src/api/router.rs
-+++ b/src/api/router.rs
-@@ -14,6 +14,11 @@
- pub use client_ip::{ConfiguredIpSource, TrustedPeerSubnets};
- use const_str::{concat, join, replace};
+diff --git a/src/api/client/routes.rs b/src/api/client/routes.rs
+index 7302b943..86631709 100644
+--- a/src/api/client/routes.rs
++++ b/src/api/client/routes.rs
+@@ -7,7 +7,11 @@ use const_str::{concat, join, replace};
  use http::{HeaderValue, header};
-+use ruma::api::{
-+	Metadata,
-+	client::authenticated_media::{get_content, get_content_as_filename, get_content_thumbnail},
-+	path_builder::PathBuilder,
-+};
+ use ruma::api::{
+ 	IncomingRequest,
+-	client::{message::send_message_event, state::send_state_event},
++	client::{
++		authenticated_media::{get_content, get_content_as_filename, get_content_thumbnail},
++		message::send_message_event,
++		state::send_state_event,
++	},
+ 	path_builder::PathBuilder,
+ };
  use tower_http::set_header::SetResponseHeaderLayer;
- use tuwunel_core::{Server, err};
- 
-@@ -404,10 +409,23 @@
+@@ -263,10 +267,21 @@ fn register_client_media_and_device_routes(
  	media_deny_framing: bool,
  	media_deny_inline_styles: bool,
  ) -> Router<State> {
@@ -182,27 +187,27 @@
 -		.ruma_route(&client::get_content_as_filename_route);
 +	// Retain Ruma's complete route history and authenticated request extractor,
 +	// while permitting either a typed file response or a raw HTTP redirect.
-+	let media_content_router = get_content_thumbnail::v1::Request::PATH_BUILDER
-+		.all_paths()
-+		.fold(Router::new(), |router, path| {
-+			router.route(path, get(client::get_content_thumbnail_route))
-+		});
-+	let media_content_router = get_content::v1::Request::PATH_BUILDER
-+		.all_paths()
-+		.fold(media_content_router, |router, path| {
-+			router.route(path, get(client::get_content_route))
-+		});
-+	let media_content_router = get_content_as_filename::v1::Request::PATH_BUILDER
-+		.all_paths()
-+		.fold(media_content_router, |router, path| {
-+			router.route(path, get(client::get_content_as_filename_route))
-+		});
++	let media_content_router = Router::new();
++	let media_content_router = route_paths::<get_content_thumbnail::v1::Request>(
++		media_content_router,
++		&get(client::get_content_thumbnail_route),
++	);
++	let media_content_router = route_paths::<get_content::v1::Request>(
++		media_content_router,
++		&get(client::get_content_route),
++	);
++	let media_content_router = route_paths::<get_content_as_filename::v1::Request>(
++		media_content_router,
++		&get(client::get_content_as_filename_route),
++	);
  
  	let media_content_router =
  		media_content_headers(media_content_router, media_deny_framing, media_deny_inline_styles);
+diff --git a/src/service/media/mod.rs b/src/service/media/mod.rs
+index 6c90aab2..c9d8f50d 100644
 --- a/src/service/media/mod.rs
 +++ b/src/service/media/mod.rs
-@@ -17,7 +17,7 @@
+@@ -18,7 +18,7 @@ use async_trait::async_trait;
  use base64::{Engine as _, engine::general_purpose};
  use futures::{FutureExt, Stream, StreamExt, TryFutureExt, TryStreamExt, pin_mut};
  use http::StatusCode;
@@ -211,7 +216,7 @@
  use ruma::{
  	Mxc, OwnedMxcUri, OwnedUserId, UserId,
  	api::error::{ErrorKind, RetryAfter},
-@@ -301,7 +301,7 @@
+@@ -305,7 +305,7 @@ impl Service {
  		)?;
  
  		//TODO: Dangling metadata in database if creation fails
@@ -220,12 +225,10 @@
  			.map_ok(|()| walk.animates())
  			.await
  	}
-@@ -605,6 +605,54 @@
- 		pin_mut!(urls);
- 
+@@ -616,6 +616,54 @@ impl Service {
  		Ok(urls.next().await)
-+	}
-+
+ 	}
+ 
 +	/// Direct authenticated-client download, retaining Matrix content headers.
 +	/// Old objects without those headers and unavailable providers fall back to
 +	/// the ordinary media path. Never expose a URL for an unverified object.
@@ -237,9 +240,9 @@
 +		filename: Option<&str>,
 +	) -> Result<Option<Url>> {
 +		let config = &self.services.config;
-+		if !config.media_allow_redirect
-+			|| config.media_deny_framing
-+			|| config.media_deny_inline_styles
++		if !config.media.allow_redirect
++			|| config.media.deny_framing
++			|| config.media.deny_inline_styles
 +		{
 +			return Ok(None);
 +		}
@@ -272,10 +275,12 @@
 +		}
 +
 +		Ok(None)
- 	}
- 
++	}
++
  	/// Gets all the MXC URIs in our media database
-@@ -954,7 +1002,14 @@
+ 	pub async fn get_all_mxcs(&self) -> Result<Vec<OwnedMxcUri>> {
+ 		let all_keys = self.db.get_all_media_keys().await;
+@@ -963,7 +1011,14 @@ impl Service {
  			.await
  	}
  
@@ -288,10 +293,10 @@
 +		content_type: Option<&str>,
 +	) -> Result {
 +		let attributes = download_attributes(content_disposition, content_type, None);
- 		self.storage_providers()
+ 		self.upload_providers()
  			.try_stream()
- 			.ready_try_filter(|provider| {
-@@ -973,7 +1028,7 @@
+ 			.and_then(async |provider| {
+@@ -976,7 +1031,7 @@ impl Service {
  				);
  
  				if let Err(e) = provider
@@ -300,7 +305,7 @@
  					.await
  				{
  					return Err!(Database(error!(
-@@ -1053,8 +1108,31 @@
+@@ -1077,8 +1132,31 @@ fn selected_providers(
  
  #[inline]
  #[must_use]
@@ -333,21 +338,11 @@
 +		(Attribute::ContentDisposition, disposition.to_string()),
 +	])
 +}
---- a/src/service/media/thumbnail/request.rs
-+++ b/src/service/media/thumbnail/request.rs
-@@ -43,7 +43,8 @@
- 				.create_file_metadata(mxc, None, dim, content_disposition, content_type)?;
- 
- 		// TODO: Remove dangling metadata when file creation fails.
--		self.create_media_file(&key, file).await?;
-+		self.create_media_file(&key, file, content_disposition, content_type)
-+			.await?;
- 
- 		Ok(())
- 	}
+diff --git a/src/service/media/thumbnail/generate.rs b/src/service/media/thumbnail/generate.rs
+index efe1305c..b4f0eb54 100644
 --- a/src/service/media/thumbnail/generate.rs
 +++ b/src/service/media/thumbnail/generate.rs
-@@ -281,7 +281,8 @@
+@@ -281,7 +281,8 @@ pub(super) async fn store_encoded(
  		Some(content_type),
  	)?;
  
@@ -357,21 +352,38 @@
  
  	let media = Media {
  		content,
+diff --git a/src/service/media/thumbnail/request.rs b/src/service/media/thumbnail/request.rs
+index df2d894b..7cf18ce2 100644
+--- a/src/service/media/thumbnail/request.rs
++++ b/src/service/media/thumbnail/request.rs
+@@ -43,7 +43,8 @@ impl super::super::Service {
+ 				.create_file_metadata(mxc, None, dim, content_disposition, content_type)?;
+ 
+ 		// TODO: Remove dangling metadata when file creation fails.
+-		self.create_media_file(&key, file).await?;
++		self.create_media_file(&key, file, content_disposition, content_type)
++			.await?;
+ 
+ 		Ok(())
+ 	}
+diff --git a/src/service/storage/provider.rs b/src/service/storage/provider.rs
+index 57269614..03ccd38c 100644
 --- a/src/service/storage/provider.rs
 +++ b/src/service/storage/provider.rs
-@@ -33,8 +33,9 @@
- use futures::{FutureExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
+@@ -44,10 +44,10 @@ use futures::{FutureExt, Stream, StreamExt, TryFutureExt, TryStreamExt};
+ #[cfg(any(feature = "gcs_storage", feature = "s3_storage"))]
  use http::Method;
+ #[cfg(any(feature = "gcs_storage", feature = "s3_storage"))]
+-use object_store::signer::Signer;
++use object_store::{GetOptions, signer::Signer};
  use object_store::{
--	Attributes, CopyMode, DynObjectStore, GetResult, MultipartUpload, ObjectMeta, ObjectStore,
--	ObjectStoreExt, PutPayload, PutResult, path::Path, signer::Signer,
-+	Attributes, CopyMode, DynObjectStore, GetOptions, GetResult, MultipartUpload, ObjectMeta,
-+	ObjectStore, ObjectStoreExt, PutMultipartOptions, PutOptions, PutPayload, PutResult,
-+	path::Path, signer::Signer,
+ 	Attributes, CopyMode, DynObjectStore, GetResult, MultipartUpload, ObjectMeta, ObjectStore,
+-	ObjectStoreExt, PutPayload, PutResult, path::Path,
++	ObjectStoreExt, PutMultipartOptions, PutOptions, PutPayload, PutResult, path::Path,
  };
  use tuwunel_core::{
  	Error, Result,
-@@ -146,7 +147,9 @@
+@@ -160,7 +160,9 @@ where
  	PutPayload: From<T> + From<PutPayload>,
  {
  	if size.is_none_or(|size| size >= self.multipart_threshold()) {
@@ -382,7 +394,7 @@
  	}
  
  	debug!(
-@@ -163,7 +166,8 @@
+@@ -177,7 +179,8 @@ where
  		.map(Bytes::from)
  		.collect();
  
@@ -392,7 +404,7 @@
  }
  
  /// Stores one contiguous object under `path`.
-@@ -184,10 +188,33 @@
+@@ -198,10 +201,33 @@ pub async fn put_one<T>(&self, path: &str, input: T) -> Result<PutResult>
  where
  	PutPayload: From<T> + From<PutPayload>,
  {
@@ -427,7 +439,7 @@
  	}
  
  	let part_size = self.multipart_part_size();
-@@ -199,7 +226,7 @@
+@@ -213,7 +239,7 @@ where
  		"Selecting multi-part upload..."
  	);
  
@@ -436,7 +448,7 @@
  		.await
  }
  
-@@ -217,7 +244,7 @@
+@@ -231,7 +257,7 @@ where
  		?path,
  	)
  )]
@@ -445,7 +457,7 @@
  where
  	S: Stream<Item = Result<T>> + Send,
  	PutPayload: From<T> + From<PutPayload>,
-@@ -225,7 +252,7 @@
+@@ -239,7 +265,7 @@ where
  	let path = self.to_abs_path(path)?;
  	let mut handle = self
  		.provider
@@ -454,7 +466,7 @@
  		.map_err(Error::from)
  		.await?;
  
-@@ -234,7 +261,7 @@
+@@ -248,7 +274,7 @@ where
  		.inspect_err(|e| error!(?path, chain = %error_chain(e), "Failed to store object"))
  		.await
  	{
@@ -463,21 +475,20 @@
  			handle
  				.complete()
  				.map_err(Error::from)
-@@ -245,9 +272,10 @@
+@@ -259,9 +285,10 @@ where
  						"Failed to store object during completion",
  					);
  				})
 -				.await,
--
--		| Err(e) =>
 +				.await
 +		},
-+
+ 
+-		| Err(e) =>
 +		| Err(e) => {
  			handle
  				.abort()
  				.map_ok(|()| Err(e))
-@@ -259,7 +287,8 @@
+@@ -273,7 +300,8 @@ where
  						"Additional errors during error handling",
  					);
  				})
@@ -487,7 +498,7 @@
  	}
  }
  
-@@ -277,11 +306,16 @@
+@@ -291,11 +319,16 @@ where
  		?path,
  	)
  )]
@@ -506,14 +517,13 @@
  		.map_err(Error::from)
  		.await
  }
-@@ -419,6 +453,34 @@
- 		.map_err(Error::from)
- 		.map_ok(Some)
- 		.await
-+}
-+
+@@ -447,6 +480,48 @@ pub async fn signed_get_url(&self, _path: &str, _ttl: Duration) -> Result<Option
+ 	Ok(None)
+ }
+ 
 +/// Signs only an existing object whose headers match the Matrix response.
 +/// HEAD avoids downloading the body and makes mixed local/S3 migrations safe.
++#[cfg(any(feature = "gcs_storage", feature = "s3_storage"))]
 +#[implement(Provider)]
 +pub async fn signed_media_url(
 +	&self,
@@ -538,6 +548,21 @@
 +	}
 +
 +	self.signed_get_url(path, ttl).await
- }
- 
++}
++
++/// Creates no media redirect URL when neither S3 nor GCS support is compiled in.
++#[cfg(not(any(feature = "gcs_storage", feature = "s3_storage")))]
++#[implement(Provider)]
++#[expect(clippy::unused_async)]
++pub async fn signed_media_url(
++	&self,
++	_path: &str,
++	_ttl: Duration,
++	_attributes: &Attributes,
++) -> Result<Option<Url>> {
++	Ok(None)
++}
++
  /// Deletes one object from this provider.
+ ///
+ /// This consumes [`Self::delete`] to completion and discards its yielded path.
