@@ -65,10 +65,9 @@ forks, including the Kuna packaging fork. `nix/forks.json` and `flake.lock` reco
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
 
-HA-MCP's compatibility source lives in `dweee/ha-mcp`, preserving v9.1.0
-upstream ancestry. The catalog retains its recipe, native test matrix and cache
-publication; `pkgs/ha-mcp/default.nix` pins the fork's compatibility patch and hash
-while preserving nixpkgs' release source and bundled skill content.
+HA-MCP uses the upstream release from nixpkgs, with local compatibility patches
+and bundled skills in `pkgs/ha-mcp`. The listener-order patch includes the
+regression test for stable IPv4-first wildcard binding.
 
 ## CI and binary cache
 
