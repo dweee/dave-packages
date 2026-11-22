@@ -1,0 +1,42 @@
+diff --git a/sm86/spec/spec.py b/sm86/spec/spec.py
+index 8c7af90..9c0017b 100644
+--- a/sm86/spec/spec.py
++++ b/sm86/spec/spec.py
+@@ -15,6 +15,9 @@ Usage: python sm86/spec/spec.py [--out build/sm86] [--cache scratchpad/nvidia] [
+        --crt (Windows, from the setup): the package's prebuilt C runtime, linked with zig lld-link, so zig does not
+        build its libc on the player's PC (tools/prepare/machine.py lld_link; issue #2)
+        (~1 min; downloads 84 MB on Linux, 126 MB on Windows, the first time)
++       MKW_NVIDIA_BIN=DIR: nvdisasm and ptxas from DIR instead of the download, the same pinned packages unpacked by
++       a distribution's package (nix/package.nix): on NixOS NVIDIA's binaries do not start as downloaded (no
++       /lib64/ld-linux-x86-64.so.2), so the package patches them and names them here
+ """
+ 
+ import argparse
+@@ -113,7 +116,10 @@ def fetch(rel: str, want: str, cache: Path) -> Path:
+ 
+ 
+ def tool(name: str, cache: Path) -> Path:
+-    """bin/<name> of its pinned package, unpacked once into cache/bin."""
++    """bin/<name> of its pinned package, unpacked once into cache/bin; MKW_NVIDIA_BIN's own copy when it has one."""
++    packaged = Path(os.environ.get("MKW_NVIDIA_BIN", "")) / (name + ".exe" if WINDOWS else name)
++    if os.environ.get("MKW_NVIDIA_BIN") and packaged.is_file():
++        return packaged
+     exe = cache / "bin" / (name + ".exe" if WINDOWS else name)
+     if exe.is_file():
+         return exe
+diff --git a/tools/build/build.py b/tools/build/build.py
+index 098b4ff..7176cc3 100644
+--- a/tools/build/build.py
++++ b/tools/build/build.py
+@@ -170,7 +170,10 @@ def module_glue(gen: Path, exefs: Path, library: bool) -> str:
+ 
+ def port_version() -> str:
+     """The release tag without its v (0.1.0) or, between tags, git describe's tag-commits-hash; the commit alone in a
+-    clone without tags, "dev" outside git (the source tarball of a release says nothing)."""
++    clone without tags, "dev" outside git (the source tarball of a release says nothing). MKW_PORT_VERSION names it
++    for a build without the repository's history (nix/package.nix: Nix builds from a copy with no .git)."""
++    if os.environ.get("MKW_PORT_VERSION"):
++        return os.environ["MKW_PORT_VERSION"]
+     r = subprocess.run(["git", "-C", str(ROOT), "describe", "--tags", "--always", "--dirty"],
+                        capture_output=True, text=True, check=False)  # fmt: skip
+     return r.stdout.strip().removeprefix("v") if r.returncode == 0 and r.stdout.strip() else "dev"

@@ -307,17 +307,17 @@
     "ghidra-mcp": {
       "flake": false,
       "locked": {
-        "lastModified": 1794479304,
-        "narHash": "sha256-ozDyuwjp+btvg7SiZqUtADCPdvQ//f6jx8pRD2R45v8=",
-        "owner": "dweee",
+        "lastModified": 1795161798,
+        "narHash": "sha256-4xWLBpdkktFCf2yI4bHDqpE+jXqZ8k8QdPM9Nh0Yf1w=",
+        "owner": "bethington",
         "repo": "ghidra-mcp",
-        "rev": "86961ca288f2832e649e8ff371a4176ae1cc1535",
+        "rev": "a57b56d71fffd5ea2560625521246014518575a7",
         "type": "github"
       },
       "original": {
-        "owner": "dweee",
+        "owner": "bethington",
         "repo": "ghidra-mcp",
-        "rev": "86961ca288f2832e649e8ff371a4176ae1cc1535",
+        "rev": "a57b56d71fffd5ea2560625521246014518575a7",
         "type": "github"
       }
     },
@@ -373,6 +373,24 @@
         "owner": "nix-community",
         "repo": "home-manager",
         "type": "github"
+      }
+    },
+    "hookshot-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794614938,
+        "narHash": "sha256-EtfW86u5g10j28NYmkXr6PLkv25+PrKsJ69XNxisFik=",
+        "ref": "main",
+        "rev": "db35b122a93ea15d536842d19b77fd1f14301853",
+        "revCount": 2297,
+        "type": "git",
+        "url": "https://git.notrexed.dev/Hookshot/Hookshot.git"
+      },
+      "original": {
+        "ref": "main",
+        "rev": "db35b122a93ea15d536842d19b77fd1f14301853",
+        "type": "git",
+        "url": "https://git.notrexed.dev/Hookshot/Hookshot.git"
       }
     },
     "import-tree": {
@@ -524,6 +542,23 @@
         "owner": "utensils",
         "repo": "mcp-nixos",
         "rev": "2b0b86ceda72ec5c5d0d78ac3130ccf024f6a7ff",
+        "type": "github"
+      }
+    },
+    "mkw-recomp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794614319,
+        "narHash": "sha256-d5M3oAwZEhqXeOm+tlkqlnmf2ECkfttBLmRb+ufqH54=",
+        "owner": "adriadam10",
+        "repo": "mkw-recomp",
+        "rev": "8dd78017067221c76b79a7463026d64fc07034df",
+        "type": "github"
+      },
+      "original": {
+        "owner": "adriadam10",
+        "repo": "mkw-recomp",
+        "rev": "8dd78017067221c76b79a7463026d64fc07034df",
         "type": "github"
       }
     },
@@ -890,6 +925,60 @@
         "url": "https://github.com/dweee/paneru.git"
       }
     },
+    "pared": {
+      "inputs": {
+        "nixpkgs": [
+          "pared-nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794666482,
+        "narHash": "sha256-2zHS3C2c5wuqmkJNmvXCRhy0qi+4/TMv8uE++z+pG4I=",
+        "owner": "4evy",
+        "repo": "pared",
+        "rev": "26c34ec7df3d39924650b852e8d8aab57874e9ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "4evy",
+        "repo": "pared",
+        "rev": "26c34ec7df3d39924650b852e8d8aab57874e9ee",
+        "type": "github"
+      }
+    },
+    "pared-nixpkgs": {
+      "locked": {
+        "lastModified": 1794890597,
+        "narHash": "sha256-lME2lHoDHAaSHP3/okgiVoJ0icVEvsQH8LeU3We7tcc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "04906337b6d53e8bb0eaf0470ae9f070a4d4eb55",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "04906337b6d53e8bb0eaf0470ae9f070a4d4eb55",
+        "type": "github"
+      }
+    },
+    "patchbay-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794600705,
+        "narHash": "sha256-rsfxngMqqKdxDUPP5tiwQn00e04daXBCKk+QvrkB31g=",
+        "owner": "shaboogen-dev",
+        "repo": "Patchbay",
+        "rev": "b3c88526599eb680dee25050070cbcaa38b3eab1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "shaboogen-dev",
+        "repo": "Patchbay",
+        "rev": "b3c88526599eb680dee25050070cbcaa38b3eab1",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -1021,17 +1110,22 @@
         "ghidra-mcp": "ghidra-mcp",
         "handy-nixpkgs": "handy-nixpkgs",
         "handy-src": "handy-src",
+        "hookshot-src": "hookshot-src",
         "jellarr": "jellarr",
         "kopuz": "kopuz",
         "kuna": "kuna",
         "mcp-nix": "mcp-nix",
         "mcp-nixos": "mcp-nixos",
+        "mkw-recomp-src": "mkw-recomp-src",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nix-zed-extensions": "nix-zed-extensions",
         "nixos-avf": "nixos-avf",
         "nixos-jellyfin": "nixos-jellyfin",
         "nixpkgs": "nixpkgs_2",
         "paneru": "paneru",
+        "pared": "pared",
+        "pared-nixpkgs": "pared-nixpkgs",
+        "patchbay-src": "patchbay-src",
         "prowlarr-mcp": "prowlarr-mcp",
         "pumpkin-nixpkgs": "pumpkin-nixpkgs",
         "pyproject-build-systems": "pyproject-build-systems",
@@ -1324,21 +1418,21 @@
     "wiicompiled": {
       "flake": false,
       "locked": {
-        "lastModified": 1794522173,
-        "narHash": "sha256-m2lodbVA7c/zLDxSVIaxmK7R3Jp17IrRX3YdnMdMqf0=",
-        "ref": "flakey",
-        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
-        "revCount": 236,
+        "lastModified": 1794339804,
+        "narHash": "sha256-M90I9INpBCt4gTns/R3Idtybir1upwcvKpoJmdlRqJQ=",
+        "ref": "main",
+        "rev": "ffbde831317c2a3fc7841f53e7244db83f024ff2",
+        "revCount": 228,
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/dweee/Wiicompiled.git"
+        "url": "https://github.com/patchzyy/Wiicompiled.git"
       },
       "original": {
-        "ref": "flakey",
-        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+        "ref": "main",
+        "rev": "ffbde831317c2a3fc7841f53e7244db83f024ff2",
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/dweee/Wiicompiled.git"
+        "url": "https://github.com/patchzyy/Wiicompiled.git"
       }
     }
   },
