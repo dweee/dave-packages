@@ -20,7 +20,38 @@ let
   };
   cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
   horizon = final.callPackage ../pkgs/horizon { };
+  hookshotVersion = (lib.importJSON "${inputs.hookshot-src}/.release-please-manifest.json").".";
+  mkwVersion =
+    lib.head (
+      lib.concatMap (
+        line:
+        let
+          match = builtins.match "## ([0-9][0-9.]*).*" line;
+        in
+        lib.optional (match != null) (lib.head match)
+      ) (lib.splitString "\n" (builtins.readFile "${inputs.mkw-recomp-src}/CHANGELOG.md"))
+    )
+    + "-${inputs.mkw-recomp-src.shortRev}";
   definitions = {
+    hookshot = final.callPackage ../pkgs/hookshot {
+      src = inputs.hookshot-src;
+      version = hookshotVersion;
+      rev = inputs.hookshot-src.shortRev;
+    };
+    hookshot-windows = final.callPackage ../pkgs/hookshot/windows.nix {
+      src = inputs.hookshot-src;
+      version = hookshotVersion;
+      rev = inputs.hookshot-src.shortRev;
+    };
+    mkw-recomp = final.callPackage ../pkgs/mkw-recomp {
+      src = inputs.mkw-recomp-src;
+      version = mkwVersion;
+      inherit (final.llvmPackages) stdenv;
+    };
+    mkw-recomp-windows = final.callPackage ../pkgs/mkw-recomp/windows.nix {
+      src = inputs.mkw-recomp-src;
+      version = mkwVersion;
+    };
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };

@@ -9,7 +9,7 @@ import sys
 
 # Check names throughout the recursive derivation graph, including sources and
 # output paths. No rejected path or evaluator diagnostic goes into public logs.
-DENIED = re.compile(r"(?:wiicompiled-disc(?:-rmcp01)?|veracrypt|nvidia(?:-x11|-kernel|-modules)?(?:-open)?-580|ffmpeg-full|subnetter)", re.I)
+DENIED = re.compile(r"(?:wiicompiled-disc(?:-rmcp01)?|mkw-recomp-nvidia-tools|veracrypt|nvidia(?:-x11|-kernel|-modules)?(?:-open)?-580|ffmpeg-full|subnetter)", re.I)
 WII_PUBLIC = {"wiicompiled-native-prebuilt", "wiicompiled-translator", "wiicompiled-setup", "wiicompiled-setup-unwrapped"}
 
 def check_paths(paths):

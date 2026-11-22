@@ -16,6 +16,9 @@
     "handy": {
       "source": "github:dweee/Handy/tested"
     },
+    "hookshot-src": {
+      "source": "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main"
+    },
     "jellarr": {
       "source": "github:venkyr77/jellarr"
     },
@@ -30,6 +33,9 @@
     },
     "mcp-nixos": {
       "source": "github:utensils/mcp-nixos"
+    },
+    "mkw-recomp-src": {
+      "source": "github:adriadam10/mkw-recomp"
     },
     "nix-cachyos-kernel": {
       "source": "github:xddxdd/nix-cachyos-kernel"

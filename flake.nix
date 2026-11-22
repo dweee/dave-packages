@@ -108,6 +108,14 @@
       url = "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&rev=0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac&submodules=1";
       flake = false;
     };
+    hookshot-src = {
+      url = "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main&rev=db35b122a93ea15d536842d19b77fd1f14301853";
+      flake = false;
+    };
+    mkw-recomp-src = {
+      url = "github:adriadam10/mkw-recomp/8dd78017067221c76b79a7463026d64fc07034df";
+      flake = false;
+    };
     gdb-mcp = {
       url = "github:birdeclipse/gdb-mcp/8ea9afb62a94e3942e50ee5d850c7cad2c7df6b7";
       flake = false;
@@ -172,6 +180,12 @@
         in
         nixpkgs.lib.genAttrs (cacheOnlyPlatforms.${system} or [ ]) (name: definitions.${name})
       );
+      nixosModules.hookshot = import ./pkgs/hookshot/modules/nixos.nix self;
+      homeManagerModules.hookshot = import ./pkgs/hookshot/modules/home-manager.nix self;
+      darwinModules.hookshot = import ./pkgs/hookshot/modules/darwin.nix self;
+      nixosModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/nixos.nix self;
+      homeManagerModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/home-manager.nix self;
+      darwinModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/darwin.nix self;
       nixosModules.android-avf-kernel-patches = import ./nix/android-avf/kernel-patches.nix;
       # Horizon (pkgs/horizon/README.md): the launcher, the game and a server.
       nixosModules.horizon = horizonModule ./pkgs/horizon/modules/nixos.nix;
@@ -199,6 +213,15 @@
             openjdk25 = (pkgsFor system).jdk21;
           };
         }
+        // nixpkgs.lib.optionalAttrs (self.packages.${system} ? hookshot) {
+          hookshot-prerequisites = (pkgsFor system).callPackage ./pkgs/hookshot/checks.nix { };
+        }
+        // nixpkgs.lib.optionalAttrs (self.packages.${system} ? mkw-recomp) (
+          import ./pkgs/mkw-recomp/checks.nix {
+            inherit self nixpkgs;
+            pkgs = pkgsFor system;
+          }
+        )
         // import ./pkgs/horizon/checks.nix {
           inherit self inputs system;
           pkgs = pkgsFor system;
