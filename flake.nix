@@ -122,6 +122,10 @@
       url = "github:4evy/pared/26c34ec7df3d39924650b852e8d8aab57874e9ee";
       inputs.nixpkgs.follows = "pared-nixpkgs";
     };
+    patchbay-src = {
+      url = "github:shaboogen-dev/Patchbay/b3c88526599eb680dee25050070cbcaa38b3eab1";
+      flake = false;
+    };
     gdb-mcp = {
       url = "github:birdeclipse/gdb-mcp/8ea9afb62a94e3942e50ee5d850c7cad2c7df6b7";
       flake = false;
@@ -154,6 +158,15 @@
           imports = [ module ];
           horizon.packageSet = lib.mkOverride 1100 (
             pkgs.horizonPackages or self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.horizonPackages
+          );
+        };
+      patchbayModule =
+        module:
+        { lib, pkgs, ... }:
+        {
+          imports = [ module ];
+          programs.patchbay.package = lib.mkDefault (
+            pkgs.patchbay or self.packages.${pkgs.stdenv.hostPlatform.system}.patchbay
           );
         };
       # Packages, Horizon modules and checks share the same pure package set.
@@ -200,6 +213,9 @@
       nixosModules.horizon = horizonModule ./pkgs/horizon/modules/nixos.nix;
       darwinModules.horizon = horizonModule ./pkgs/horizon/modules/darwin.nix;
       homeManagerModules.horizon = horizonModule ./pkgs/horizon/modules/home-manager.nix;
+      nixosModules.patchbay = patchbayModule ./pkgs/patchbay/modules/system.nix;
+      darwinModules.patchbay = patchbayModule ./pkgs/patchbay/modules/system.nix;
+      homeManagerModules.patchbay = patchbayModule ./pkgs/patchbay/modules/home-manager.nix;
       # Every Horizon channel and variant, built as `packages` are.
       legacyPackages = nixpkgs.lib.genAttrs systems (system: {
         inherit ((pkgsFor system)) horizonPackages;

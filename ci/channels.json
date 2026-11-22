@@ -202,6 +202,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.patchbay",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.prismlauncher",
         "visibility": "public"
       },
@@ -608,6 +612,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.patchbay",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.paulxstretch",
         "visibility": "public"
       },
@@ -991,6 +999,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.paceman-tracker",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.patchbay",
         "visibility": "public"
       },
       {

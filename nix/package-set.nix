@@ -65,6 +65,7 @@ let
         swiftc -typecheck Sources/Pared/gui/components/components.swift Tests/gui-state/gui-state.swift
       '';
     });
+    patchbay = final.callPackage ../pkgs/patchbay { source = inputs.patchbay-src.outPath; };
     handy = inputs.handy.packages.${system}.handy;
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;
