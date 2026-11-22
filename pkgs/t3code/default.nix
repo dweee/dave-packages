@@ -14,11 +14,19 @@ let
   # Both launchers must share the patched server and disk-backed Cursor SDK.
   sourceUnwrapped = upstream.t3code-nightly-source.sourceUnwrapped.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
-      ./cursor-max-mode.patch
       # macOS Keychain service for safeStorage follows app.setName. Upstream
       # catalogs are encrypted as "t3code Safe Storage".
       ./safe-storage-app-name.patch
     ];
+    # The catalog can follow a consumer's t3-code-nix pin. Older nightlies
+    # load the SDK eagerly and lack the upstream SDK test file.
+    prePatch = (old.prePatch or "") + ''
+      if [ -f packages/provider-cursor/src/server/sdk.test.ts ]; then
+        appendToVar patches ${./cursor-max-mode.patch}
+      else
+        appendToVar patches ${./cursor-max-mode-eager-sdk.patch}
+      fi
+    '';
     preBuild =
       (old.preBuild or "")
       + lib.optionalString isLinux ''
@@ -58,7 +66,11 @@ let
     checkPhase = ''
       runHook preCheck
       T3CODE_STAGE_RUNTIME_SCRIPT=${./stage-runtime.mjs} node --test ${./stage-runtime.test.mjs}
-      pnpm --dir packages/provider-cursor exec vp test run src/server/sdk.test.ts src/server/cursor-max-mode.test.ts
+      sdkTests=(src/server/sdk.test.ts)
+      if [ -f packages/provider-cursor/src/server/cursor-max-mode.test.ts ]; then
+        sdkTests+=(src/server/cursor-max-mode.test.ts)
+      fi
+      pnpm --dir packages/provider-cursor exec vp test run "''${sdkTests[@]}"
       runHook postCheck
     '';
     passthru = (old.passthru or { }) // {
