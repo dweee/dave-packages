@@ -96,7 +96,7 @@
       flake = false;
     };
     ghidra-mcp = {
-      url = "github:dweee/ghidra-mcp/86961ca288f2832e649e8ff371a4176ae1cc1535";
+      url = "github:bethington/ghidra-mcp/a57b56d71fffd5ea2560625521246014518575a7";
       flake = false;
     };
     # Jellarr's own flake: consumers take its NixOS module from this same pin.
