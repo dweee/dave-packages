@@ -1,0 +1,39 @@
+diff --git a/runtime/cmake/RuntimeLibrary.cmake b/runtime/cmake/RuntimeLibrary.cmake
+index 8d6160a..f29a0c9 100644
+--- a/runtime/cmake/RuntimeLibrary.cmake
++++ b/runtime/cmake/RuntimeLibrary.cmake
+@@ -11,14 +11,29 @@ else()
+     set(MKW_HOST_IS_X86_64 FALSE)
+ endif()
+
+-# Windows, Linux and Intel macOS x86_64 use the selected profile. AArch64
+-# builds are compiled locally for the host that will run them, so both Linux
+-# and Apple Silicon use the compiler's native CPU tuning rather than leaving
+-# target-specific performance on the table.
++# Nix builds must name their target ISA, never infer it from the builder CPU.
++# Keep upstream's selected x86 profile and its matching runtime ISA guard.
++# AArch64 may select a named CPU; Apple Silicon defaults to the portable M1 floor.
++set(MKW_BASELINE_ARCH "" CACHE STRING
++    "Named host CPU/ISA; empty uses the selected x86 profile or portable ARM baseline")
++if(MKW_BASELINE_ARCH STREQUAL "native")
++    message(FATAL_ERROR "MKW_BASELINE_ARCH=native is not reproducible; select a named CPU")
++endif()
+ if(MKW_HOST_IS_X86_64)
++    if(MKW_BASELINE_ARCH AND NOT MKW_BASELINE_ARCH STREQUAL "x86-64-${MKW_X86_CPU_PROFILE}")
++        message(FATAL_ERROR "Set MKW_X86_CPU_PROFILE to select the matching x86 ISA guard")
++    endif()
+     set(MKW_BASELINE_ARCH_FLAG -march=x86-64-${MKW_X86_CPU_PROFILE})
+ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64|ARM64)$")
+-    set(MKW_BASELINE_ARCH_FLAG -mcpu=native)
++    if(MKW_BASELINE_ARCH)
++        set(MKW_BASELINE_ARCH_FLAG -mcpu=${MKW_BASELINE_ARCH})
++    elseif(APPLE)
++        set(MKW_BASELINE_ARCH_FLAG -mcpu=apple-m1)
++    else()
++        set(MKW_BASELINE_ARCH_FLAG "")
++    endif()
++elseif(MKW_BASELINE_ARCH)
++    message(FATAL_ERROR "MKW_BASELINE_ARCH is only supported on x86_64 and AArch64")
+ else()
+     set(MKW_BASELINE_ARCH_FLAG "")
+ endif()
