@@ -28,9 +28,17 @@
       inputs.pyproject-nix.follows = "pyproject-nix";
       inputs.uv2nix.follows = "uv2nix";
     };
-    # Retain native fork toolchains so catalog updates reuse their CI outputs.
-    handy = {
-      url = "github:dweee/Handy/b3230de199e1e6880c204002d27543a63608def6";
+    handy-src = {
+      url = "github:cjpais/Handy/f2483011d60fccab639d3c33f40b3456e92f2940";
+      flake = false;
+    };
+    # Preserve the toolchain used to build Handy 0.10.0.
+    handy-nixpkgs.url = "github:NixOS/nixpkgs/40aa5a0e9ff16a78d4b5d5c39e72f0382cb44061";
+    bun2nix = {
+      url = "github:nix-community/bun2nix/c843f477b15f51151f8c6bcc886954699440a6e1";
+      inputs.nixpkgs.follows = "handy-nixpkgs";
+      # bun2nix 2.0.8 evaluates formatters for all listed systems.
+      inputs.systems.url = "github:nix-systems/triplet/6de7bc09397911ce03636afbcf6118745ab2cda0";
     };
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
@@ -160,6 +168,13 @@
             pkgs.horizonPackages or self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.horizonPackages
           );
         };
+      handyModule =
+        namespace: module:
+        { lib, pkgs, ... }:
+        {
+          imports = [ module ];
+          ${namespace}.handy.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.handy;
+        };
       patchbayModule =
         module:
         { lib, pkgs, ... }:
@@ -226,6 +241,9 @@
       nixosModules.horizon = horizonModule ./pkgs/horizon/modules/nixos.nix;
       darwinModules.horizon = horizonModule ./pkgs/horizon/modules/darwin.nix;
       homeManagerModules.horizon = horizonModule ./pkgs/horizon/modules/home-manager.nix;
+      nixosModules.handy = handyModule "programs" ./pkgs/handy/modules/nixos.nix;
+      darwinModules.handy = handyModule "programs" ./pkgs/handy/modules/darwin.nix;
+      homeManagerModules.handy = handyModule "services" ./pkgs/handy/modules/home-manager.nix;
       nixosModules.patchbay = patchbayModule ./pkgs/patchbay/modules/system.nix;
       darwinModules.patchbay = patchbayModule ./pkgs/patchbay/modules/system.nix;
       homeManagerModules.patchbay = patchbayModule ./pkgs/patchbay/modules/home-manager.nix;

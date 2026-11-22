@@ -66,7 +66,14 @@ let
       '';
     });
     patchbay = final.callPackage ../pkgs/patchbay { source = inputs.patchbay-src.outPath; };
-    handy = inputs.handy.packages.${system}.handy;
+    handy =
+      let
+        handyPkgs = import inputs.handy-nixpkgs {
+          inherit system;
+          overlays = [ inputs.bun2nix.overlays.default ];
+        };
+      in
+      handyPkgs.callPackage ../pkgs/handy { source = inputs.handy-src.outPath; };
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;
       upstream = inputs.mcp-nixos;

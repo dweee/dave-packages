@@ -50,15 +50,5 @@
     ],
     "ci_owner": "application fork",
     "private": false
-  },
-  "handy": {
-    "repository": "https://github.com/dweee/Handy",
-    "branch": "nix/darwin",
-    "packages": [
-      "handy"
-    ],
-    "ci_owner": "application fork",
-    "private": false,
-    "revision": "b3230de199e1e6880c204002d27543a63608def6"
   }
 }

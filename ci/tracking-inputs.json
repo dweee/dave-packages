@@ -13,9 +13,6 @@
     "ghidra-mcp": {
       "source": "github:bethington/ghidra-mcp/main"
     },
-    "handy": {
-      "source": "github:dweee/Handy/tested"
-    },
     "hookshot-src": {
       "source": "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main"
     },
