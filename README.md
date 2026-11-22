@@ -133,6 +133,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | slopbro | yes | yes | yes |
 | slskd-mcp | yes | yes | yes |
 | spank | yes | - | - |
+| strata-bin | yes | - | - |
 | tabrix | yes | yes | yes |
 | tabrix-extension | yes | yes | yes |
 | tokscale | yes | yes | yes |

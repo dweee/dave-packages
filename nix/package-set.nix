@@ -30,6 +30,7 @@ let
       upstream = inputs.llama-cpp-inkling;
       useVulkan = true;
     };
+    strata-bin = prev.callPackage ../pkgs/strata-bin { };
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };

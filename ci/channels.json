@@ -278,6 +278,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.strata-bin",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.t3code",
         "visibility": "public"
       },
