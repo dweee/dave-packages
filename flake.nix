@@ -155,6 +155,8 @@
     in
     {
       overlays.default = overlay;
+      overlays.freebsd-desktop = import ./nix/freebsd-desktop.nix;
+      overlays.freebsd-server = import ./nix/freebsd-server.nix;
       # Mopidy 4 and its extensions (nix/mopidy-4.nix), including mopidyPackages,
       # for consumers that build Mopidy environments from their own package set.
       overlays.mopidy-4 = import ./nix/mopidy-4.nix;
@@ -193,6 +195,7 @@
         system:
         self.packages.${system}
         // {
+          freebsd-overlays = import ./nix/freebsd-overlays-check.nix { pkgs = pkgsFor system; };
           kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
           rea-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix {
             ghidra-kuna = (pkgsFor system).rea-kuna.ghidra-kuna;
