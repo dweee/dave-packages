@@ -92,7 +92,7 @@
       flake = false;
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=d0b375d44ad4f69bb137642271f0b7e0f556eb29&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=019b74e8fc9339f314d8ef7797468e5447914c76&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {

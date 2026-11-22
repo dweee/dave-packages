@@ -25,13 +25,13 @@
   zstd,
 }: let
   pname = "yaas";
-  version = "0-unstable-2026-11-18";
+  version = "0-unstable-2026-11-15";
 
   src = fetchFromGitHub {
     owner = "skrimix";
     repo = "yaas";
-    rev = "1cb671ae3d55d17b8d17cde63e682eb94281c11d";
-    hash = "sha256-fhJLq3rqJQi0DUy1eMwJEANUw1QKnNY/yB2vmGa0bso=";
+    rev = "bd5af43edd413534a1495fe23df5ac559d9a0f32";
+    hash = "sha256-YCD4h+hcv/6Xs79JgHFDht1pmInsF8tT/vQNVAtdbCk=";
   };
 
   rustDep = rustPlatform.buildRustPackage {
