@@ -13,13 +13,13 @@ spec = importlib.util.spec_from_file_location("input_tools", ROOT / "ci/update-i
 inputs = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(inputs)
 NAME = "wiicompiled"
-URL = "https://github.com/dweee/Wiicompiled.git"
-SOURCE = "git+" + URL + "?ref=flakey&submodules=1"
+URL = "https://github.com/patchzyy/Wiicompiled.git"
+SOURCE = "git+" + URL + "?ref=main&submodules=1"
 
 
 def validate(locked):
     if (locked.get("type") != "git" or locked.get("url") != URL
-            or locked.get("ref") != "flakey" or locked.get("submodules") is not True
+            or locked.get("ref") != "main" or locked.get("submodules") is not True
             or not re.fullmatch(r"[0-9a-f]{40}", locked.get("rev", ""))
             or not re.fullmatch(r"sha256-[A-Za-z0-9+/]{43}=", locked.get("narHash", ""))):
         raise ValueError("Unreviewed Wii source identity")
@@ -69,10 +69,6 @@ def update(snapshot, apply=False):
         raise ValueError("Unrelated input changed; preserve for review")
     flake.write_text(text[:match.start(1)] + exact + text[match.end(1):])
     inputs.run("nix", "flake", "lock", "--option", "accept-flake-config", "false")
-    owners = ROOT / "nix/forks.json"
-    records = json.loads(owners.read_text())
-    records[NAME]["revision"] = target["rev"]
-    owners.write_text(json.dumps(records, indent=2) + "\n")
     return report | {"applied": True}
 
 

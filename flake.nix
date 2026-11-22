@@ -105,7 +105,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wiicompiled = {
-      url = "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&rev=0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac&submodules=1";
+      url = "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&rev=ffbde831317c2a3fc7841f53e7244db83f024ff2&submodules=1";
       flake = false;
     };
     gdb-mcp = {

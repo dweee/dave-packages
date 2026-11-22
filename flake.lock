@@ -1326,21 +1326,21 @@
     "wiicompiled": {
       "flake": false,
       "locked": {
-        "lastModified": 1794522173,
-        "narHash": "sha256-m2lodbVA7c/zLDxSVIaxmK7R3Jp17IrRX3YdnMdMqf0=",
-        "ref": "flakey",
-        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
-        "revCount": 236,
+        "lastModified": 1794339804,
+        "narHash": "sha256-M90I9INpBCt4gTns/R3Idtybir1upwcvKpoJmdlRqJQ=",
+        "ref": "main",
+        "rev": "ffbde831317c2a3fc7841f53e7244db83f024ff2",
+        "revCount": 228,
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/dweee/Wiicompiled.git"
+        "url": "https://github.com/patchzyy/Wiicompiled.git"
       },
       "original": {
-        "ref": "flakey",
-        "rev": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
+        "ref": "main",
+        "rev": "ffbde831317c2a3fc7841f53e7244db83f024ff2",
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/dweee/Wiicompiled.git"
+        "url": "https://github.com/patchzyy/Wiicompiled.git"
       }
     }
   },
