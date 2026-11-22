@@ -12,7 +12,7 @@ let
   mopidy = import ./mopidy-4.nix final prev;
   wii = import ../pkgs/wiicompiled/packages.nix {
     inherit final;
-    root = /. + inputs.wiicompiled.outPath;
+    root = /. + builtins.unsafeDiscardStringContext inputs.wiicompiled.outPath;
   };
   avfSystem = inputs.nixpkgs.lib.nixosSystem {
     system = "aarch64-linux";
