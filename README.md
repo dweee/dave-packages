@@ -57,18 +57,61 @@ archives. `nixosModules.horizon`, `darwinModules.horizon` and
 server, with content mods, datapacks and native mods. See
 [the package notes](pkgs/horizon/README.md).
 
+## Hookshot and mkw-recomp
+
+`nix build .#hookshot` builds the x86-64 Linux Hookshot builder and Vulkan
+renderer. `nix build .#mkw-recomp` builds the Linux start screen and setup tools
+on x86-64 and AArch64. Both use a player-supplied copy of the game at runtime and
+write the compiled game to a writable directory outside the Nix store.
+
+On x86-64 Linux, `nix build .#hookshot-windows` cross-compiles the Vulkan DLL,
+static dav1d and bootstrap installer. The installer downloads the managed
+builder at runtime. `nix build .#mkw-recomp-windows` cross-compiles `mkw.exe`
+and assembles its setup folder. Copy that output to a writable directory on
+Windows before running it. CI builds the Windows mkw-recomp package without
+exporting its closure, which includes Microsoft Visual C++ redistributables.
+
+The flake exports NixOS and Home Manager modules under `hookshot` and
+`mkw-recomp`. The corresponding nix-darwin modules provide options for shared
+configurations. Both projects currently build for Linux and Windows.
+
+mkw-recomp obtains NVIDIA's unfree `nvdisasm` and `ptxas` during local setup.
+On NixOS, enable `programs.nix-ld` to use the upstream binaries. For an opt-in
+Nix build, apply the catalog overlay, allow the unfree package
+`mkw-recomp-nvidia-tools` with `nixpkgs.config.allowUnfreePredicate`, and use
+`pkgs.mkw-recomp.override { withNvidiaTools = true; }`. Public builds use the
+default package without those tools in its closure.
+
+## FreeBSD overlays
+
+`overlays.freebsd-desktop` and `overlays.freebsd-server` apply only to FreeBSD
+targets and are kept separate from the default overlay and native package
+matrix. Consumers can import `nix/freebsd-desktop.nix` and
+`nix/freebsd-server.nix` directly against their pinned nixpkgs.
+
+The [desktop overlay](pkgs/mesa-freebsd/README.md) supports software-rendered
+Sway sessions. The server overlay adjusts restic and libfuse platform support,
+supplies the FreeBSD libraries for node exporter's devstat collector, links
+mkpasswd against gettext, enables CGO in Tailscale, and removes Caddy's systemd
+units.
+
+Run `nix build .#checks.x86_64-linux.freebsd-overlays` to check that both
+overlays are inert on Linux and evaluate the x86_64 FreeBSD cross derivations.
+The check uses NixBSD's nixpkgs revision from `nix/freebsd-overlays-check.nix`.
+Update that compatibility pin with its NixBSD counterpart. Native FreeBSD
+runtime checks are maintained separately.
+
 ## Package ownership
 
 The catalog owns portable recipes and small patches. Application source and
 larger changes live in the Kopuz, Paneru, Tabrix, Rekordbox MCP and SchildiChat Revenge
-forks, including the Kuna packaging fork. `nix/forks.json` and `flake.lock` record their exact source revisions.
+forks. `nix/forks.json` and `flake.lock` record their exact source revisions.
 Each application fork owns its build workflows; the catalog excludes those
 packages from its CI matrix. Fork inputs use public GitHub sources.
 
-HA-MCP's compatibility source lives in `dweee/ha-mcp`, preserving v9.1.0
-upstream ancestry. The catalog retains its recipe, native test matrix and cache
-publication; `pkgs/ha-mcp/default.nix` pins the fork's compatibility patch and hash
-while preserving nixpkgs' release source and bundled skill content.
+HA-MCP uses the upstream release from nixpkgs, with local compatibility patches
+and bundled skills in `pkgs/ha-mcp`. The listener-order patch includes the
+regression test for stable IPv4-first wildcard binding.
 
 ## CI and binary cache
 
@@ -132,6 +175,7 @@ see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
 | schildi-revenge | yes | yes | yes |
 | slopbro | yes | yes | yes |
 | slskd-mcp | yes | yes | yes |
+| sof-tplg-adl-rt1019 | - | yes | - |
 | spank | yes | - | - |
 | tabrix | yes | yes | yes |
 | tabrix-extension | yes | yes | yes |

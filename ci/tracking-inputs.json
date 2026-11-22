@@ -11,10 +11,10 @@
       "source": "github:birdeclipse/gdb-mcp"
     },
     "ghidra-mcp": {
-      "source": "github:dweee/ghidra-mcp/flakey"
+      "source": "github:bethington/ghidra-mcp/main"
     },
-    "handy": {
-      "source": "github:dweee/Handy/tested"
+    "hookshot-src": {
+      "source": "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main"
     },
     "jellarr": {
       "source": "github:venkyr77/jellarr"
@@ -22,14 +22,14 @@
     "kopuz": {
       "source": "git+https://github.com/dweee/kopuz.git?ref=tested"
     },
-    "kuna": {
-      "source": "github:dweee/kuna/tested"
-    },
     "mcp-nix": {
       "source": "github:felixdorn/mcp-nix"
     },
     "mcp-nixos": {
       "source": "github:utensils/mcp-nixos"
+    },
+    "mkw-recomp-src": {
+      "source": "github:adriadam10/mkw-recomp"
     },
     "nix-cachyos-kernel": {
       "source": "github:xddxdd/nix-cachyos-kernel"
@@ -86,7 +86,7 @@
       "source": "github:quinneden/virby-nix-darwin"
     },
     "wiicompiled": {
-      "source": "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&submodules=1"
+      "source": "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&submodules=1"
     }
   },
   "fixedOutputHashes": {

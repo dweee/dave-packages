@@ -175,11 +175,11 @@ server_name = "redirect.test"
 database_path = {json.dumps(str(root / "db"))}
 address = ["127.0.0.1"]
 port = [{port}]
-allow_registration = false
+allow_registration = true
 allow_guest_registration = false
 allow_federation = false
 allow_legacy_media = false
-registration_shared_secret = "fixture-registration-secret"
+registration_token = "fixture-registration-token"
 trusted_servers = []
 # All peers are numeric loopback addresses; avoid the sandbox's absent resolv.conf.
 dns_servers = ["127.0.0.1"]
@@ -238,14 +238,20 @@ multipart_threshold = "1 MiB"
 
 
 def register(base):
-    status, _headers, body = request(base + "/_synapse/admin/v1/register")
-    assert status == 200, body
-    nonce = json.loads(body)["nonce"]
-    message = b"\0".join([nonce.encode(), b"fixture", b"fixture-password", b"admin"])
-    mac = hmac.new(b"fixture-registration-secret", message, hashlib.sha1).hexdigest()
-    status, _headers, body = request(base + "/_synapse/admin/v1/register", method="POST", data={
-        "nonce": nonce, "username": "fixture", "password": "fixture-password",
-        "admin": True, "mac": mac,
+    # The minimal catalog build omits the optional Synapse admin API.
+    url = base + "/_matrix/client/v3/register"
+    credentials = {"username": "fixture", "password": "fixture-password"}
+    status, _headers, body = request(url, method="POST", data=credentials)
+    assert status == 401, body
+    challenge = json.loads(body)
+    assert {"stages": ["m.login.registration_token"]} in challenge["flows"], body
+    status, _headers, body = request(url, method="POST", data={
+        **credentials,
+        "auth": {
+            "type": "m.login.registration_token",
+            "token": "fixture-registration-token",
+            "session": challenge["session"],
+        },
     })
     assert status == 200, body
     return json.loads(body)["access_token"]

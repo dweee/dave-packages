@@ -77,7 +77,8 @@ jobs:
         REVISION: ${{ inputs.revision || github.sha }}
       run: python3 -c 'import os,re; s=os.environ["REVISION"]; assert re.fullmatch("[a-f0-9]{40}",s); open(os.environ["GITHUB_OUTPUT"],"a").write("revision="+s+"\n")'
   build_aarch64_darwin:
-    runs-on: macos-15
+    # The complete Darwin release includes Pared, which requires macOS 27.
+    runs-on: xcode-27
     timeout-minutes: 360
     env:
       PYTHONDONTWRITEBYTECODE: '1'

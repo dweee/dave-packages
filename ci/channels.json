@@ -198,6 +198,14 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.pared",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.patchbay",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.prismlauncher",
         "visibility": "public"
       },
@@ -428,6 +436,14 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.hookshot",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.hookshot-windows",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.horizon",
         "visibility": "public"
       },
@@ -524,6 +540,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.mkw-recomp",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.mopidy",
         "visibility": "public"
       },
@@ -592,6 +612,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.patchbay",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.paulxstretch",
         "visibility": "public"
       },
@@ -653,6 +677,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.slskd-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.sof-tplg-adl-rt1019",
         "visibility": "public"
       },
       {
@@ -910,6 +938,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-linux.mkw-recomp",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-linux.mopidy",
         "visibility": "public"
       },
@@ -971,6 +1003,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.paceman-tracker",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.patchbay",
         "visibility": "public"
       },
       {
