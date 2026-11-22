@@ -43,7 +43,6 @@ rustPlatform.buildRustPackage {
   ];
   buildFeatures = [ "kuna-cli/embed-specs" ];
 
-  # The complete workspace suite is available through `nix develop -c make specs rust-test`.
   doCheck = false;
   doInstallCheck = true;
   installCheckPhase = ''
