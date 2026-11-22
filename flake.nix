@@ -96,7 +96,7 @@
       flake = false;
     };
     ghidra-mcp = {
-      url = "github:dweee/ghidra-mcp/86961ca288f2832e649e8ff371a4176ae1cc1535";
+      url = "github:bethington/ghidra-mcp/a57b56d71fffd5ea2560625521246014518575a7";
       flake = false;
     };
     # Jellarr's own flake: consumers take its NixOS module from this same pin.
@@ -106,6 +106,14 @@
     };
     wiicompiled = {
       url = "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&rev=ffbde831317c2a3fc7841f53e7244db83f024ff2&submodules=1";
+      flake = false;
+    };
+    hookshot-src = {
+      url = "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main&rev=db35b122a93ea15d536842d19b77fd1f14301853";
+      flake = false;
+    };
+    mkw-recomp-src = {
+      url = "github:adriadam10/mkw-recomp/8dd78017067221c76b79a7463026d64fc07034df";
       flake = false;
     };
     # Swift and SwiftPM 6.2.4+ are required by Pared.
@@ -128,6 +136,7 @@
     let
       platforms = builtins.fromJSON (builtins.readFile ./nix/platforms.json);
       systems = builtins.attrNames platforms;
+      buildOnlyPackages = builtins.fromJSON (builtins.readFile ./nix/build-only-packages.json);
       cacheOnlyPlatforms = builtins.fromJSON (builtins.readFile ./nix/cache-only-platforms.json);
       packageOverlay = final: prev: import ./nix/package-set.nix { inherit inputs final prev; };
       overlay = nixpkgs.lib.composeManyExtensions [
@@ -180,6 +189,12 @@
         in
         nixpkgs.lib.genAttrs (cacheOnlyPlatforms.${system} or [ ]) (name: definitions.${name})
       );
+      nixosModules.hookshot = import ./pkgs/hookshot/modules/nixos.nix self;
+      homeManagerModules.hookshot = import ./pkgs/hookshot/modules/home-manager.nix self;
+      darwinModules.hookshot = import ./pkgs/hookshot/modules/darwin.nix self;
+      nixosModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/nixos.nix self;
+      homeManagerModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/home-manager.nix self;
+      darwinModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/darwin.nix self;
       lib.wiicompiled = import ./pkgs/wiicompiled/recipes.nix;
       nixosModules.wiicompiled = import ./pkgs/wiicompiled/module.nix {
         inherit overlay;
@@ -212,7 +227,7 @@
       );
       checks = nixpkgs.lib.genAttrs systems (
         system:
-        self.packages.${system}
+        removeAttrs self.packages.${system} (buildOnlyPackages.${system} or [ ])
         // {
           freebsd-overlays = import ./nix/freebsd-overlays-check.nix { pkgs = pkgsFor system; };
           kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
@@ -221,6 +236,15 @@
             openjdk25 = (pkgsFor system).jdk21;
           };
         }
+        // nixpkgs.lib.optionalAttrs (self.packages.${system} ? hookshot) {
+          hookshot-prerequisites = (pkgsFor system).callPackage ./pkgs/hookshot/checks.nix { };
+        }
+        // nixpkgs.lib.optionalAttrs (self.packages.${system} ? mkw-recomp) (
+          import ./pkgs/mkw-recomp/checks.nix {
+            inherit self nixpkgs;
+            pkgs = pkgsFor system;
+          }
+        )
         // {
           pared-activation = (pkgsFor system).callPackage ./pkgs/pared/activation-check.nix {
             source = inputs.pared.outPath;

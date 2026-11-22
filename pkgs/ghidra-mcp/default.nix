@@ -3,11 +3,10 @@
   writeShellApplication,
   python3,
   ghidra,
-  writeText,
   src,
 }:
 let
-  version = "7.0.0";
+  version = "7.1.0";
   # Version 7 explicitly supports MCP 1.x. Keep its declared SDK instead of
   # changing application code to the unrelated 2.x API.
   mcp1 = python3.pkgs.callPackage ./mcp-v1.nix { };
@@ -16,8 +15,8 @@ let
     ps.starlette
     ps.uvicorn
   ]);
-  # The upstream ZIP targets Ghidra 12.1.4. Compile against the exact catalog
-  # Ghidra instead, so extension metadata and Java APIs are checked together.
+  # Compile against the catalog Ghidra so extension metadata and Java APIs
+  # are checked together.
   extension = ghidra.buildGhidraExtension {
     pname = "GhidraMCP";
     inherit version src;
@@ -26,16 +25,6 @@ let
       "--no-daemon"
       "--max-workers=2"
       "-PGHIDRA_INSTALL_DIR=${ghidra}/lib/ghidra"
-      "--init-script"
-      (writeText "ghidra-mcp-jdk.gradle" ''
-        allprojects {
-          plugins.withId('java') {
-            afterEvaluate {
-              java.toolchain.languageVersion = JavaLanguageVersion.of(25)
-            }
-          }
-        }
-      '')
     ];
     postPatch = ''
       # Upstream's build timestamp otherwise makes the archive non-reproducible.

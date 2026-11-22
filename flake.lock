@@ -308,17 +308,17 @@
     "ghidra-mcp": {
       "flake": false,
       "locked": {
-        "lastModified": 1794479304,
-        "narHash": "sha256-ozDyuwjp+btvg7SiZqUtADCPdvQ//f6jx8pRD2R45v8=",
-        "owner": "dweee",
+        "lastModified": 1795161798,
+        "narHash": "sha256-4xWLBpdkktFCf2yI4bHDqpE+jXqZ8k8QdPM9Nh0Yf1w=",
+        "owner": "bethington",
         "repo": "ghidra-mcp",
-        "rev": "86961ca288f2832e649e8ff371a4176ae1cc1535",
+        "rev": "a57b56d71fffd5ea2560625521246014518575a7",
         "type": "github"
       },
       "original": {
-        "owner": "dweee",
+        "owner": "bethington",
         "repo": "ghidra-mcp",
-        "rev": "86961ca288f2832e649e8ff371a4176ae1cc1535",
+        "rev": "a57b56d71fffd5ea2560625521246014518575a7",
         "type": "github"
       }
     },
@@ -361,6 +361,24 @@
         "owner": "nix-community",
         "repo": "home-manager",
         "type": "github"
+      }
+    },
+    "hookshot-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794614938,
+        "narHash": "sha256-EtfW86u5g10j28NYmkXr6PLkv25+PrKsJ69XNxisFik=",
+        "ref": "main",
+        "rev": "db35b122a93ea15d536842d19b77fd1f14301853",
+        "revCount": 2297,
+        "type": "git",
+        "url": "https://git.notrexed.dev/Hookshot/Hookshot.git"
+      },
+      "original": {
+        "ref": "main",
+        "rev": "db35b122a93ea15d536842d19b77fd1f14301853",
+        "type": "git",
+        "url": "https://git.notrexed.dev/Hookshot/Hookshot.git"
       }
     },
     "import-tree": {
@@ -512,6 +530,23 @@
         "owner": "utensils",
         "repo": "mcp-nixos",
         "rev": "2b0b86ceda72ec5c5d0d78ac3130ccf024f6a7ff",
+        "type": "github"
+      }
+    },
+    "mkw-recomp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794614319,
+        "narHash": "sha256-d5M3oAwZEhqXeOm+tlkqlnmf2ECkfttBLmRb+ufqH54=",
+        "owner": "adriadam10",
+        "repo": "mkw-recomp",
+        "rev": "8dd78017067221c76b79a7463026d64fc07034df",
+        "type": "github"
+      },
+      "original": {
+        "owner": "adriadam10",
+        "repo": "mkw-recomp",
+        "rev": "8dd78017067221c76b79a7463026d64fc07034df",
         "type": "github"
       }
     },
@@ -1060,11 +1095,13 @@
         "gdb-mcp": "gdb-mcp",
         "ghidra-mcp": "ghidra-mcp",
         "handy": "handy",
+        "hookshot-src": "hookshot-src",
         "jellarr": "jellarr",
         "kopuz": "kopuz",
         "kuna": "kuna",
         "mcp-nix": "mcp-nix",
         "mcp-nixos": "mcp-nixos",
+        "mkw-recomp-src": "mkw-recomp-src",
         "nix-cachyos-kernel": "nix-cachyos-kernel",
         "nix-zed-extensions": "nix-zed-extensions",
         "nixos-avf": "nixos-avf",
