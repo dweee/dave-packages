@@ -112,7 +112,7 @@ let
     papu = final.callPackage "${inputs.audio}/vst/papu.nix" { pcre = final.pcre2; };
     paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { pcre = final.pcre2; };
 
-    inherit (fixes) redlib dorion;
+    inherit (fixes) redlib dorion rustdesk-flutter;
     jellarr = final.callPackage ../pkgs/jellarr { src = inputs.jellarr; };
     gpu-screen-recorder-ui = prev.gpu-screen-recorder-ui.overrideAttrs (
       import ../pkgs/gpu-screen-recorder-ui { inherit (final) dbus lib; }
