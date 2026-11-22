@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   plan:
-    if: ${{ vars.DAVE_PACKAGES_CI_ENABLED == 'true' && (vars.NIKS3_PUSH_ENABLED || vars.ATTIC_PUSH_ENABLED) == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    if: ${{ vars.DAVE_PACKAGES_CI_ENABLED == 'true' && vars.NIKS3_PUSH_ENABLED == 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     outputs:

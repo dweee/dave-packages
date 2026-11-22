@@ -121,9 +121,9 @@ Pushes, pull requests and manual dispatch build the selected native packages.
 The repository gate is `DAVE_PACKAGES_CI_ENABLED=true`.
 
 Select one package or `all`. `ci/matrix.py` reads `nix/platforms.json` and excludes
-fork-owned outputs. Builders use the pinned Nix Quick Install action. Optional
-Attic publication uses a separate Linux publisher and cache-scoped credentials;
-see [ci/ATTIC.md](ci/ATTIC.md) for configuration.
+fork-owned outputs. Builders use the pinned Nix Quick Install action. Trusted
+pushes publish to the private Niks3 cache from a separate Linux publisher through
+GitHub OIDC; no cache credential is stored in the repository.
 
 ## Platform inventory
 
@@ -190,7 +190,7 @@ See [NOTICE](NOTICE). Recipes retain upstream source locations and license
 metadata; application forks retain their own licenses and author history.
 
 Every successful build retains a downloadable Nix closure archive for one day,
-independently of Attic publication.
+independently of cache publication.
 
 ## Generation 2 refresh (2026-11-18)
 

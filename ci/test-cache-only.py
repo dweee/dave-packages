@@ -26,7 +26,7 @@ class CacheOnlyBoundary(unittest.TestCase):
         binary = Path(self.directory.name) / "niks3"
         binary.write_text("#!/bin/sh\nexit 0\n")
         binary.chmod(0o700)
-        self.env = {"RUNNER_TEMP": self.directory.name, "ATTIC_TOKEN": "synthetic-private-token",
+        self.env = {"RUNNER_TEMP": self.directory.name, "NIKS3_WRITE_TOKEN": "synthetic-private-token",
                     "NIKS3_BIN": str(binary), "ACTIONS_ID_TOKEN_REQUEST_TOKEN": "synthetic-oidc-request"}
         self.graph = {PATH + ".drv": {"outputs": {"out": {}}, "env": {"license": "unfree"}}}
         self.runtime = PATH
@@ -52,8 +52,6 @@ class CacheOnlyBoundary(unittest.TestCase):
             self.assertEqual(manifest.read_text(), PATH + "\n")
             self.manifest = manifest
             self.assertIsNotNone(stdout)  # uploader progress cannot reach public logs
-            self.assertNotIn("ATTIC_TOKEN", env)
-            self.assertNotIn("ATTIC_ENDPOINT", env)
             self.assertEqual(env["ACTIONS_ID_TOKEN_REQUEST_TOKEN"], self.env["ACTIONS_ID_TOKEN_REQUEST_TOKEN"])
             value = ""
         return subprocess.CompletedProcess(args, 0, stdout=value)
@@ -68,7 +66,7 @@ class CacheOnlyBoundary(unittest.TestCase):
         for args, env in self.calls:
             if args[0] == module.sys.executable:
                 continue
-            self.assertNotIn("ATTIC_TOKEN", env)
+            self.assertNotIn("NIKS3_WRITE_TOKEN", env)
             self.assertNotIn("synthetic-private-token", " ".join(args))
         self.assertTrue(any("cacheOnlyPackages.x86_64-linux.veracrypt" in " ".join(a) for a, _ in self.calls))
         self.assertFalse(any("export" in a or "--export" in a for a, _ in self.calls))
@@ -88,7 +86,7 @@ class CacheOnlyBoundary(unittest.TestCase):
         with patch.object(module, "FETCH_BATCH", 2), patch.dict(os.environ, self.env, clear=True), \
                 patch.object(module, "quiet", side_effect=self.run_quiet):
             module.build("x86_64-linux", "keyguard")
-        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"] and "nixpkgs#attic-client" not in a]
+        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"]]
         installables = [[x for x in a if x.endswith("^*")] for a in builds]
         self.assertEqual(installables[0], ["/nix/store/" + "b" * 32 + "-artifact-b.jar.drv^*",
                                            "/nix/store/" + "c" * 32 + "-artifact-c.jar.drv^*"])
@@ -101,7 +99,7 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.assertEqual([Path(a[1]).name for a in pushes], ["push-niks3.py"] * len(pushes))
         for args, env in self.calls:
             if args[0] != module.sys.executable:
-                self.assertNotIn("ATTIC_TOKEN", env)
+                self.assertNotIn("NIKS3_WRITE_TOKEN", env)
 
     def test_completed_fetch_batch_is_cached_before_a_later_fetch_failure(self):
         self.graph = self.staged_graph()
@@ -118,7 +116,7 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.system = "aarch64-darwin"
         with patch.dict(os.environ, self.env, clear=True), patch.object(module, "quiet", side_effect=self.run_quiet):
             module.build("aarch64-darwin", "keyguard")
-        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"] and "nixpkgs#attic-client" not in a]
+        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"]]
         self.assertEqual(len(builds), 1)
 
     def test_staged_package_without_dependency_cache_fails_before_build(self):
@@ -173,7 +171,7 @@ class CacheOnlyBoundary(unittest.TestCase):
                                 env=env, text=True, capture_output=True)
         self.assertEqual(result.returncode, 1)
         self.assertIn("No artifacts or diagnostic logs were published", result.stderr)
-        for private in ["sensitive-build-stdout", "sensitive-build-stderr", self.env["ATTIC_TOKEN"]]:
+        for private in ["sensitive-build-stdout", "sensitive-build-stderr", self.env["NIKS3_WRITE_TOKEN"]]:
             self.assertNotIn(private, result.stdout + result.stderr)
 
     def test_public_matrix_and_backup_workflow_exclude_cache_only_jobs(self):
@@ -183,7 +181,7 @@ class CacheOnlyBoundary(unittest.TestCase):
             self.assertFalse(set(names) & set(free[system]))
         workflow = (ROOT / ".github/workflows/cache-only.yml").read_text()
         self.assertNotIn("pull_request:", workflow)
-        for forbidden in ["upload-artifact", "download-artifact", "transfer-attic", "gh release", "contents: write"]:
+        for forbidden in ["upload-artifact", "download-artifact", "transfer-closures", "gh release", "contents: write"]:
             self.assertNotIn(forbidden, workflow)
         self.assertEqual(" ".join(workflow.split()).count("github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"), 2)
         archive = (ROOT / ".github/workflows/archive-packages.yml").read_text()

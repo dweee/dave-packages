@@ -70,7 +70,7 @@ jobs:
       - name: Export completed public GeoIP graph outputs
         id: cache_transfer
         if: ${{ always() && !cancelled() && hashFiles('cache-outputs.txt') != '' }}
-        run: python3 ci/transfer-attic.py export --directory geoip-transfer --manifest cache-outputs.txt
+        run: python3 ci/transfer-closures.py export --directory geoip-transfer --manifest cache-outputs.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: ${{ always() && !cancelled() && steps.cache_transfer.outcome == 'success' }}
         with:
@@ -111,7 +111,7 @@ jobs:
         run: python3 ci/push-niks3.py --outputs niks3-bootstrap-outputs.txt
       - name: Import public data and publish with S3 integrity verification
         run: |
-          python3 ci/transfer-attic.py import --directory geoip-transfer
+          python3 ci/transfer-closures.py import --directory geoip-transfer
           python3 ci/push-niks3.py --outputs geoip-transfer/outputs.txt
       - name: Remove job-local Niks3 reader
         if: ${{ always() }}
