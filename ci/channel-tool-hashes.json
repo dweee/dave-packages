@@ -1,8 +1,8 @@
 {
   "caches.json": "5a4b74c7bf7d9815d9cde39492e570a29f4f27533b3a74a7490ac63de4b577d0",
   "cache-config.py": "7fe4b74ce7997f050689f32627a250e2ca6ea8154ae2709a286c92e02f2626ab",
-  "release-channel.py": "5c4e37b9cecee1d156d0fd7e961e5300f634ffd4ad3cab0edabbc619e44dc37d",
-  "test-release-channel.py": "7158ee71eec01fa955b52baca8d5ef8265cce865a3f88eef1e77fb2451140243",
+  "release-channel.py": "d22b81137f0b14e1bcceee0430ded4309749155036589c9227f48350b9fd13f2",
+  "test-release-channel.py": "10dac631bb983dc10fbd2bcdb80068294e00cfc7b0f70796e1aff065b9b99106",
   "update-inputs.py": "ce66ee5c77a8b731cee10390c4123b9e467cb376e2443343fdf724baaecfb66f",
   "update-monitor.py": "ff1867c18ef4f549a0d7f84eb828f6a3e44b1575d4d42113bca770ff06e09c74",
   "test-update-automation.py": "545315e6d019ca26a8d0618377ca8c1533c4565599aeefc7ac4cc78988d156b8",
