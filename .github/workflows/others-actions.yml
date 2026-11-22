@@ -1,243 +1,53 @@
 name: Dave packages others
-'on':
-  push:
-    branches:
-    - main
-  pull_request: null
+on:
   workflow_dispatch:
     inputs:
       package:
-        description: Package attribute, all for the complete native matrix, or changed for this branch's own changes (all on the default branch)
+        description: Package to diagnose
         required: true
-        default: changed
         type: string
 permissions:
   contents: read
-concurrency:
-  group: dave-packages-others-${{ github.ref }}-${{ inputs.package || 'all' }}
-  cancel-in-progress: false
 jobs:
-  plan:
-    if: ${{ vars.DAVE_PACKAGES_CI_ENABLED == 'true' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    outputs:
-      matrix: ${{ steps.matrix.outputs.matrix }}
-      has_jobs: ${{ steps.matrix.outputs.has_jobs }}
-      publish_matrix: ${{ steps.matrix.outputs.publish_matrix }}
-      has_publish_jobs: ${{ steps.matrix.outputs.has_publish_jobs }}
-    steps:
-    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-      with:
-        persist-credentials: false
-        fetch-depth: 0
-    - name: Check cache publication handling without credentials
-      run: |
-        python3 ci/test-push-niks3.py
-        python3 ci/test-transfer-closures.py
-        python3 ci/test-public-closure.py
-        python3 ci/test-cache-only.py
-        python3 ci/test-public-source.py
-        python3 ci/test-retain-build-outputs.py
-    - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
-      with:
-        source-tag: v3.24.1
-        summarize: false
-        kvm: false
-        extra-conf: |
-          experimental-features = nix-command flakes parallel-eval
-          eval-cores = 2
-          accept-flake-config = false
-    - name: Validate FreeBSD overlays
-      run: nix build .#checks.x86_64-linux.freebsd-overlays --no-update-lock-file --no-write-lock-file --no-link -L
-    - name: Test derivation selection
-      run: python3 ci/test-changed-matrix.py
-    - id: matrix
-      env:
-        SELECTED_PACKAGE: ${{ inputs.package || 'all' }}
-      run: |
-        matrix=$(python3 ci/changed-matrix.py others --package "$SELECTED_PACKAGE")
-        echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
-        publish_matrix=$(jq -c '.include |= map(select(.build_only != true))' <<< "$matrix")
-        echo "publish_matrix=$publish_matrix" >> "$GITHUB_OUTPUT"
-        echo "has_publish_jobs=$(jq -r '.include | length > 0' <<< "$publish_matrix")" >> "$GITHUB_OUTPUT"
-  build:
-    needs: plan
-    if: ${{ needs.plan.outputs.has_jobs == 'true' }}
-    name: ${{ matrix.package }} (${{ matrix.system }})
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 360
+  diagnose-arm-schildi:
+    if: inputs.package == 'schildi-revenge'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 65
     strategy:
       fail-fast: false
-      max-parallel: 16
-      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+      matrix:
+        revision: [catalog-lock, owner-tested]
     steps:
-    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-      with:
-        persist-credentials: false
-        submodules: recursive
-    - name: Reclaim unused hosted Linux SDK space for package and kernel builds
-      run: |
-        sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        df -h / /nix || true
-    - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
-      with:
-        source-tag: v3.24.1
-        summarize: false
-        kvm: false
-        extra-conf: |
-          experimental-features = nix-command flakes parallel-eval
-          eval-cores = 2
-          accept-flake-config = false
-          substituters = https://cache.nixos.org/
-          extra-substituters =
-          extra-trusted-public-keys = niks3.monke.fail-1:q13GqiZgAxx7SyoLZInXoJjviZMOdNpfG03xs0VUD2M=
-          max-jobs = 1
-          cores = 3
-    - name: Configure read-only Niks3 access with GitHub OIDC
-      if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-      run: python3 ci/configure-niks3.py --oidc
-    - name: Evaluate and build the selected native package
-      env:
-        TARGET_SYSTEM: ${{ matrix.system }}
-        TARGET_PACKAGE: ${{ matrix.package }}
-      run: |
-        set -euo pipefail
-        test "$(nix eval --impure --raw --expr builtins.currentSystem)" = "$TARGET_SYSTEM"
-        target=".#packages.$TARGET_SYSTEM.$TARGET_PACKAGE"
-        python3 ci/public-closure.py "$target"
-        SECONDS=0
-        python3 ci/retain-build-outputs.py --target "$target" --manifest cache-outputs.txt -- nix build "$target" --fallback --no-update-lock-file --no-write-lock-file --no-link --print-out-paths -L > outputs.txt
-        {
-          echo "Built $TARGET_PACKAGE for $TARGET_SYSTEM"
-          echo "Package build: ${SECONDS}s"
-          cat outputs.txt
-        } >> "$GITHUB_STEP_SUMMARY"
-    - name: Validate Lightning runtime libraries and upstream contracts
-      if: ${{ matrix.package == 'lightning-matrix-client' }}
-      env:
-        TARGET_SYSTEM: ${{ matrix.system }}
-      run: |
-        set -euo pipefail
-        package=$(head -n1 outputs.txt)
-        source=$(nix eval --raw ".#packages.$TARGET_SYSTEM.lightning-matrix-client.source" --no-update-lock-file --no-write-lock-file)
-        version=$(nix eval --raw ".#packages.$TARGET_SYSTEM.lightning-matrix-client.version" --no-update-lock-file --no-write-lock-file)
-        python3 pkgs/lightning/check.py --package "$package" --source "$source" --version "$version"
-    - name: Verify game-free builder and setup checks
-      if: ${{ matrix.package == 'hookshot' || matrix.package == 'mkw-recomp' }}
-      env:
-        TARGET_SYSTEM: ${{ matrix.system }}
-        TARGET_PACKAGE: ${{ matrix.package }}
-      run: |
-        set -euo pipefail
-        if [[ "$TARGET_PACKAGE" == hookshot ]]; then
-          checks=(hookshot-prerequisites)
-        else
-          checks=(mkw-recomp-setup-layout mkw-recomp-nixos-module)
-        fi
-        for check in "${checks[@]}"; do
-          target=".#checks.$TARGET_SYSTEM.$check"
-          python3 ci/public-closure.py "$target"
-          nix build "$target" --no-update-lock-file --no-write-lock-file --no-link -L
-        done
-    - name: Verify the Caddy source pin and install checks
-      if: ${{ matrix.package == 'caddy-custom' && matrix.system == 'x86_64-linux' }}
-      run: python3 ci/test-caddy-source.py
-    - name: Verify the composed headless decompiler
-      if: ${{ matrix.package == 'ghidra-kuna' || matrix.package == 'rea-kuna' }}
-      env:
-        TARGET_SYSTEM: ${{ matrix.system }}
-        HEADLESS_CHECK: ${{ matrix.package == 'rea-kuna' && 'rea-ghidra-headless' || 'kuna-ghidra-headless' }}
-      run: |
-        python3 ci/public-closure.py ".#checks.$TARGET_SYSTEM.$HEADLESS_CHECK"
-        nix build ".#checks.$TARGET_SYSTEM.$HEADLESS_CHECK" --no-update-lock-file --no-write-lock-file --no-link -L
-    - name: Verify MCP protocol and SDK compatibility checks
-      if: ${{ matrix.package == 'gdb-mcp' || matrix.package == 'ghidra-mcp' }}
-      env:
-        TARGET_SYSTEM: ${{ matrix.system }}
-        TARGET_PACKAGE: ${{ matrix.package }}
-      run: |
-        set -euo pipefail
-        # Collector replaces the manifest: retain the package and every check together.
-        targets=(".#packages.$TARGET_SYSTEM.$TARGET_PACKAGE" ".#checks.$TARGET_SYSTEM.$TARGET_PACKAGE-stdio")
-        if [[ "$TARGET_PACKAGE" == ghidra-mcp ]]; then
-          targets+=(".#checks.$TARGET_SYSTEM.ghidra-mcp-compatibility")
-        fi
-        collection=()
-        for target in "${targets[@]}"; do
-          python3 ci/public-closure.py "$target"
-          collection+=(--target "$target")
-        done
-        python3 ci/retain-build-outputs.py "${collection[@]}" --manifest cache-outputs.txt -- nix build "${targets[@]}" --no-update-lock-file --no-write-lock-file --no-link --print-out-paths -L
-    - name: Remove private read credentials before exporting build data
-      if: ${{ always() }}
-      run: python3 ci/configure-niks3.py --cleanup
-    - name: Save selected runtime closures independently of cache publication
-      timeout-minutes: 15
-      env:
-        MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'handy' && '10240' || matrix.package == 'yaas' && (vars.YAAS_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.T3_MAX_CLOSURE_MIB || '8192') || (vars.MAX_CLOSURE_MIB || '4096') }}
-      run: python3 ci/transfer-closures.py export --directory closure-transfer --manifest cache-outputs.txt
-      id: cache_transfer
-      if: ${{ always() && !cancelled() && !matrix.build_only && hashFiles('cache-outputs.txt') != '' }}
-    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-      with:
-        name: nix-${{ matrix.system }}-${{ matrix.package }}-${{ github.sha }}
-        path: closure-transfer/
-        retention-days: 1
-        compression-level: 0
-        if-no-files-found: error
-        overwrite: false
-      if: ${{ always() && !cancelled() && steps.cache_transfer.outcome == 'success' }}
-    permissions:
-      contents: read
-      id-token: write
-  publish:
-    permissions:
-      contents: read
-      id-token: write
-    needs:
-    - plan
-    - build
-    if: ${{ always() && !cancelled() && ((needs.build.result == 'success' || needs.build.result == 'failure') && (github.event_name != 'pull_request' && github.event_name != 'pull_request_target' && needs.plan.outputs.has_publish_jobs == 'true' && vars.NIKS3_PUSH_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push') && github.ref == format('refs/heads/{0}', github.event.repository.default_branch))) }}
-    name: Publish ${{ matrix.package }} (${{ matrix.system }})
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      max-parallel: 6
-      matrix: ${{ fromJSON(needs.plan.outputs.publish_matrix) }}
-    steps:
-    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-      with:
-        persist-credentials: false
-    - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
-      with:
-        source-tag: v3.24.1
-        summarize: false
-        kvm: false
-        extra-conf: |
-          experimental-features = nix-command flakes parallel-eval
-          eval-cores = 2
-          accept-flake-config = false
-          substituters = https://cache.nixos.org/
-          extra-substituters =
-    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-      with:
-        name: nix-${{ matrix.system }}-${{ matrix.package }}-${{ github.sha }}
-        path: closure-transfer
-    - name: Read Niks3 before installing the pinned publisher
-      run: python3 ci/configure-niks3.py --oidc
-    - name: Install pinned Niks3 publisher
-      run: bash ci/install-niks3.sh --retain-bootstrap
-    - name: Publish bootstrap client and completed build dependencies
-      run: python3 ci/push-niks3.py --outputs niks3-bootstrap-outputs.txt
-    - name: Import data without running any package programs
-      timeout-minutes: 15
-      env:
-        MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'handy' && '10240' || matrix.package == 'yaas' && (vars.YAAS_MAX_CLOSURE_MIB || '16384') || startsWith(matrix.package, 't3code') && (vars.T3_MAX_CLOSURE_MIB || '8192') || (vars.MAX_CLOSURE_MIB || '4096') }}
-      run: python3 ci/transfer-closures.py import --directory closure-transfer
-    - name: Publish to Niks3 with GitHub OIDC and verify S3 integrity
-      run: python3 ci/push-niks3.py --outputs closure-transfer/outputs.txt
-    - name: Remove job-local Niks3 reader
-      if: ${{ always() }}
-      run: python3 ci/configure-niks3.py --cleanup
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: DeterminateSystems/determinate-nix-action@92957199488000b908fdad19f63711000965d8f3
+        with:
+          source-tag: v3.24.1
+          summarize: false
+          kvm: false
+          extra-conf: |
+            experimental-features = nix-command flakes parallel-eval
+            eval-cores = 2
+            accept-flake-config = false
+            max-jobs = 1
+            cores = 1
+            connect-timeout = 20
+      - name: Build Schildi on a native ARM runner with build logs
+        env:
+          SCHILDI_REVISION: ${{ matrix.revision }}
+        run: |
+          df -h / /nix
+          free -h
+          flags=()
+          if [[ "$SCHILDI_REVISION" == owner-tested ]]; then
+            flags+=(--override-input schildi-revenge 'git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=019b74e8fc9339f314d8ef7797468e5447914c76&submodules=1')
+          else
+            flags+=(--no-update-lock-file)
+          fi
+          nix build '.#packages.aarch64-linux.schildi-revenge^*' "${flags[@]}" --fallback --no-write-lock-file --no-link --print-out-paths -L
+      - name: Record runner resource availability
+        if: always()
+        run: |
+          df -h / /nix
+          free -h
