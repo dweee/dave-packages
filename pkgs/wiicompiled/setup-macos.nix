@@ -7,7 +7,6 @@
   ninja,
   src,
   wiicompiled-translator,
-  wiicompiled-nodtool,
 }:
 let
   intel = stdenv.hostPlatform.isx86_64;
@@ -98,6 +97,7 @@ stdenv.mkDerivation rec {
       install                   Build into ~/Applications (override with WIICOMPILED_OUTPUT)
       --version                 Print the package version
       --help                    This message
+      --game IMAGE --nodtool PATH  Use your local disc and extractor
 
     Forwards remaining flags to local-build-macos.command. The workspace is
     synced under ~/Library/Application Support/WiiCompiled/workspace.
@@ -110,13 +110,6 @@ stdenv.mkDerivation rec {
       shift
       extras+=(--output-dir "$output_dir")
     fi
-    # --game and --nodtool must be supplied together.
-    for arg in "$@"; do
-      if [ "$arg" = --game ]; then
-        extras+=(--nodtool ${wiicompiled-nodtool}/bin/nodtool)
-        break
-      fi
-    done
     # Nix clang+libcxx vs the macOS SDK breaks aurora (`cstddef`/`stddef.h`).
     # CMake/ninja come from Nix; the compiler is Apple clang on PATH.
     export PATH=${

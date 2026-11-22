@@ -4,7 +4,6 @@ let
   sources = import ./sources.nix { inherit lib root; };
 in
 {
-  wiicompiled-nodtool = final.callPackage ./nodtool.nix { };
   wiicompiled = final.callPackage
     (if final.stdenv.hostPlatform.isDarwin then ./pkgs/game-macos.nix else ./pkgs/game.nix)
     {

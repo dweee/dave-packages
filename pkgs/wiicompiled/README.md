@@ -9,6 +9,9 @@ library and the runtime shipped with the setup programs.
 The public catalog provides the setup and translator tools and the native
 dependency bundle on x86-64 Linux, ARM Linux and Apple Silicon.
 The unwrapped setup is also available on both Linux architectures.
+When setting up a disc, pass your existing local extractor with
+`--disc-tool-bin /path/to/nodtool` on Linux or `--nodtool /path/to/nodtool`
+on macOS. The setup packages do not bundle or download a disc extractor.
 
 Run `python3 pkgs/wiicompiled/update.py --check` for canonical-owner discovery,
 or use `--write-snapshot FILE` followed by `--snapshot FILE --apply` in a clean
