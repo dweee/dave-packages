@@ -153,8 +153,7 @@ def publish(root, manifest, paths, env):
     if not closure or any(not STORE.fullmatch(p) for p in closure):
         raise ValueError("Missing runtime closure")
     check(closure)
-    publish_env = {key: value for key, value in os.environ.items()
-                   if key not in {"ATTIC_TOKEN", "FLAKEY_ATTIC_TOKEN", "ATTIC_BIN", "ATTIC_ENDPOINT", "ATTIC_CACHE"}}
+    publish_env = dict(os.environ)
     with tempfile.TemporaryFile() as log:
         # The existing helper confines credentials to mode-0600 client
         # configuration and uploads roots plus their runtime closures.
@@ -171,7 +170,7 @@ def build(system, package):
     if not client.is_absolute() or not client.is_file() or not os.access(client, os.X_OK):
         raise ValueError("Missing installed Niks3 publisher")
     env = {key: value for key, value in os.environ.items() if key not in {
-        "ATTIC_TOKEN", "FLAKEY_ATTIC_TOKEN", "NIKS3_WRITE_TOKEN", "NIKS3_AUTH_TOKEN_FILE",
+        "NIKS3_WRITE_TOKEN", "NIKS3_AUTH_TOKEN_FILE",
         "ACTIONS_ID_TOKEN_REQUEST_TOKEN", "ACTIONS_ID_TOKEN_REQUEST_URL", "GITHUB_TOKEN", "GH_TOKEN"}}
     if quiet(["nix", "eval", "--impure", "--raw", "--expr", "builtins.currentSystem"], env).stdout.strip() != system:
         raise ValueError("Native runner mismatch")
