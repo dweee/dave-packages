@@ -11,7 +11,7 @@
       "source": "github:birdeclipse/gdb-mcp"
     },
     "ghidra-mcp": {
-      "source": "github:dweee/ghidra-mcp/flakey"
+      "source": "github:bethington/ghidra-mcp/main"
     },
     "handy": {
       "source": "github:dweee/Handy/tested"

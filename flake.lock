@@ -308,17 +308,17 @@
     "ghidra-mcp": {
       "flake": false,
       "locked": {
-        "lastModified": 1794479304,
-        "narHash": "sha256-ozDyuwjp+btvg7SiZqUtADCPdvQ//f6jx8pRD2R45v8=",
-        "owner": "dweee",
+        "lastModified": 1795161798,
+        "narHash": "sha256-4xWLBpdkktFCf2yI4bHDqpE+jXqZ8k8QdPM9Nh0Yf1w=",
+        "owner": "bethington",
         "repo": "ghidra-mcp",
-        "rev": "86961ca288f2832e649e8ff371a4176ae1cc1535",
+        "rev": "a57b56d71fffd5ea2560625521246014518575a7",
         "type": "github"
       },
       "original": {
-        "owner": "dweee",
+        "owner": "bethington",
         "repo": "ghidra-mcp",
-        "rev": "86961ca288f2832e649e8ff371a4176ae1cc1535",
+        "rev": "a57b56d71fffd5ea2560625521246014518575a7",
         "type": "github"
       }
     },
