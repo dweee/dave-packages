@@ -108,6 +108,12 @@
       url = "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&rev=ffbde831317c2a3fc7841f53e7244db83f024ff2&submodules=1";
       flake = false;
     };
+    # Swift and SwiftPM 6.2.4+ are required by Pared.
+    pared-nixpkgs.url = "github:NixOS/nixpkgs/04906337b6d53e8bb0eaf0470ae9f070a4d4eb55";
+    pared = {
+      url = "github:4evy/pared/26c34ec7df3d39924650b852e8d8aab57874e9ee";
+      inputs.nixpkgs.follows = "pared-nixpkgs";
+    };
     gdb-mcp = {
       url = "github:birdeclipse/gdb-mcp/8ea9afb62a94e3942e50ee5d850c7cad2c7df6b7";
       flake = false;
@@ -200,6 +206,11 @@
           rea-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix {
             ghidra-kuna = (pkgsFor system).rea-kuna.ghidra-kuna;
             openjdk25 = (pkgsFor system).jdk21;
+          };
+        }
+        // {
+          pared-activation = (pkgsFor system).callPackage ./pkgs/pared/activation-check.nix {
+            source = inputs.pared.outPath;
           };
         }
         // import ./pkgs/horizon/checks.nix {

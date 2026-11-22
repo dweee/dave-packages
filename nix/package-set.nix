@@ -28,6 +28,12 @@ let
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
     glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
+    pared = (inputs.pared.packages.${system}.pared).overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ../pkgs/pared/gui-state-test.patch ];
+      preCheck = (old.preCheck or "") + ''
+        swiftc -typecheck Sources/Pared/gui/components/components.swift Tests/gui-state/gui-state.swift
+      '';
+    });
     handy = inputs.handy.packages.${system}.handy;
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;
