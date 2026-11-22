@@ -894,6 +894,23 @@
         "url": "https://github.com/dweee/paneru.git"
       }
     },
+    "patchbay-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794600705,
+        "narHash": "sha256-rsfxngMqqKdxDUPP5tiwQn00e04daXBCKk+QvrkB31g=",
+        "owner": "shaboogen-dev",
+        "repo": "Patchbay",
+        "rev": "b3c88526599eb680dee25050070cbcaa38b3eab1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "shaboogen-dev",
+        "repo": "Patchbay",
+        "rev": "b3c88526599eb680dee25050070cbcaa38b3eab1",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -1034,6 +1051,7 @@
         "nixos-jellyfin": "nixos-jellyfin",
         "nixpkgs": "nixpkgs_3",
         "paneru": "paneru",
+        "patchbay-src": "patchbay-src",
         "prowlarr-mcp": "prowlarr-mcp",
         "pumpkin-nixpkgs": "pumpkin-nixpkgs",
         "pyproject-build-systems": "pyproject-build-systems",
