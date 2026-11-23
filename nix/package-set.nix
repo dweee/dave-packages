@@ -57,6 +57,7 @@ let
     };
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
+    linkwarden = prev.callPackage ../pkgs/linkwarden { inherit (prev) linkwarden; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
     glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
     pared = (inputs.pared.packages.${system}.pared).overrideAttrs (old: {
