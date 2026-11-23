@@ -4,6 +4,9 @@
     "audio": {
       "source": "github:polygon/audio.nix"
     },
+    "bun2nix": {
+      "source": "github:nix-community/bun2nix/c843f477b15f51151f8c6bcc886954699440a6e1"
+    },
     "darwin": {
       "source": "github:nix-darwin/nix-darwin/master"
     },
@@ -13,6 +16,12 @@
     "ghidra-mcp": {
       "source": "github:bethington/ghidra-mcp/main"
     },
+    "handy-nixpkgs": {
+      "source": "github:NixOS/nixpkgs/40aa5a0e9ff16a78d4b5d5c39e72f0382cb44061"
+    },
+    "handy-src": {
+      "source": "github:cjpais/Handy/f2483011d60fccab639d3c33f40b3456e92f2940"
+    },
     "hookshot-src": {
       "source": "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main"
     },
@@ -21,6 +30,9 @@
     },
     "kopuz": {
       "source": "git+https://github.com/dweee/kopuz.git?ref=tested"
+    },
+    "kuna-src": {
+      "source": "github:Noelo-Lab/kuna/9ce03fa874c298db4dc284da1bed54c6b7348d8f"
     },
     "mcp-nix": {
       "source": "github:felixdorn/mcp-nix"
@@ -48,6 +60,15 @@
     },
     "paneru": {
       "source": "git+https://github.com/dweee/paneru.git?ref=tested"
+    },
+    "pared": {
+      "source": "github:4evy/pared/26c34ec7df3d39924650b852e8d8aab57874e9ee"
+    },
+    "pared-nixpkgs": {
+      "source": "github:NixOS/nixpkgs/04906337b6d53e8bb0eaf0470ae9f070a4d4eb55"
+    },
+    "patchbay-src": {
+      "source": "github:shaboogen-dev/Patchbay/b3c88526599eb680dee25050070cbcaa38b3eab1"
     },
     "prowlarr-mcp": {
       "source": "github:arr-mcps/prowlarr-mcp"
