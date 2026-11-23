@@ -11,6 +11,8 @@
   makeBinaryWrapper,
   procps,
   util-linux,
+  swift,
+  apple-sdk,
   # See runtime-tools.nix: false uses the Mac's xcrun swiftc at runtime.
   bundleDarwinSwift ? true,
 }:
@@ -110,6 +112,11 @@ buildNpmPackage {
   doInstallCheck = true;
   installCheckPhase = ''
     runHook preInstallCheck
+    ${lib.optionalString (stdenv.hostPlatform.isDarwin && !bundleDarwinSwift) ''
+      # The sandbox hides the system compiler that xcrun finds at runtime, so
+      # only the smoke test (JADX compiles the process helper) uses Nix swift.
+      export REA_DARWIN_SWIFTC_PATH=${swift}/bin/swiftc SDKROOT=${apple-sdk.sdkroot}
+    ''}
     ${nodejs_24}/bin/node ${./smoke-test.mjs} "$out" ${androidFixture}
     runHook postInstallCheck
   '';
