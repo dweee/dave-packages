@@ -87,9 +87,9 @@
   "game": {
     "head": {
       "cargoHash": "sha256-NgI2OfPGNJ6Au8IdfWo255APzS507+mZ+GAYFdC6gT0=",
-      "hash": "sha256-ZJEVOVCQdXjbkreBvlS+wzLejOMUBjQu6xub3t1RR6g=",
-      "rev": "6871b095ca3ffeebc74021b9f9bb9443dbb37d6d",
-      "version": "0-unstable-2026-11-22"
+      "hash": "sha256-yxY++BkP0sqqrDg6zBYlf9LxCVz24nuc5W8f3cSFUAM=",
+      "rev": "03cbeb4b93d3572c2c3a3e5ef5031920bb81b722",
+      "version": "0-unstable-2026-11-23"
     },
     "stable": {
       "cargoHash": "sha256-AntMEaWFflhCUx0SpUvi/sKyuOADh9cnk2OBzG7b2J8=",
@@ -110,10 +110,10 @@
   },
   "launcher": {
     "head": {
-      "cargoHash": "sha256-urXzAl0whfwwwRUezJVL6FYxnHgJd2/jKgLWXyg81d4=",
-      "hash": "sha256-ZJEVOVCQdXjbkreBvlS+wzLejOMUBjQu6xub3t1RR6g=",
-      "rev": "6871b095ca3ffeebc74021b9f9bb9443dbb37d6d",
-      "version": "0.2.107-unstable-2026-11-22"
+      "cargoHash": "sha256-xzTGNEacKbZkYd3SQUMKoqaJ2Tf/KSJdrWcQgAmTK4s=",
+      "hash": "sha256-yxY++BkP0sqqrDg6zBYlf9LxCVz24nuc5W8f3cSFUAM=",
+      "rev": "03cbeb4b93d3572c2c3a3e5ef5031920bb81b722",
+      "version": "0.2.107-unstable-2026-11-23"
     },
     "stable": {
       "cargoHash": "sha256-1aKxEy4ICZlrjwYtT3gaGer2H64mTYbHeHyMtBjMQQI=",
@@ -129,5 +129,5 @@
     "rev": "e59da9094f0c2fdda6c627fe9eff22dec6a906f0",
     "version": "0.6.0-unstable-2026-11-09"
   },
-  "updated": "2026-11-22"
+  "updated": "2026-11-23"
 }
