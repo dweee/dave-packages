@@ -10,15 +10,17 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "codexbar-plasmoid";
-  version = "0.7.0-dave.1";
+  version = "0.7.0-dave.2";
 
   src = fetchFromGitHub {
     owner = "dweee";
     repo = "codexbar-plasmoid";
-    # feat/macos-parity
-    rev = "44800ed5bc26a6f9914fe42b4d58d98aabf98bd2";
-    hash = "sha256-k2rhaV9qAnZmLqf63MKcsRbWX6zddoXbIe/P3x/TjeI=";
+    # feat/google-developer-program (PR #2)
+    rev = "2919e4cac1172cf734316c5d95b46d9cf91de0d6";
+    hash = "sha256-ip0POFwLl787G+7UWcxmfQL2PFf1BftjZ+GgHd3Fn+w=";
   };
+
+  patches = [ ./patches/summary-pace-markers.patch ];
 
   dontBuild = true;
 

@@ -1,7 +1,7 @@
 # Kuna through headless Ghidra
 
 `ghidra-kuna` composes the catalog's Ghidra with the source-built
-`kuna_ghidra` backend from the public [Kuna packaging fork](https://github.com/dweee/kuna/tree/flakey).
+`kuna_ghidra` backend from the pinned [upstream Kuna source](https://github.com/Noelo-Lab/kuna).
 It replaces the native decompiler in a separate Nix output: Ghidra's headless
 analyzer does not load the Kuna GUI extension. This package is independent of
 the optional `ghidra-mcp` GUI extension and Python bridge.

@@ -33,7 +33,7 @@
   },
   "schildi-revenge": {
     "repository": "https://github.com/dweee/schildi-revenge",
-    "revision": "d0b375d44ad4f69bb137642271f0b7e0f556eb29",
+    "revision": "019b74e8fc9339f314d8ef7797468e5447914c76",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"
@@ -47,39 +47,6 @@
     "branch": "flakey",
     "packages": [
       "kopuz"
-    ],
-    "ci_owner": "application fork",
-    "private": false
-  },
-  "kuna": {
-    "repository": "https://github.com/dweee/kuna",
-    "revision": "5ed5c9df944bb2873c3c2e527407f1e9aaee2d85",
-    "branch": "flakey",
-    "packages": [
-      "kuna"
-    ],
-    "ci_owner": "application fork",
-    "private": false
-  },
-  "handy": {
-    "repository": "https://github.com/dweee/Handy",
-    "branch": "nix/darwin",
-    "packages": [
-      "handy"
-    ],
-    "ci_owner": "application fork",
-    "private": false,
-    "revision": "b3230de199e1e6880c204002d27543a63608def6"
-  },
-  "wiicompiled": {
-    "repository": "https://github.com/dweee/Wiicompiled",
-    "revision": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
-    "branch": "flakey",
-    "packages": [
-      "wiicompiled-translator",
-      "wiicompiled-native-prebuilt",
-      "wiicompiled-setup",
-      "wiicompiled-setup-unwrapped"
     ],
     "ci_owner": "application fork",
     "private": false

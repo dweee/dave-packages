@@ -10,7 +10,10 @@ let
   t3code = import ../pkgs/t3code { inherit inputs system; };
   fixes = import ./host-fixes.nix final prev;
   mopidy = import ./mopidy-4.nix final prev;
-  wii = import (inputs.wiicompiled + "/nix/overlay.nix") inputs.wiicompiled final prev;
+  wii = import ../pkgs/wiicompiled/packages.nix {
+    inherit final;
+    root = /. + builtins.unsafeDiscardStringContext inputs.wiicompiled.outPath;
+  };
   avfSystem = inputs.nixpkgs.lib.nixosSystem {
     system = "aarch64-linux";
     modules = [
@@ -20,6 +23,18 @@ let
   };
   cachyos = (prev.extend inputs.nix-cachyos-kernel.overlays.pinned).cachyosKernels;
   horizon = final.callPackage ../pkgs/horizon { };
+  hookshotVersion = (lib.importJSON "${inputs.hookshot-src}/.release-please-manifest.json").".";
+  mkwVersion =
+    lib.head (
+      lib.concatMap (
+        line:
+        let
+          match = builtins.match "## ([0-9][0-9.]*).*" line;
+        in
+        lib.optional (match != null) (lib.head match)
+      ) (lib.splitString "\n" (builtins.readFile "${inputs.mkw-recomp-src}/CHANGELOG.md"))
+    )
+    + "-${inputs.mkw-recomp-src.shortRev}";
   definitions = {
     llama-cpp-inkling = import ../pkgs/llama-cpp-inkling {
       pkgs = prev;
@@ -30,11 +45,44 @@ let
       upstream = inputs.llama-cpp-inkling;
       useVulkan = true;
     };
+    hookshot = final.callPackage ../pkgs/hookshot {
+      src = inputs.hookshot-src;
+      version = hookshotVersion;
+      rev = inputs.hookshot-src.shortRev;
+    };
+    hookshot-windows = final.callPackage ../pkgs/hookshot/windows.nix {
+      src = inputs.hookshot-src;
+      version = hookshotVersion;
+      rev = inputs.hookshot-src.shortRev;
+    };
+    mkw-recomp = final.callPackage ../pkgs/mkw-recomp {
+      src = inputs.mkw-recomp-src;
+      version = mkwVersion;
+      inherit (final.llvmPackages) stdenv;
+    };
+    mkw-recomp-windows = final.callPackage ../pkgs/mkw-recomp/windows.nix {
+      src = inputs.mkw-recomp-src;
+      version = mkwVersion;
+    };
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
     glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
-    handy = inputs.handy.packages.${system}.handy;
+    pared = (inputs.pared.packages.${system}.pared).overrideAttrs (old: {
+      patches = (old.patches or [ ]) ++ [ ../pkgs/pared/gui-state-test.patch ];
+      preCheck = (old.preCheck or "") + ''
+        swiftc -typecheck Sources/Pared/gui/components/components.swift Tests/gui-state/gui-state.swift
+      '';
+    });
+    patchbay = final.callPackage ../pkgs/patchbay { source = inputs.patchbay-src.outPath; };
+    handy =
+      let
+        handyPkgs = import inputs.handy-nixpkgs {
+          inherit system;
+          overlays = [ inputs.bun2nix.overlays.default ];
+        };
+      in
+      handyPkgs.callPackage ../pkgs/handy { source = inputs.handy-src.outPath; };
     mcp-nixos = import ../pkgs/mcp-nixos {
       pkgs = final;
       upstream = inputs.mcp-nixos;
@@ -150,7 +198,6 @@ let
       wiicompiled-translator
       wiicompiled-setup
       ;
-    wiicompiled-nodtool = wii.wiicompiled-nodtool;
     wiicompiled-setup-unwrapped = wii.wiicompiled-setup.setupUnwrapped;
 
     kopuz = inputs.kopuz.packages.${system}.kopuz;
@@ -173,6 +220,7 @@ let
     openghub = final.callPackage ../pkgs/openghub { };
     yaas = final.callPackage ../pkgs/yaas { };
     trawl = final.callPackage ../pkgs/trawl { };
+    sof-tplg-adl-rt1019 = final.callPackage ../pkgs/sof-tplg-adl-rt1019 { };
     sable-desktop = final.callPackage ../pkgs/sable-desktop { };
     sable-desktop-legacy = final.callPackage ../pkgs/sable-desktop-legacy { };
     qobuzify = final.callPackage ../pkgs/qobuzify { };
@@ -202,7 +250,7 @@ let
       src = inputs.prowlarr-mcp;
     };
     ghidra-mcp = final.callPackage ../pkgs/ghidra-mcp { src = inputs.ghidra-mcp; };
-    kuna = inputs.kuna.packages.${system}.kuna;
+    kuna = final.callPackage ../pkgs/kuna { src = inputs.kuna-src.outPath; };
     rea = final.callPackage ../pkgs/rea { };
     ghidra-kuna = final.callPackage ../pkgs/ghidra-kuna { };
     rea-kuna = final.callPackage ../pkgs/rea-kuna { };
@@ -226,9 +274,12 @@ lib.genAttrs (platforms.${system} or [ ]) (
 )
 
 // {
-  wiicompiled-nodtool = wii.wiicompiled-nodtool;
   # Every channel and variant, for the Horizon modules (pkgs/horizon/modules).
   horizonPackages = horizon;
+}
+# The baked game stays outside public packages, checks and CI.
+// lib.optionalAttrs (builtins.hasAttr system platforms) {
+  inherit (wii) wiicompiled;
 }
 // lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
   inherit (fixes) spotify;
