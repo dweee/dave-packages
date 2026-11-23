@@ -32,7 +32,7 @@ class WiiUpdate(unittest.TestCase):
 
     def test_private_sources_branches_and_missing_submodules_fail_closed(self):
         for key, value in [('url', 'https://git.monke.fail/d/wiicompiled.git'),
-                           ('ref', 'main'), ('submodules', False), ('rev', 'flakey'),
+                           ('ref', 'flakey'), ('submodules', False), ('rev', 'flakey'),
                            ('type', 'github'), ('narHash', 'unknown')]:
             snapshot = copy.deepcopy(self.snapshot)
             snapshot['locked'][key] = value
@@ -60,7 +60,7 @@ class WiiUpdate(unittest.TestCase):
                 expected.add('wiicompiled-setup-unwrapped')
             self.assertEqual(names, expected)
         self.assertFalse((ROOT / 'pkgs/wiicompiled/source').exists())
-        self.assertIn('inputs.wiicompiled + "/nix/overlay.nix"', (ROOT / 'nix/package-set.nix').read_text())
+        self.assertIn('../pkgs/wiicompiled/packages.nix', (ROOT / 'nix/package-set.nix').read_text())
 
 
 if __name__ == '__main__':

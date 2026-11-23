@@ -36,4 +36,35 @@ final: prev: {
           ];
         });
   };
+
+  # librustdesk.so embeds the store paths of rustc (panic locations under
+  # lib/rustlib) and the unwrapped gcc (a build-flags string). Neither is
+  # loaded at runtime, but together they pin ~1.9 GiB (rustc, llvm-lib, gcc)
+  # on every host with RustDesk. gcc's -lib output stays: libstdc++ and
+  # libgcc_s are real runtime dependencies.
+  rustdesk-flutter = prev.rustdesk-flutter.overrideAttrs (old: {
+    nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.removeReferencesTo ];
+    postFixup = (old.postFixup or "") + ''
+      find "$out" -name librustdesk.so -type f | while IFS= read -r so; do
+        grep -aoE "$NIX_STORE/[a-z0-9]{32}-(rustc|gcc)-[0-9.]+(-lib)?" "$so" | sort -u \
+          | grep -vE -- '-lib$' | while IFS= read -r ref; do
+            remove-references-to -t "$ref" "$so"
+          done
+      done
+    '';
+  });
+
+  # The fastfetch wrapper puts every runtime dependency's lib/ on
+  # LD_LIBRARY_PATH. On Darwin that list includes apple-sdk_15, whose stubs dyld
+  # never loads, so the wrapper pins the whole SDK (~0.43 GiB). Only the cheap
+  # wrapper changes; fastfetch-unwrapped stays the cached build.
+  fastfetch =
+    if prev.stdenv.hostPlatform.isDarwin then
+      prev.fastfetch.override {
+        runtimeDependencies = builtins.filter (
+          dep: !(prev.lib.hasPrefix "apple-sdk" (dep.pname or (prev.lib.getName dep)))
+        ) prev.fastfetch.runtimeDependencies;
+      }
+    else
+      prev.fastfetch;
 }

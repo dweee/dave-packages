@@ -3,7 +3,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/2786a2a72088ecf32aea5b3ec52099e6a7cff78f";
     nix-zed-extensions = {
-      url = "github:SwornSystems/nix-zed-extensions/898bc0f07436ef200354b40ba9554c2161c8675f";
+      url = "github:SwornSystems/nix-zed-extensions/174e3c8db102500e006538331fba46d3fc45b543";
       flake = false;
     };
     mcp-nix = {
@@ -28,9 +28,17 @@
       inputs.pyproject-nix.follows = "pyproject-nix";
       inputs.uv2nix.follows = "uv2nix";
     };
-    # Retain native fork toolchains so catalog updates reuse their CI outputs.
-    handy = {
-      url = "github:dweee/Handy/b2f592d4252cd4296d5f18db637536de0a499048";
+    handy-src = {
+      url = "github:cjpais/Handy/f2483011d60fccab639d3c33f40b3456e92f2940";
+      flake = false;
+    };
+    # Preserve the toolchain used to build Handy 0.10.0.
+    handy-nixpkgs.url = "github:NixOS/nixpkgs/40aa5a0e9ff16a78d4b5d5c39e72f0382cb44061";
+    bun2nix = {
+      url = "github:nix-community/bun2nix/c843f477b15f51151f8c6bcc886954699440a6e1";
+      inputs.nixpkgs.follows = "handy-nixpkgs";
+      # bun2nix 2.0.8 evaluates formatters for all listed systems.
+      inputs.systems.url = "github:nix-systems/triplet/6de7bc09397911ce03636afbcf6118745ab2cda0";
     };
     # Preserve the upstream runner toolchain for reproducible cache outputs.
     virby.url = "github:quinneden/virby-nix-darwin/a52216470a97ef5970939acf697a00ec61beb0c6";
@@ -39,16 +47,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
-    t3-code.url = "github:LisaScheers/t3-code-nix/f6696d0e300fef84b55aa3c655902983daffb46d";
+    t3-code.url = "github:LisaScheers/t3-code-nix/10956496791f4cc3ab1df4c257a77f452a2177a9";
     nixos-jellyfin = {
-      url = "github:matt1432/nixos-jellyfin/2b464890ce33c84b5affdcfa98ed62b03f0d3fe0";
+      url = "github:matt1432/nixos-jellyfin/c93abed0d744ab1a5cd9369ced8e523b8108a9b8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/52db20539ec0ba063479d66092992d9efcf456ff";
+      url = "github:oxalica/rust-overlay/ea2084066e0f3fed86a76a2654658ed2eb998046";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/2ce3c67a3687fca89a7342d40bfa28aff0b6a114";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/21a89953e617b561a60d934b979aa47f3e2c48d5";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -57,34 +65,34 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/3547834022c7faca65918abbd8645c855d20cc35";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/306480b9096055a06503167f975c027e244dd839";
     darwin = {
-      url = "github:nix-darwin/nix-darwin/f673885103fa92c1c5b1d16b8bf2b858906809e2";
+      url = "github:nix-darwin/nix-darwin/663d8b962a11cda261b6e9f14e03911fac94baf0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=e2d481d58054545146a76638f601d81341dc1118";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=444343ce12587234c17026cc32390525ed852b17";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=27a92e5abf2aa299aace42b177f43a877b918e17";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=5b578859f18e9832978f9147ea12240560ddc2bb";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
     tabrix = {
-      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=24e20b017f0ef3c34de75e9c93c502ede0859541";
+      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=d247b03664254b787a5d478adcf8883da358dac9";
     };
     rekordbox-mcp = {
-      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=01198a79d0dfd74cbc1f5a8e0b88184e49aa0ed8";
+      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=9e4562e2150048b44f4b2d96d435a2b77f4f01a3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    kuna = {
-      url = "github:dweee/kuna/6cc1f99dc4a59e6070643e01baebec0dfd72435b";
-      inputs.nixpkgs.follows = "nixpkgs";
+    kuna-src = {
+      url = "github:Noelo-Lab/kuna/9ce03fa874c298db4dc284da1bed54c6b7348d8f";
+      flake = false;
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=019b74e8fc9339f314d8ef7797468e5447914c76&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=f79fee114e2fe66dfa180c346f8d1d195f13310b&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
@@ -96,7 +104,7 @@
       flake = false;
     };
     ghidra-mcp = {
-      url = "github:dweee/ghidra-mcp/2ef97b699efadedae6ff4c5ea4263ec60e5f629e";
+      url = "github:bethington/ghidra-mcp/a57b56d71fffd5ea2560625521246014518575a7";
       flake = false;
     };
     # Jellarr's own flake: consumers take its NixOS module from this same pin.
@@ -105,7 +113,25 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wiicompiled = {
-      url = "git+https://github.com/dweee/Wiicompiled.git?ref=flakey&rev=0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac&submodules=1";
+      url = "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&rev=6e41ad0495e9bb6e7c85817392ffc9a6711c38f9&submodules=1";
+      flake = false;
+    };
+    hookshot-src = {
+      url = "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main&rev=38b90dfe70abcd9e9a9c09d17b70808c16f0153d";
+      flake = false;
+    };
+    mkw-recomp-src = {
+      url = "github:adriadam10/mkw-recomp/bd2a8deb606d6272ef5d9a3c3ba42673c960aeba";
+      flake = false;
+    };
+    # Swift and SwiftPM 6.2.4+ are required by Pared.
+    pared-nixpkgs.url = "github:NixOS/nixpkgs/04906337b6d53e8bb0eaf0470ae9f070a4d4eb55";
+    pared = {
+      url = "github:4evy/pared/26c34ec7df3d39924650b852e8d8aab57874e9ee";
+      inputs.nixpkgs.follows = "pared-nixpkgs";
+    };
+    patchbay-src = {
+      url = "github:shaboogen-dev/Patchbay/b3c88526599eb680dee25050070cbcaa38b3eab1";
       flake = false;
     };
     gdb-mcp = {
@@ -122,6 +148,7 @@
     let
       platforms = builtins.fromJSON (builtins.readFile ./nix/platforms.json);
       systems = builtins.attrNames platforms;
+      buildOnlyPackages = builtins.fromJSON (builtins.readFile ./nix/build-only-packages.json);
       cacheOnlyPlatforms = builtins.fromJSON (builtins.readFile ./nix/cache-only-platforms.json);
       packageOverlay = final: prev: import ./nix/package-set.nix { inherit inputs final prev; };
       overlay = nixpkgs.lib.composeManyExtensions [
@@ -141,6 +168,22 @@
             pkgs.horizonPackages or self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.horizonPackages
           );
         };
+      handyModule =
+        namespace: module:
+        { lib, pkgs, ... }:
+        {
+          imports = [ module ];
+          ${namespace}.handy.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.handy;
+        };
+      patchbayModule =
+        module:
+        { lib, pkgs, ... }:
+        {
+          imports = [ module ];
+          programs.patchbay.package = lib.mkDefault (
+            pkgs.patchbay or self.packages.${pkgs.stdenv.hostPlatform.system}.patchbay
+          );
+        };
       # Packages, Horizon modules and checks share the same pure package set.
       # A plain function would rebuild the bootstrap/fixed point on every call.
       pkgsBySystem = nixpkgs.lib.genAttrs systems (
@@ -155,6 +198,8 @@
     in
     {
       overlays.default = overlay;
+      overlays.freebsd-desktop = import ./nix/freebsd-desktop.nix;
+      overlays.freebsd-server = import ./nix/freebsd-server.nix;
       # Mopidy 4 and its extensions (nix/mopidy-4.nix), including mopidyPackages,
       # for consumers that build Mopidy environments from their own package set.
       overlays.mopidy-4 = import ./nix/mopidy-4.nix;
@@ -172,11 +217,38 @@
         in
         nixpkgs.lib.genAttrs (cacheOnlyPlatforms.${system} or [ ]) (name: definitions.${name})
       );
+      nixosModules.hookshot = import ./pkgs/hookshot/modules/nixos.nix self;
+      homeManagerModules.hookshot = import ./pkgs/hookshot/modules/home-manager.nix self;
+      darwinModules.hookshot = import ./pkgs/hookshot/modules/darwin.nix self;
+      nixosModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/nixos.nix self;
+      homeManagerModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/home-manager.nix self;
+      darwinModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/darwin.nix self;
+      lib.trimCodexDesktop =
+        pkgs: package: pkgs.callPackage ./pkgs/codex-desktop { codex-desktop = package; };
+      lib.wiicompiled = import ./pkgs/wiicompiled/recipes.nix;
+      nixosModules.wiicompiled = import ./pkgs/wiicompiled/module.nix {
+        inherit overlay;
+        publicPackages = self.packages;
+      };
+      homeManagerModules.wiicompiled = import ./pkgs/wiicompiled/hm-module.nix {
+        inherit overlay;
+        publicPackages = self.packages;
+      };
+      darwinModules.wiicompiled = import ./pkgs/wiicompiled/darwin-module.nix {
+        inherit overlay;
+        publicPackages = self.packages;
+      };
       nixosModules.android-avf-kernel-patches = import ./nix/android-avf/kernel-patches.nix;
       # Horizon (pkgs/horizon/README.md): the launcher, the game and a server.
       nixosModules.horizon = horizonModule ./pkgs/horizon/modules/nixos.nix;
       darwinModules.horizon = horizonModule ./pkgs/horizon/modules/darwin.nix;
       homeManagerModules.horizon = horizonModule ./pkgs/horizon/modules/home-manager.nix;
+      nixosModules.handy = handyModule "programs" ./pkgs/handy/modules/nixos.nix;
+      darwinModules.handy = handyModule "programs" ./pkgs/handy/modules/darwin.nix;
+      homeManagerModules.handy = handyModule "services" ./pkgs/handy/modules/home-manager.nix;
+      nixosModules.patchbay = patchbayModule ./pkgs/patchbay/modules/system.nix;
+      darwinModules.patchbay = patchbayModule ./pkgs/patchbay/modules/system.nix;
+      homeManagerModules.patchbay = patchbayModule ./pkgs/patchbay/modules/home-manager.nix;
       # Every Horizon channel and variant, built as `packages` are.
       legacyPackages = nixpkgs.lib.genAttrs systems (system: {
         inherit ((pkgsFor system)) horizonPackages;
@@ -191,12 +263,27 @@
       );
       checks = nixpkgs.lib.genAttrs systems (
         system:
-        self.packages.${system}
+        removeAttrs self.packages.${system} (buildOnlyPackages.${system} or [ ])
         // {
+          freebsd-overlays = import ./nix/freebsd-overlays-check.nix { pkgs = pkgsFor system; };
           kuna-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix { };
           rea-ghidra-headless = (pkgsFor system).callPackage ./pkgs/ghidra-kuna/smoke-test.nix {
             ghidra-kuna = (pkgsFor system).rea-kuna.ghidra-kuna;
             openjdk25 = (pkgsFor system).jdk21;
+          };
+        }
+        // nixpkgs.lib.optionalAttrs (self.packages.${system} ? hookshot) {
+          hookshot-prerequisites = (pkgsFor system).callPackage ./pkgs/hookshot/checks.nix { };
+        }
+        // nixpkgs.lib.optionalAttrs (self.packages.${system} ? mkw-recomp) (
+          import ./pkgs/mkw-recomp/checks.nix {
+            inherit self nixpkgs;
+            pkgs = pkgsFor system;
+          }
+        )
+        // {
+          pared-activation = (pkgsFor system).callPackage ./pkgs/pared/activation-check.nix {
+            source = inputs.pared.outPath;
           };
         }
         // import ./pkgs/horizon/checks.nix {

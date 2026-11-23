@@ -1,14 +1,16 @@
-# Linux CLI from steipete/CodexBar release tarballs. nixpkgs#codexbar is the
-# Darwin menu-bar app only. The psimaker Plasma widget shells out to `codexbar`.
+# Linux CLI built from the pinned steipete/CodexBar release tag, with the
+# Unlid provider patch. nixpkgs#codexbar is the Darwin menu-bar app only.
+# The psimaker Plasma widget shells out to `codexbar`.
 {
   lib,
   stdenv,
-  fetchurl,
-  autoPatchelfHook,
+  fetchFromGitHub,
+  fetchSwiftPMDeps,
+  swift,
+  swiftpm,
+  pkg-config,
   makeWrapper,
-  curl,
   libredirect,
-  libxml2,
   procps,
   sqlite,
   which,
@@ -18,52 +20,73 @@
   writeShellApplication,
 }:
 let
-  pname = "codexbar-cli";
   pin = lib.importJSON ./cli-pin.json;
-  inherit (pin) version assets;
-
-  asset =
-    assets.${stdenv.hostPlatform.system}
-      or (throw "${pname} is only packaged for x86_64-linux and aarch64-linux");
 in
-stdenv.mkDerivation {
-  inherit pname version;
+stdenv.mkDerivation (finalAttrs: {
+  pname = "codexbar-cli";
+  inherit (pin) version;
 
-  src = fetchurl {
-    url = "https://github.com/steipete/CodexBar/releases/download/v${version}/${asset.name}";
-    inherit (asset) hash;
+  src = fetchFromGitHub {
+    owner = "steipete";
+    repo = "CodexBar";
+    rev = pin.revision;
+    inherit (pin) hash;
   };
 
-  sourceRoot = ".";
-
-  nativeBuildInputs = [
-    autoPatchelfHook
-    makeWrapper
+  patches = [
+    # Resolve only the CLI's dependencies on Linux (no Sparkle binary artifact)
+    # and find sqlite3 through pkg-config.
+    ./patches/cli-linux-dependencies.patch
+    # Unlid balance, holds and spend provider with API-key account selection
+    # (d/codexbar 52dd6a1cd without its docs; the post-0.84.0 setup-route
+    # metadata is dropped).
+    ./patches/cli-unlid-provider.patch
   ];
 
-  buildInputs =
-    map lib.getLib [
-      curl
-      libxml2
-      sqlite
-    ]
-    ++ [ stdenv.cc.cc.lib ];
+  nativeBuildInputs = [
+    swift
+    swiftpm
+    pkg-config
+    makeWrapper
+  ];
+  buildInputs = [ sqlite ];
 
-  # Plugin scripts and VERSION sit beside the real executable in libexec,
-  # where Swift resolves /proc/self/exe even when launched by the wrapper.
+  # Reads Package.resolved from the unpatched source.
+  swiftpmDeps = fetchSwiftPMDeps {
+    inherit (finalAttrs) pname version src;
+    hash = pin.swiftpmDepsHash;
+  };
+  swiftpmFlags = [
+    "--product"
+    "CodexBarCLI"
+  ];
+  env.CODEXBAR_SQLITE3_LIB_DIR = "${lib.getLib sqlite}/lib";
+
+  # Mirror the upstream release layout: plugin scripts and VERSION sit beside
+  # the real executable in libexec, where Swift resolves /proc/self/exe even
+  # when launched by the wrapper.
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/libexec/codexbar $out/bin
-    cp -a CodexBarCLI codexbar VERSION CodexBar_CodexBarCore.bundle $out/libexec/codexbar/
-    chmod 755 $out/libexec/codexbar/CodexBarCLI $out/libexec/codexbar/codexbar
+    binPath="$(swiftpmBinPath)"
+    dest=$out/libexec/codexbar
+    mkdir -p $dest $out/bin
+    install -m755 "$binPath/CodexBarCLI" $dest/CodexBarCLI
+    ln -s CodexBarCLI $dest/codexbar
+    printf '%s\n' "$version" > $dest/VERSION
+    if [ -d "$binPath/CodexBar_CodexBarCore.bundle" ]; then
+      cp -R "$binPath/CodexBar_CodexBarCore.bundle" $dest/
+    else
+      cp -R "$binPath/CodexBar_CodexBarCore.resources" $dest/CodexBar_CodexBarCore.bundle
+    fi
     # Upstream hardcodes these FHS paths. In particular, a failed launch of
     # /usr/bin/which reaches Process.terminationStatus and traps with SIGILL.
     # Keep the executable beside its bundle and redirect filesystem checks
     # and process launches without adding host-global compatibility links.
-    makeWrapper $out/libexec/codexbar/CodexBarCLI $out/bin/codexbar \
+    makeWrapper $dest/CodexBarCLI $out/bin/codexbar \
       --prefix LD_PRELOAD : ${libredirect}/lib/libredirect.so \
       --prefix NIX_REDIRECTS : /usr/bin/which=${which}/bin/which:/bin/ps=${procps}/bin/ps:/usr/bin/ps=${procps}/bin/ps
     ln -s codexbar $out/bin/CodexBarCLI
+    install -Dm644 LICENSE $out/share/licenses/codexbar-cli/LICENSE
     runHook postInstall
   '';
 
@@ -77,8 +100,9 @@ stdenv.mkDerivation {
     $out/bin/CodexBarCLI --version
     # No credentials or provider CLIs in the sandbox: normal usage errors
     # are expected, but crashes and missing packaged resources are not.
-    # Kiro runs /usr/bin/which; Antigravity runs /bin/ps.
-    for provider in openai kiro antigravity; do
+    # Kiro runs /usr/bin/which; Antigravity runs /bin/ps; Unlid is patched in.
+    test -f $out/libexec/codexbar/CodexBar_CodexBarCore.bundle/unlid.js
+    for provider in openai kiro antigravity unlid; do
       status=0
       $out/bin/codexbar usage --format json --json-only --provider "$provider" \
         >"$TMPDIR/$provider.json" 2>"$TMPDIR/$provider.stderr" || status=$?
@@ -116,6 +140,5 @@ stdenv.mkDerivation {
       "aarch64-linux"
     ];
     mainProgram = "codexbar";
-    sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
   };
-}
+})

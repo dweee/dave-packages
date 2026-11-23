@@ -25,7 +25,7 @@ runCommand "ghidra-mcp-real-api-compatibility"
     export JAVA_TOOL_OPTIONS="-Duser.home=$TMPDIR/home -Djava.io.tmpdir=$TMPDIR"
     export GHIDRA_JAVA_OPTIONS="$JAVA_TOOL_OPTIONS"
     if ! ghidra-analyzeHeadless "$TMPDIR/project" compatibility \
-      -import "$PWD/fixture" -scriptPath ${extension.src}/ghidra_scripts \
+      -import "$PWD/fixture" -scriptPath ${./.} \
       -postScript FlakeyCompatibilitySmoke.java "$TMPDIR/passed" \
       -analysisTimeoutPerFile 90 -max-cpu 2 -deleteProject \
       > "$TMPDIR/headless.log" 2>&1; then

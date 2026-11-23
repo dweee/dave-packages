@@ -6,6 +6,10 @@
   darwin,
   swift,
   apple-sdk,
+  # The Nix Swift toolchain plus its SDK is ~7 GiB of the closure. On a Mac
+  # with Xcode or the Command Line Tools, REA's own xcrun fallback finds the
+  # system swiftc instead; pass false there to leave both out.
+  bundleDarwinSwift ? true,
   fetchurl,
   fetchFromGitHub,
   wabt,
@@ -119,7 +123,7 @@ let
     REA_OBJDUMP_COMMAND = "${binutils}/bin/objdump";
     REA_RIZIN_COMMAND = lib.getExe rizin;
   }
-  // lib.optionalAttrs stdenv.hostPlatform.isDarwin {
+  // lib.optionalAttrs (stdenv.hostPlatform.isDarwin && bundleDarwinSwift) {
     # Owned subprocesses (including JADX) compile REA's Darwin token reader.
     # xcrun cannot discover a compiler in an isolated Nix environment.
     REA_DARWIN_SWIFTC_PATH = "${swift}/bin/swiftc";

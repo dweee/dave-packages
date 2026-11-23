@@ -1,7 +1,7 @@
 {
   "paneru": {
     "repository": "https://github.com/dweee/paneru",
-    "revision": "27a92e5abf2aa299aace42b177f43a877b918e17",
+    "revision": "5b578859f18e9832978f9147ea12240560ddc2bb",
     "branch": "flakey",
     "packages": [
       "paneru",
@@ -12,7 +12,7 @@
   },
   "tabrix": {
     "repository": "https://github.com/dweee/tabrix",
-    "revision": "24e20b017f0ef3c34de75e9c93c502ede0859541",
+    "revision": "d247b03664254b787a5d478adcf8883da358dac9",
     "branch": "flakey",
     "packages": [
       "tabrix",
@@ -23,7 +23,7 @@
   },
   "rekordbox-mcp": {
     "repository": "https://github.com/dweee/rekordbox-mcp",
-    "revision": "01198a79d0dfd74cbc1f5a8e0b88184e49aa0ed8",
+    "revision": "9e4562e2150048b44f4b2d96d435a2b77f4f01a3",
     "branch": "flakey",
     "packages": [
       "rekordbox-mcp"
@@ -33,7 +33,7 @@
   },
   "schildi-revenge": {
     "repository": "https://github.com/dweee/schildi-revenge",
-    "revision": "019b74e8fc9339f314d8ef7797468e5447914c76",
+    "revision": "f79fee114e2fe66dfa180c346f8d1d195f13310b",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"
@@ -43,43 +43,10 @@
   },
   "kopuz": {
     "repository": "https://github.com/dweee/kopuz",
-    "revision": "e2d481d58054545146a76638f601d81341dc1118",
+    "revision": "444343ce12587234c17026cc32390525ed852b17",
     "branch": "flakey",
     "packages": [
       "kopuz"
-    ],
-    "ci_owner": "application fork",
-    "private": false
-  },
-  "kuna": {
-    "repository": "https://github.com/dweee/kuna",
-    "revision": "6cc1f99dc4a59e6070643e01baebec0dfd72435b",
-    "branch": "flakey",
-    "packages": [
-      "kuna"
-    ],
-    "ci_owner": "application fork",
-    "private": false
-  },
-  "handy": {
-    "repository": "https://github.com/dweee/Handy",
-    "branch": "nix/darwin",
-    "packages": [
-      "handy"
-    ],
-    "ci_owner": "application fork",
-    "private": false,
-    "revision": "b2f592d4252cd4296d5f18db637536de0a499048"
-  },
-  "wiicompiled": {
-    "repository": "https://github.com/dweee/Wiicompiled",
-    "revision": "0efc70ee6c5925b5d3c2c6d2eb79e92d9ae93bac",
-    "branch": "flakey",
-    "packages": [
-      "wiicompiled-translator",
-      "wiicompiled-native-prebuilt",
-      "wiicompiled-setup",
-      "wiicompiled-setup-unwrapped"
     ],
     "ci_owner": "application fork",
     "private": false
