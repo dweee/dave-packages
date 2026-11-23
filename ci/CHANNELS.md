@@ -50,7 +50,8 @@ source selections, but only this bounded recovery set is pinned and actively
 rechecked; cache uptime is still monitored separately.
 
 Every six hours, the updater resolves `tracking-inputs.json`, uses Nix to write
-the lock, pins Git sources exactly in flake.nix and evaluates. Changed pins go
+the lock, pins Git sources exactly in flake.nix and evaluates. Every nonlocal direct input
+must be listed; an entry whose source names an exact revision holds that pin. Changed pins go
 to one `automation/input-updates` branch and PR per repository, updated in place.
 On Forgejo that PR squash-merges itself once the required checks pass
 (`"inputAutoMerge": false` in channels.json turns this off).
