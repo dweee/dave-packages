@@ -1,13 +1,6 @@
 {
   "version": "0.84.0",
-  "assets": {
-    "x86_64-linux": {
-      "name": "CodexBarCLI-v0.84.0-linux-x86_64.tar.gz",
-      "hash": "sha256-cksL6w0nac/G/BVY8ngrW4EutzoUBYK5cW+vZirbrqA="
-    },
-    "aarch64-linux": {
-      "name": "CodexBarCLI-v0.84.0-linux-aarch64.tar.gz",
-      "hash": "sha256-dpRuTSbNbmRbBGCZu3ekO2+2IyfHdpf9BkYlv5RV0a8="
-    }
-  }
+  "revision": "5bebf9a05e68059eae11d5031c7239f1aa1d49ef",
+  "hash": "sha256-tfx6eCGbUpmswA4AxMfx8mbrw//lyhNRthx9zHjzSQQ=",
+  "swiftpmDepsHash": "sha256-R5cEV+dsLo0tR/asknINSFSQDUHl1rSsS/JfG/ciWj4="
 }

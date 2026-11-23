@@ -18,10 +18,8 @@ PIN = "pkgs/codexbar/cli-pin.json"
 
 
 def pins(version):
-    return (json.dumps({"version": version, "assets": {
-        system: {"name": f"CodexBarCLI-v{version}-linux-{arch}.tar.gz", "hash": "sha256-" + "A" * 43 + "="}
-        for system, arch in [("x86_64-linux", "x86_64"), ("aarch64-linux", "aarch64")]
-    }}, indent=2) + "\n").encode()
+    return (json.dumps({"version": version, "revision": "a" * 40, "hash": "sha256-" + "A" * 43 + "=",
+                        "swiftpmDepsHash": "sha256-" + "B" * 43 + "="}, indent=2) + "\n").encode()
 
 
 class Publication(unittest.TestCase):
@@ -206,7 +204,7 @@ class Publication(unittest.TestCase):
         script = self.root / "pkgs/codexbar/update.py"
         script.write_text('''import argparse,json,pathlib
 p=argparse.ArgumentParser();p.add_argument('--write-snapshot');p.add_argument('--snapshot');p.add_argument('--apply',action='store_true');a=p.parse_args()
-f=pathlib.Path('pkgs/codexbar/cli-pin.json');old=json.loads(f.read_text());new={'version':'2.0.0','assets':{k:{'name':v['name'].replace('v'+old['version'],'v2.0.0'),'hash':v['hash']} for k,v in old['assets'].items()}}
+f=pathlib.Path('pkgs/codexbar/cli-pin.json');old=json.loads(f.read_text());new=dict(old,version='2.0.0')
 if a.write_snapshot:pathlib.Path(a.write_snapshot).write_text('{"target":"2.0.0"}')
 if a.apply:f.write_text(json.dumps(new)+'\\n')
 print(json.dumps({'changed':old!=new}))
