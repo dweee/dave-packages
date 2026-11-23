@@ -344,43 +344,15 @@
     ],
     "x86_64-linux": [
       {
-        "attribute": "cacheOnlyPackages.x86_64-linux.ffmpeg-full",
-        "visibility": "cache-only"
-      },
-      {
-        "attribute": "cacheOnlyPackages.x86_64-linux.ffmpeg-full-rocm",
-        "visibility": "cache-only"
-      },
-      {
-        "attribute": "cacheOnlyPackages.x86_64-linux.keyguard",
-        "visibility": "cache-only"
-      },
-      {
-        "attribute": "cacheOnlyPackages.x86_64-linux.nvidia-580",
-        "visibility": "cache-only"
-      },
-      {
-        "attribute": "cacheOnlyPackages.x86_64-linux.retro-rewind-pack",
-        "visibility": "cache-only"
-      },
-      {
-        "attribute": "cacheOnlyPackages.x86_64-linux.stemlab",
-        "visibility": "cache-only"
-      },
-      {
-        "attribute": "cacheOnlyPackages.x86_64-linux.veracrypt",
-        "visibility": "cache-only"
-      },
-      {
         "attribute": "packages.x86_64-linux.atuin",
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.bitwig-theme-editor",
+        "attribute": "packages.x86_64-linux.glances",
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.blackglass",
+        "attribute": "packages.x86_64-linux.bitwig-theme-editor",
         "visibility": "public"
       },
       {
@@ -445,14 +417,6 @@
       },
       {
         "attribute": "packages.x86_64-linux.ghidra-mcp",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.x86_64-linux.glances",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.x86_64-linux.gpu-screen-recorder-ui",
         "visibility": "public"
       },
       {
@@ -532,7 +496,7 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.jellarr",
+        "attribute": "packages.x86_64-linux.linkwarden",
         "visibility": "public"
       },
       {
@@ -560,10 +524,6 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.linkwarden",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.x86_64-linux.linux-cachyos-server",
         "visibility": "public"
       },
@@ -580,11 +540,11 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.mkw-recomp",
+        "attribute": "packages.x86_64-linux.modcheck",
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.modcheck",
+        "attribute": "packages.x86_64-linux.mkw-recomp",
         "visibility": "public"
       },
       {
@@ -789,6 +749,46 @@
       },
       {
         "attribute": "packages.x86_64-linux.zed-nix-extension",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.veracrypt",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.ffmpeg-full",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.ffmpeg-full-rocm",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.nvidia-580",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.keyguard",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.stemlab",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.x86_64-linux.blackglass",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.retro-rewind-pack",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.x86_64-linux.gpu-screen-recorder-ui",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.jellarr",
         "visibility": "public"
       }
     ],
