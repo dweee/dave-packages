@@ -1,5 +1,5 @@
 # Strata's prebuilt Apple Silicon server (with its bundled relocatable CPython)
-# and the Metal engine for Inkling-2-Mini, from the v0.2.19 GitHub release.
+# and the Metal engine for Inkling-2-Mini, from the v0.2.20 GitHub release.
 # Only the server is exposed: `strata launch`/`strata update` download engines
 # and models into the home folder at run time, which a store package must not do.
 {
@@ -9,8 +9,8 @@
   makeWrapper,
 }:
 let
-  release = "0.2.19";
-  engineVersion = "0.1.65";
+  release = "0.2.20";
+  engineVersion = "0.1.66";
   asset =
     name: hash:
     fetchurl {
@@ -18,8 +18,8 @@ let
       inherit hash;
     };
   # Hashes are the release's SHA256SUMS.txt entries.
-  control = asset "strata-control-${engineVersion}-macos-arm64.tar.gz" "sha256-xa1+gVkp6iB2z8ZlEKwUJyfRXeOxf1JWvBWv8adO3bw=";
-  inkling = asset "strata-inkling-${engineVersion}-macos-arm64-metal.tar.gz" "sha256-+inPXaenqhzriNH7ZBwpEgFRaCMY2PBVa7nUDvvRjz8=";
+  control = asset "strata-control-${engineVersion}-macos-arm64.tar.gz" "sha256-yjUM1xnp06sUMXJztVEHNCq6qNysRROAs15Le9X5oEc=";
+  inkling = asset "strata-inkling-${engineVersion}-macos-arm64-metal.tar.gz" "sha256-T+4VS8g46Ji74StK0lhxKtkOHVDlvl40c9s3JElcmSk=";
 in
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "strata-bin";
