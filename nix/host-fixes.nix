@@ -53,4 +53,18 @@ final: prev: {
       done
     '';
   });
+
+  # The fastfetch wrapper puts every runtime dependency's lib/ on
+  # LD_LIBRARY_PATH. On Darwin that list includes apple-sdk_15, whose stubs dyld
+  # never loads, so the wrapper pins the whole SDK (~0.43 GiB). Only the cheap
+  # wrapper changes; fastfetch-unwrapped stays the cached build.
+  fastfetch =
+    if prev.stdenv.hostPlatform.isDarwin then
+      prev.fastfetch.override {
+        runtimeDependencies = builtins.filter (
+          dep: !(prev.lib.hasPrefix "apple-sdk" (dep.pname or (prev.lib.getName dep)))
+        ) prev.fastfetch.runtimeDependencies;
+      }
+    else
+      prev.fastfetch;
 }

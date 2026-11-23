@@ -273,5 +273,5 @@ lib.genAttrs (platforms.${system} or [ ]) (
   inherit (wii) wiicompiled;
 }
 // lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
-  inherit (fixes) spotify;
+  inherit (fixes) spotify fastfetch;
 }
