@@ -10,6 +10,7 @@
   swiftpm,
   pkg-config,
   makeWrapper,
+  removeReferencesTo,
   libredirect,
   procps,
   sqlite,
@@ -48,6 +49,7 @@ stdenv.mkDerivation (finalAttrs: {
     swiftpm
     pkg-config
     makeWrapper
+    removeReferencesTo
   ];
   buildInputs = [ sqlite ];
 
@@ -62,6 +64,16 @@ stdenv.mkDerivation (finalAttrs: {
   ];
   env.CODEXBAR_SQLITE3_LIB_DIR = "${lib.getLib sqlite}/lib";
 
+  # BoringSSL (swift-crypto) embeds its source paths through __FILE__, which
+  # would keep the 72 MiB vendored SwiftPM sources in the runtime closure.
+  # The guard fails the build if any vendor path comes back.
+  disallowedReferences = [
+    finalAttrs.swiftpmDeps
+    finalAttrs.swiftpmDeps.vendorStaging
+  ];
+  # The default strip keeps the 13 MiB symbol table; nothing needs it.
+  stripAllList = [ "libexec" ];
+
   # Mirror the upstream release layout: plugin scripts and VERSION sit beside
   # the real executable in libexec, where Swift resolves /proc/self/exe even
   # when launched by the wrapper.
@@ -71,6 +83,7 @@ stdenv.mkDerivation (finalAttrs: {
     dest=$out/libexec/codexbar
     mkdir -p $dest $out/bin
     install -m755 "$binPath/CodexBarCLI" $dest/CodexBarCLI
+    remove-references-to -t ${finalAttrs.swiftpmDeps.vendorStaging} $dest/CodexBarCLI
     ln -s CodexBarCLI $dest/codexbar
     printf '%s\n' "$version" > $dest/VERSION
     if [ -d "$binPath/CodexBar_CodexBarCore.bundle" ]; then
