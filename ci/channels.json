@@ -18,6 +18,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.caddy-custom",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.cursaves",
         "visibility": "public"
       },
@@ -46,6 +50,54 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.horizon",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-launcher",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-launcher-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-launcher-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-mixins",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-server",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-server-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-server-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-server-unstable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.horizon-unstable",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.infrared",
         "visibility": "public"
       },
@@ -59,6 +111,10 @@
       },
       {
         "attribute": "packages.aarch64-darwin.lg-webos-dashboard",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.lightning-matrix-client",
         "visibility": "public"
       },
       {
@@ -142,6 +198,14 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.pared",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.patchbay",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.prismlauncher",
         "visibility": "public"
       },
@@ -151,6 +215,10 @@
       },
       {
         "attribute": "packages.aarch64-darwin.pyrekordbox",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-darwin.qobuzify",
         "visibility": "public"
       },
       {
@@ -256,11 +324,19 @@
       {
         "attribute": "cacheOnlyPackages.aarch64-darwin.stemlab",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-darwin.retro-rewind-pack",
+        "visibility": "cache-only"
       }
     ],
     "x86_64-linux": [
       {
         "attribute": "packages.x86_64-linux.atuin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.glances",
         "visibility": "public"
       },
       {
@@ -348,6 +424,62 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.hookshot",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.hookshot-windows",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-launcher",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-launcher-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-launcher-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-mixins",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-server",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-server-bin",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-server-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-server-unstable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.horizon-unstable",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.infrared",
         "visibility": "public"
       },
@@ -372,6 +504,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.lightning-matrix-client",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.linux-cachyos-server",
         "visibility": "public"
       },
@@ -389,6 +525,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.modcheck",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.mkw-recomp",
         "visibility": "public"
       },
       {
@@ -460,6 +600,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.patchbay",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.paulxstretch",
         "visibility": "public"
       },
@@ -492,6 +636,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.qobuzify",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.rea",
         "visibility": "public"
       },
@@ -517,6 +665,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.slskd-mcp",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.sof-tplg-adl-rt1019",
         "visibility": "public"
       },
       {
@@ -594,6 +746,22 @@
       {
         "attribute": "cacheOnlyPackages.x86_64-linux.stemlab",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.x86_64-linux.blackglass",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.x86_64-linux.retro-rewind-pack",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.x86_64-linux.gpu-screen-recorder-ui",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.jellarr",
+        "visibility": "public"
       }
     ],
     "aarch64-linux": [
@@ -662,6 +830,42 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-linux.horizon",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-launcher",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-launcher-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-mixins",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-server",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-server-git",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-server-unstable",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.horizon-unstable",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-linux.infrared",
         "visibility": "public"
       },
@@ -686,6 +890,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-linux.lightning-matrix-client",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-linux.linux-android-avf",
         "visibility": "public"
       },
@@ -703,6 +911,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.modcheck",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.mkw-recomp",
         "visibility": "public"
       },
       {
@@ -767,6 +979,10 @@
       },
       {
         "attribute": "packages.aarch64-linux.paceman-tracker",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.patchbay",
         "visibility": "public"
       },
       {
@@ -864,6 +1080,22 @@
       {
         "attribute": "cacheOnlyPackages.aarch64-linux.keyguard",
         "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.aarch64-linux.blackglass",
+        "visibility": "public"
+      },
+      {
+        "attribute": "cacheOnlyPackages.aarch64-linux.retro-rewind-pack",
+        "visibility": "cache-only"
+      },
+      {
+        "attribute": "packages.aarch64-linux.gpu-screen-recorder-ui",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.jellarr",
+        "visibility": "public"
       }
     ]
   },

@@ -6,24 +6,32 @@
   fetchFromGitHub,
   flutter347,
   lib,
+  libgit2,
   makeDesktopItem,
   mpv-unwrapped,
-  nix-update-script,
+  nix-update,
+  nix,
+  gh,
+  python3,
+  yq-go,
+  writeShellApplication,
   p7zip,
   protobuf,
+  pkg-config,
   rinf_cli,
   rustPlatform,
   stdenvNoCC,
   writeText,
+  zstd,
 }: let
   pname = "yaas";
-  version = "0-unstable-2026-09-17";
+  version = "0-unstable-2026-11-15";
 
   src = fetchFromGitHub {
     owner = "skrimix";
     repo = "yaas";
-    rev = "ce3c45d580257185623e8330bca9aeb85caed8ad";
-    hash = "sha256-W4gGLz+5yzDdM7gyimV1LNXXcGZIgw62f6jQJAj+MgA=";
+    rev = "bd5af43edd413534a1495fe23df5ac559d9a0f32";
+    hash = "sha256-YCD4h+hcv/6Xs79JgHFDht1pmInsF8tT/vQNVAtdbCk=";
   };
 
   rustDep = rustPlatform.buildRustPackage {
@@ -31,7 +39,10 @@
 
     buildAndTestSubdir = "native/hub";
 
-    cargoHash = "sha256-TGsnevAIWOIP07W4hEk+Kne+deuvRSj2+2EuU2qY87w=";
+    cargoHash = "sha256-tL6nxE0pJOu0lLhhOhWVmdbTK2pTyJy7gTC7lsCY8l0=";
+
+    nativeBuildInputs = [pkg-config];
+    buildInputs = [libgit2 (zstd.override {enableStatic = true;})];
 
     doCheck = false;
 
@@ -41,7 +52,11 @@ in
   flutter347.buildFlutterApplication {
     inherit pname version src;
 
-    autoPubspecLock = "${src}/pubspec.lock";
+    # Committed JSON, not autoPubspecLock: that reads ${src}/pubspec.lock during
+    # evaluation (import-from-derivation), which the release gate's no-build
+    # retained-root evaluation cannot realise. Regenerate after a bump with
+    #   yq -o=json . "$(nix build --no-link --print-out-paths .#yaas.src)/pubspec.lock" > pkgs/yaas/pubspec.lock.json
+    pubspecLock = lib.importJSON ./pubspec.lock.json;
 
     customSourceBuilders = {
       rinf = {
@@ -151,12 +166,15 @@ in
       inherit (rustDep) cargoDeps;
 
       # upstream only publishes a mutable nightly prerelease; follow `master` instead
-      updateScript.command = nix-update-script {
-        extraArgs = [
-          "--version=branch"
-          "--version-regex=^(0-unstable-[0-9-]+)$"
-        ];
-      };
+      updateScript.command = [
+        (lib.getExe (writeShellApplication {
+          name = "update-yaas";
+          runtimeInputs = [gh nix nix-update python3 yq-go];
+          text = ''
+            exec python3 ${./update.py} --root "$PWD" --apply "$@"
+          '';
+        }))
+      ];
     };
 
     meta = {

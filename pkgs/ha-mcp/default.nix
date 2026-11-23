@@ -1,4 +1,7 @@
-{ ha-mcp, fetchFromGitHub }:
+{
+  ha-mcp,
+  fetchFromGitHub,
+}:
 let
   skills = fetchFromGitHub {
     owner = "homeassistant-ai";
@@ -6,7 +9,15 @@ let
     rev = "bc73bdac9f2be4b7e62bb3fcfe8b826050dcf851";
     hash = "sha256-IgZfwQDH36McOJMdrmEOwGOiEg94Nem7aBuHYHckSz4=";
   };
-in ha-mcp.overridePythonAttrs (old: {
+in
+ha-mcp.overridePythonAttrs (old: {
+  # Keep nixpkgs' release source, including its bundled skill content.
+  patches = (old.patches or [ ]) ++ [
+    ./guidance-platform-tests.patch
+    ./json-decoder-recursion-test.patch
+    ./wildcard-port-test-fixtures.patch
+    ./listener-order.patch
+  ];
   postPatch = (old.postPatch or "") + ''
     mkdir -p src/ha_mcp/resources
     cp -a ${skills}/. src/ha_mcp/resources/skills-vendor/

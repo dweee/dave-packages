@@ -23,7 +23,11 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.calls = []
-        self.env = {"RUNNER_TEMP": self.directory.name, "ATTIC_TOKEN": "synthetic-private-token"}
+        binary = Path(self.directory.name) / "niks3"
+        binary.write_text("#!/bin/sh\nexit 0\n")
+        binary.chmod(0o700)
+        self.env = {"RUNNER_TEMP": self.directory.name, "NIKS3_WRITE_TOKEN": "synthetic-private-token",
+                    "NIKS3_BIN": str(binary), "ACTIONS_ID_TOKEN_REQUEST_TOKEN": "synthetic-oidc-request"}
         self.graph = {PATH + ".drv": {"outputs": {"out": {}}, "env": {"license": "unfree"}}}
         self.runtime = PATH
         self.failure = None
@@ -37,22 +41,18 @@ class CacheOnlyBoundary(unittest.TestCase):
             value = self.system
         elif args[0] == "nix" and args[1] == "derivation":
             value = json.dumps(self.graph)
-        elif "nixpkgs#attic-client" in args:
-            value = PATH
         elif args[0] == "nix" and args[1] == "build":
             stdout.write(PATH + "\n")
             value = ""
         elif args[0] == "nix-store":
             value = self.runtime
         else:
-            self.assertTrue(args[1].endswith("/ci/push-attic.py"))
+            self.assertTrue(args[1].endswith("/ci/push-niks3.py"))
             manifest = Path(args[args.index("--outputs") + 1])
             self.assertEqual(manifest.read_text(), PATH + "\n")
             self.manifest = manifest
             self.assertIsNotNone(stdout)  # uploader progress cannot reach public logs
-            self.assertEqual(env["ATTIC_TOKEN"], self.env["ATTIC_TOKEN"])
-            self.assertEqual(env["ATTIC_CACHE"], "flakey")
-            self.assertEqual(env["ATTIC_ENDPOINT"], "https://attic.monke.fail")
+            self.assertEqual(env["ACTIONS_ID_TOKEN_REQUEST_TOKEN"], self.env["ACTIONS_ID_TOKEN_REQUEST_TOKEN"])
             value = ""
         return subprocess.CompletedProcess(args, 0, stdout=value)
 
@@ -63,8 +63,10 @@ class CacheOnlyBoundary(unittest.TestCase):
     def test_unfree_allowed_only_in_direct_private_pipeline_and_manifest_removed(self):
         self.run_build()
         self.assertFalse(self.manifest.exists())
-        for args, env in self.calls[:-1]:
-            self.assertNotIn("ATTIC_TOKEN", env)
+        for args, env in self.calls:
+            if args[0] == module.sys.executable:
+                continue
+            self.assertNotIn("NIKS3_WRITE_TOKEN", env)
             self.assertNotIn("synthetic-private-token", " ".join(args))
         self.assertTrue(any("cacheOnlyPackages.x86_64-linux.veracrypt" in " ".join(a) for a, _ in self.calls))
         self.assertFalse(any("export" in a or "--export" in a for a, _ in self.calls))
@@ -84,7 +86,7 @@ class CacheOnlyBoundary(unittest.TestCase):
         with patch.object(module, "FETCH_BATCH", 2), patch.dict(os.environ, self.env, clear=True), \
                 patch.object(module, "quiet", side_effect=self.run_quiet):
             module.build("x86_64-linux", "keyguard")
-        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"] and "nixpkgs#attic-client" not in a]
+        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"]]
         installables = [[x for x in a if x.endswith("^*")] for a in builds]
         self.assertEqual(installables[0], ["/nix/store/" + "b" * 32 + "-artifact-b.jar.drv^*",
                                            "/nix/store/" + "c" * 32 + "-artifact-c.jar.drv^*"])
@@ -93,17 +95,28 @@ class CacheOnlyBoundary(unittest.TestCase):
         self.assertEqual(installables[2:], [[f"{target}.{a}^*"] for a in module.STAGED["keyguard"]["attributes"]]
                          + [[target + "^*"]])
         pushes = [a for a, _ in self.calls if a[0] == module.sys.executable]
-        self.assertEqual(len(pushes), len(module.STAGED["keyguard"]["attributes"]) + 1)
+        self.assertEqual(len(pushes), 2 + len(module.STAGED["keyguard"]["attributes"]) + 1)
+        self.assertEqual([Path(a[1]).name for a in pushes], ["push-niks3.py"] * len(pushes))
         for args, env in self.calls:
             if args[0] != module.sys.executable:
-                self.assertNotIn("ATTIC_TOKEN", env)
+                self.assertNotIn("NIKS3_WRITE_TOKEN", env)
+
+    def test_completed_fetch_batch_is_cached_before_a_later_fetch_failure(self):
+        self.graph = self.staged_graph()
+        self.failure = "/nix/store/" + "d" * 32 + "-artifact-d.jar.drv^*"
+        with patch.object(module, "FETCH_BATCH", 2), patch.dict(os.environ, self.env, clear=True), patch.object(module, "quiet", side_effect=self.run_quiet):
+            with self.assertRaises(subprocess.CalledProcessError):
+                module.build("x86_64-linux", "keyguard")
+        pushes = [args for args, _ in self.calls if args[0] == module.sys.executable]
+        self.assertEqual(len(pushes), 1)
+        self.assertTrue(pushes[0][1].endswith("/ci/push-niks3.py"))
 
     def test_darwin_keyguard_keeps_one_build(self):
         self.graph = self.staged_graph()
         self.system = "aarch64-darwin"
         with patch.dict(os.environ, self.env, clear=True), patch.object(module, "quiet", side_effect=self.run_quiet):
             module.build("aarch64-darwin", "keyguard")
-        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"] and "nixpkgs#attic-client" not in a]
+        builds = [a for a, _ in self.calls if a[:2] == ["nix", "build"]]
         self.assertEqual(len(builds), 1)
 
     def test_staged_package_without_dependency_cache_fails_before_build(self):
@@ -119,6 +132,12 @@ class CacheOnlyBoundary(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.run_build()
                 self.assertFalse(any("build" in a for a, _ in self.calls))
+
+    def test_niks3_failure_blocks_success_without_an_attic_dependency(self):
+        self.failure = str(Path(module.__file__).parent / 'push-niks3.py')
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.run_build()
+        self.assertFalse(any('attic-client' in str(a) or 'push-attic.py' in str(a) for a, _ in self.calls))
 
     def test_unknown_package_rejected_before_nix_or_credentials(self):
         with patch.object(module, "quiet") as run:
@@ -152,7 +171,7 @@ class CacheOnlyBoundary(unittest.TestCase):
                                 env=env, text=True, capture_output=True)
         self.assertEqual(result.returncode, 1)
         self.assertIn("No artifacts or diagnostic logs were published", result.stderr)
-        for private in ["sensitive-build-stdout", "sensitive-build-stderr", self.env["ATTIC_TOKEN"]]:
+        for private in ["sensitive-build-stdout", "sensitive-build-stderr", self.env["NIKS3_WRITE_TOKEN"]]:
             self.assertNotIn(private, result.stdout + result.stderr)
 
     def test_public_matrix_and_backup_workflow_exclude_cache_only_jobs(self):
@@ -162,19 +181,24 @@ class CacheOnlyBoundary(unittest.TestCase):
             self.assertFalse(set(names) & set(free[system]))
         workflow = (ROOT / ".github/workflows/cache-only.yml").read_text()
         self.assertNotIn("pull_request:", workflow)
-        for forbidden in ["upload-artifact", "download-artifact", "transfer-attic", "gh release", "contents: write"]:
+        for forbidden in ["upload-artifact", "download-artifact", "transfer-closures", "gh release", "contents: write"]:
             self.assertNotIn(forbidden, workflow)
-        self.assertEqual(workflow.count("github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"), 2)
+        self.assertEqual(" ".join(workflow.split()).count("github.ref == format('refs/heads/{0}', github.event.repository.default_branch)"), 2)
         archive = (ROOT / ".github/workflows/archive-packages.yml").read_text()
         self.assertNotIn("Dave packages cache only", archive)
 
     def test_cache_only_selection_and_native_runners(self):
         jobs = matrix.matrix("all")["include"]
-        self.assertEqual(len(jobs), 13)
+        self.assertEqual(len(jobs), 16)
         self.assertEqual({j["runner"] for j in jobs}, {"ubuntu-24.04", "ubuntu-24.04-arm", "macos-15"})
         self.assertEqual(len(matrix.matrix("keyguard")["include"]), 3)
         self.assertEqual(matrix.matrix("spotify")["include"], [
             {"system": "aarch64-darwin", "runner": "macos-15", "package": "spotify"}
+        ])
+        self.assertEqual(matrix.matrix("retro-rewind-pack")["include"], [
+            {"system": "x86_64-linux", "runner": "ubuntu-24.04", "package": "retro-rewind-pack"},
+            {"system": "aarch64-linux", "runner": "ubuntu-24.04-arm", "package": "retro-rewind-pack"},
+            {"system": "aarch64-darwin", "runner": "macos-15", "package": "retro-rewind-pack"},
         ])
         with self.assertRaises(ValueError): matrix.matrix("wiicompiled-disc-rmcp01")
 

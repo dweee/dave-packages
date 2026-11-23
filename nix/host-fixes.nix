@@ -7,8 +7,8 @@ final: prev: {
       (old.stripExclude or [ ]) ++ prev.lib.optionals prev.stdenv.hostPlatform.isDarwin [ "favicon.ico" ];
   });
 
-  # Vendored redlib (a4d36e95 + named MAIN FEEDS). See pkgs/redlib and
-  # docs/superpowers/specs/2026-08-12-redlib-named-feeds-design.md.
+  # Vendored redlib (a4d36e95 + named MAIN FEEDS). Refresh the vendored tree
+  # with scripts/update-redlib-vendor.py; review steps are in pkgs/redlib/README.md.
   redlib = prev.callPackage ../pkgs/redlib { };
 
   # dorion 6.13.2 builds webkitgtk_4_1 with enableExperimental (WebRTC/WebXR),
@@ -24,11 +24,16 @@ final: prev: {
   # vulkan-headers, so WebKit's WebProcess compilation needs it explicitly.
   # Drop when nixpkgs adds both inputs under enableExperimental.
   dorion = prev.dorion.override {
-    webkitgtk_4_1 = (prev.webkitgtk_4_1.override { enableExperimental = true; }).overrideAttrs (old: {
-      buildInputs = (old.buildInputs or [ ]) ++ [
-        final.vulkan-volk
-        final.vulkan-headers
-      ];
-    });
+    webkitgtk_4_1 =
+      (prev.webkitgtk_4_1.override {
+        enableExperimental = true;
+        librice = import ../pkgs/librice-capi.nix { librice = prev.librice; };
+      }).overrideAttrs
+        (old: {
+          buildInputs = (old.buildInputs or [ ]) ++ [
+            final.vulkan-volk
+            final.vulkan-headers
+          ];
+        });
   };
 }

@@ -35,6 +35,8 @@ buildPythonPackage rec {
   # setuptools-scm needs the version to be explicitly provided (in `env`:
   # Python builds use structured attrs, so only `env` reaches the backend).
   env.SETUPTOOLS_SCM_PRETEND_VERSION = version;
+  # The darwin build backend subprocess only honours the per-distribution name.
+  env.SETUPTOOLS_SCM_PRETEND_VERSION_FOR_PYREKORDBOX = version;
 
   nativeBuildInputs = [
     setuptools

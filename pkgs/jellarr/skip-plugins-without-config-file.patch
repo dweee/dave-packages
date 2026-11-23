@@ -1,0 +1,12 @@
+diff --git a/src/apply/plugins.ts b/src/apply/plugins.ts
+--- a/src/apply/plugins.ts
++++ b/src/apply/plugins.ts
+@@ -48,7 +48,7 @@ export async function getPluginConfigurationSchemaByName(
+   > = new Map();
+ 
+   for (const pluginInfo of current) {
+-    if (pluginInfo.Id && pluginInfo.Name) {
++    if (pluginInfo.Id && pluginInfo.Name && pluginInfo.ConfigurationFileName) {
+       pluginConfigurationSchemaByName.set(pluginInfo.Name, {
+         id: pluginInfo.Id,
+         configuration: await client.getPluginConfiguration(pluginInfo.Id),

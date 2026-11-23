@@ -1,10 +1,29 @@
 {
+  aws-lc,
   cacert,
+  fetchFromGitHub,
+  jemalloc,
   matrix-tuwunel,
   python3,
   symlinkJoin,
 }: let
-  unwrapped = matrix-tuwunel.overrideAttrs (old: {
+  unwrapped = matrix-tuwunel.overrideAttrs (final: old: {
+    # The redirect patch follows upstream's v2 media router and storage features.
+    version = "2.0.0";
+    src = fetchFromGitHub {
+      owner = "matrix-construct";
+      repo = "tuwunel";
+      tag = "v${final.version}";
+      hash = "sha256-klBp0a9ad+TTNr5t3CDhCpM/t5Ndqw3FIxVvm6kMmvA=";
+    };
+    cargoHash = "sha256-f7864AwkfSnYLYuFjHLXGKmf+vZoSp4cm+ROIzXBeBw=";
+    cargoBuildFeatures = old.cargoBuildFeatures ++ ["s3_storage"];
+    cargoCheckFeatures = old.cargoCheckFeatures ++ ["s3_storage"];
+    # cargoSetupHook makes aws-lc-sys use the system library.
+    buildInputs = (old.buildInputs or []) ++ [aws-lc jemalloc];
+    # Both supported Linux targets use jevmalloc's unprefixed ABI. Its
+    # system-library override expects a file, not an installation directory.
+    JEMALLOC_OVERRIDE = "${jemalloc}/lib/libjemalloc.so";
     # Each database test creates its own CPU-scaled worker pool. Concurrent
     # pools exhaust container task limits; keep all tests, running one at a time.
     dontUseCargoParallelTests = true;

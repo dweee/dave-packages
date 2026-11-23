@@ -1,10 +1,11 @@
-# Drop this overlay (and overlays/mopidy/*.patch) when nixpkgs #543550
+# Drop this overlay (and nix/mopidy/*.patch) when nixpkgs #543550
 # (mopidy 3.4.2 → 4.0.2) is in flake.lock. mopidy-spotify 5.0 needs mopidy >= 4;
 # nixpkgs is still 5.0.0a3, whose tests die on pytest 9.
 #
 # After the drop: keep mopidy-tidal out of extensionPackages until upstream
 # ships a Mopidy 4 release (Pydantic models; nixpkgs marks it broken).
 # Iris is still 3.70.0 — built against 4.0.2, not runtime-checked here.
+# Check upstream pins, or prepare a reviewed candidate, with scripts/update-mopidy.py.
 _final: prev: let
   inherit (prev) lib;
   py = prev.mopidyPackages.python.pkgs;
