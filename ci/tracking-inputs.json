@@ -34,6 +34,9 @@
     "kuna-src": {
       "source": "github:Noelo-Lab/kuna/9ce03fa874c298db4dc284da1bed54c6b7348d8f"
     },
+    "llama-cpp-inkling": {
+      "source": "github:ggml-org/llama.cpp/29b52d398b294509746ec0a3f28948a3107c0213"
+    },
     "mcp-nix": {
       "source": "github:felixdorn/mcp-nix"
     },
