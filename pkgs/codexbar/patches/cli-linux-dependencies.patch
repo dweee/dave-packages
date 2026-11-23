@@ -1,0 +1,45 @@
+diff --git a/Package.swift b/Package.swift
+index 7fe7c2ebb..92abb3eca 100644
+--- a/Package.swift
++++ b/Package.swift
+@@ -43,15 +43,23 @@ let package = Package(
+ 
+         return products
+     }(),
+-    dependencies: [
+-        .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.10.1"),
+-        .package(url: "https://github.com/steipete/Commander", from: "0.3.0"),
+-        .package(url: "https://github.com/apple/swift-crypto.git", "4.5.2"..<"6.0.0"),
+-        .package(url: "https://github.com/apple/swift-log", from: "1.16.2"),
+-        .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "3.1.0"),
+-        .package(url: "https://github.com/zats/Vortex", revision: "ef5392088d4aeb255c4eee83157dbdafcd31bf07"),
+-        sweetCookieKitDependency,
+-    ],
++    dependencies: {
++        var dependencies: [Package.Dependency] = [
++            .package(url: "https://github.com/steipete/Commander", from: "0.3.0"),
++            .package(url: "https://github.com/apple/swift-crypto.git", "4.5.2"..<"6.0.0"),
++            .package(url: "https://github.com/apple/swift-log", from: "1.16.2"),
++            sweetCookieKitDependency,
++        ]
++        // The macOS app's UI dependencies (and Sparkle's binary artifact) are unused on Linux.
++        #if os(macOS)
++        dependencies += [
++            .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.10.1"),
++            .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "3.1.0"),
++            .package(url: "https://github.com/zats/Vortex", revision: "ef5392088d4aeb255c4eee83157dbdafcd31bf07"),
++        ]
++        #endif
++        return dependencies
++    }(),
+     targets: {
+         var targets: [Target] = [
+             .target(
+@@ -68,6 +76,7 @@ let package = Package(
+             // Both glibc and static-musl CLI builds use this target; the module map supplies sqlite3 linkage.
+             .systemLibrary(
+                 name: "CSQLite3",
++                pkgConfig: "sqlite3",
+                 providers: [
+                     .apt(["libsqlite3-dev"]),
+                     .brew(["sqlite3"]),
