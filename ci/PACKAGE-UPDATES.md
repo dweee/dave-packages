@@ -37,9 +37,11 @@ Current package handlers:
   spelling, dynamic linkage and upstream Python contracts. Declared platforms
   are x86_64-linux, aarch64-linux and aarch64-darwin; registration does not
   establish native success or promote a channel.
-- `codexbar-cli`: stable upstream release, both Linux architecture assets and
-  their published digests. Each actual payload is hashed with Nix before pins
-  change. The KDE plasmoid and nixpkgs Darwin application are separate owners.
+- `codexbar-cli`: stable upstream release, its exact peeled tag commit, the
+  Nix source NAR hash and the SwiftPM dependency hash, all computed with Nix
+  before the pin changes. The CLI is built from that source with the patches in
+  `pkgs/codexbar/patches`; a patch that stops applying fails the update PR. The
+  KDE plasmoid and nixpkgs Darwin application are separate owners.
 - `retro-rewind-pack`: the official full-install pointer, an exact ZIP version
   and its Nix hash. This unfree payload uses `cacheOnlyPackages` and is excluded
   from the public artifact inventory.
