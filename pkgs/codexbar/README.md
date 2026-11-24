@@ -1,5 +1,24 @@
 # CodexBar CLI and Plasma widget
 
+`codexbar-cli` builds the Linux CLI from the pinned upstream release tag
+(`cli-pin.json`) with two patches:
+
+- `patches/cli-linux-dependencies.patch` resolves only the CLI's SwiftPM
+  dependencies on Linux (no Sparkle binary artifact) and finds sqlite3 through
+  pkg-config.
+- `patches/cli-unlid-provider.patch` adds the [Unlid](https://unlid.ai)
+  provider: balance, open holds, available balance, this month's spend,
+  optional lifetime credits, and multiple API keys with account selection. It
+  is the provider from d/codexbar `feat/unlid-provider-nix` (52dd6a1cd) without
+  its docs; the setup-route metadata that needs upstream changes after 0.84.0 is
+  left out.
+
+```sh
+nix build .#codexbar-cli
+printf '%s' "$UNLID_API_KEY" | codexbar config set-api-key --provider unlid --stdin
+codexbar usage --provider unlid
+```
+
 `codexbar-plasmoid` applies `patches/summary-pace-markers.patch` to the pinned
 fork. The provider tabs and both overview bars use the same expected-usage
 markers and pace colors as the detailed provider cards. They follow **Show

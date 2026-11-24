@@ -223,6 +223,8 @@
       nixosModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/nixos.nix self;
       homeManagerModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/home-manager.nix self;
       darwinModules.mkw-recomp = import ./pkgs/mkw-recomp/modules/darwin.nix self;
+      lib.trimCodexDesktop =
+        pkgs: package: pkgs.callPackage ./pkgs/codex-desktop { codex-desktop = package; };
       lib.wiicompiled = import ./pkgs/wiicompiled/recipes.nix;
       nixosModules.wiicompiled = import ./pkgs/wiicompiled/module.nix {
         inherit overlay;

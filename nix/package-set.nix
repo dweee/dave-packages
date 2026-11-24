@@ -57,6 +57,7 @@ let
     };
     virby-vm-runner = inputs.virby.packages.${system}.vm-runner;
     ha-mcp = prev.callPackage ../pkgs/ha-mcp { inherit (prev) ha-mcp; };
+    linkwarden = prev.callPackage ../pkgs/linkwarden { inherit (prev) linkwarden; };
     atuin = prev.callPackage ../pkgs/atuin { inherit (prev) atuin; };
     glances = prev.callPackage ../pkgs/glances { inherit (prev) glances; };
     pared = (inputs.pared.packages.${system}.pared).overrideAttrs (old: {
@@ -112,7 +113,7 @@ let
     papu = final.callPackage "${inputs.audio}/vst/papu.nix" { pcre = final.pcre2; };
     paulxstretch = final.callPackage "${inputs.audio}/vst/paulxstretch.nix" { pcre = final.pcre2; };
 
-    inherit (fixes) redlib dorion;
+    inherit (fixes) redlib dorion rustdesk-flutter;
     jellarr = final.callPackage ../pkgs/jellarr { src = inputs.jellarr; };
     gpu-screen-recorder-ui = prev.gpu-screen-recorder-ui.overrideAttrs (
       import ../pkgs/gpu-screen-recorder-ui { inherit (final) dbus lib; }
@@ -273,5 +274,5 @@ lib.genAttrs (platforms.${system} or [ ]) (
   inherit (wii) wiicompiled;
 }
 // lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
-  inherit (fixes) spotify;
+  inherit (fixes) spotify fastfetch;
 }
