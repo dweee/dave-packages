@@ -117,7 +117,7 @@
       flake = false;
     };
     hookshot-src = {
-      url = "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main&rev=db35b122a93ea15d536842d19b77fd1f14301853";
+      url = "git+https://github.com/ItsNotRexed/Hookshot.git?ref=main&rev=db35b122a93ea15d536842d19b77fd1f14301853";
       flake = false;
     };
     mkw-recomp-src = {
