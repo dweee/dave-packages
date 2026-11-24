@@ -160,6 +160,16 @@ class S3(http.server.BaseHTTPRequestHandler):
         }, head=head)
 
 
+# A build without the "email" feature refuses to start with an SMTP URI. The
+# transport connects lazily, so a closed loopback port is enough here.
+SMTP = '''[global.well_known]
+client = "https://redirect.test"
+[global.smtp]
+connection_uri = "smtp://127.0.0.1:9"
+sender = "Fixture <noreply@redirect.test>"
+'''
+
+
 def free_port():
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
@@ -167,7 +177,7 @@ def free_port():
 
 
 @contextlib.contextmanager
-def homeserver(binary, root, endpoint, *, redirects=True, strict=False):
+def homeserver(binary, root, endpoint, *, redirects=True, strict=False, smtp=False):
     port = free_port()
     config = root / "tuwunel.toml"
     config.write_text(f'''[global]
@@ -204,7 +214,7 @@ use_vhost_request = false
 use_payload_signatures = false
 startup_check = false
 multipart_threshold = "1 MiB"
-''')
+''' + (SMTP if smtp else ''))
     env = {key: value for key, value in os.environ.items()
            if not key.startswith(("TUWUNEL_", "CONDUIT_", "CONDUWUIT_"))}
     env["TUWUNEL_CONFIG"] = str(config)
@@ -361,11 +371,14 @@ def exercise(binary):
                     assert status == 200 and body == payload and "Location" not in headers
                     if strict:
                         assert "frame-ancestors 'none'" in headers["Content-Security-Policy"]
+
+            with homeserver(binary, root, endpoint, smtp=True) as base:
+                assert request(base + "/_matrix/client/versions")[0] == 200
         finally:
             fixture.shutdown()
             fixture.server_close()
             thread.join(timeout=5)
-    print("PASS: authenticated direct downloads, signatures, headers, thumbnails, multipart, fallbacks and disabled/strict policy")
+    print("PASS: authenticated direct downloads, signatures, headers, thumbnails, multipart, fallbacks, disabled/strict policy and SMTP startup")
 
 
 if __name__ == "__main__":
