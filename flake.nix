@@ -1,6 +1,10 @@
 {
   description = "Dave's portable third-party Nix packages";
   inputs = {
+    llama-cpp-inkling = {
+      url = "github:ggml-org/llama.cpp/29b52d398b294509746ec0a3f28948a3107c0213";
+      flake = false;
+    };
     nixpkgs.url = "github:nixos/nixpkgs/2786a2a72088ecf32aea5b3ec52099e6a7cff78f";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/174e3c8db102500e006538331fba46d3fc45b543";
@@ -47,7 +51,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
-    t3-code.url = "github:LisaScheers/t3-code-nix/10956496791f4cc3ab1df4c257a77f452a2177a9";
     nixos-jellyfin = {
       url = "github:matt1432/nixos-jellyfin/c93abed0d744ab1a5cd9369ced8e523b8108a9b8";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -56,7 +59,7 @@
       url = "github:oxalica/rust-overlay/ea2084066e0f3fed86a76a2654658ed2eb998046";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/21a89953e617b561a60d934b979aa47f3e2c48d5";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/ce9fc27f80cee11ec0c9a8e7723fe680bd5ec7f8";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -65,7 +68,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/306480b9096055a06503167f975c027e244dd839";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/920a3823872b21640181fe8065a5fb35fcb06e3f";
     darwin = {
       url = "github:nix-darwin/nix-darwin/663d8b962a11cda261b6e9f14e03911fac94baf0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -117,11 +120,11 @@
       flake = false;
     };
     hookshot-src = {
-      url = "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main&rev=38b90dfe70abcd9e9a9c09d17b70808c16f0153d";
+      url = "git+https://github.com/ItsNotRexed/Hookshot.git?ref=main&rev=38b90dfe70abcd9e9a9c09d17b70808c16f0153d";
       flake = false;
     };
     mkw-recomp-src = {
-      url = "github:adriadam10/mkw-recomp/bd2a8deb606d6272ef5d9a3c3ba42673c960aeba";
+      url = "github:adriadam10/mkw-recomp/a10de49f2e2ea1badbb898ee1a249df4e24213a7";
       flake = false;
     };
     # Swift and SwiftPM 6.2.4+ are required by Pared.

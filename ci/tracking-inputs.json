@@ -23,7 +23,7 @@
       "source": "github:cjpais/Handy/f2483011d60fccab639d3c33f40b3456e92f2940"
     },
     "hookshot-src": {
-      "source": "git+https://git.notrexed.dev/Hookshot/Hookshot.git?ref=main"
+      "source": "git+https://github.com/ItsNotRexed/Hookshot.git?ref=main"
     },
     "jellarr": {
       "source": "github:venkyr77/jellarr"
@@ -33,6 +33,9 @@
     },
     "kuna-src": {
       "source": "github:Noelo-Lab/kuna/9ce03fa874c298db4dc284da1bed54c6b7348d8f"
+    },
+    "llama-cpp-inkling": {
+      "source": "github:ggml-org/llama.cpp/29b52d398b294509746ec0a3f28948a3107c0213"
     },
     "mcp-nix": {
       "source": "github:felixdorn/mcp-nix"
@@ -93,9 +96,6 @@
     },
     "slskd-mcp": {
       "source": "github:abl030/slskd-mcp"
-    },
-    "t3-code": {
-      "source": "github:LisaScheers/t3-code-nix"
     },
     "tabrix": {
       "source": "git+https://github.com/dweee/tabrix.git?ref=tested"

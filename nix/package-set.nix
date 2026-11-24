@@ -7,7 +7,6 @@ let
   inherit (prev) lib;
   system = prev.stdenv.hostPlatform.system;
   platforms = builtins.fromJSON (builtins.readFile ./platforms.json);
-  t3code = import ../pkgs/t3code { inherit inputs system; };
   fixes = import ./host-fixes.nix final prev;
   mopidy = import ./mopidy-4.nix final prev;
   wii = import ../pkgs/wiicompiled/packages.nix {
@@ -36,6 +35,15 @@ let
     )
     + "-${inputs.mkw-recomp-src.shortRev}";
   definitions = {
+    llama-cpp-inkling = import ../pkgs/llama-cpp-inkling {
+      pkgs = prev;
+      upstream = inputs.llama-cpp-inkling;
+    };
+    llama-cpp-inkling-vulkan = import ../pkgs/llama-cpp-inkling {
+      pkgs = prev;
+      upstream = inputs.llama-cpp-inkling;
+      useVulkan = true;
+    };
     hookshot = final.callPackage ../pkgs/hookshot {
       src = inputs.hookshot-src;
       version = hookshotVersion;
@@ -79,7 +87,6 @@ let
       pkgs = final;
       upstream = inputs.mcp-nixos;
     };
-    inherit (t3code) t3code-nightly t3code-server-nightly;
     # nixpkgs removed `pcre`; the audio.nix recipes still take it as an argument.
     chow-phaser = final.callPackage "${inputs.audio}/chow/chow-phaser.nix" { pcre = final.pcre2; };
     chow-centaur = final.callPackage "${inputs.audio}/chow/chow-centaur.nix" { };
@@ -143,7 +150,6 @@ let
     tauon = final.callPackage ../pkgs/tauon-darwin.nix { };
     splayer-next = final.callPackage ../pkgs/splayer-next-darwin { };
     spotatui = final.callPackage ../pkgs/spotatui { };
-    t3code = t3code.t3code-nightly;
     jellyfin-web = inputs.nixos-jellyfin.packages.${system}.jellyfin-web.override {
       forceEnableBackdrops = true;
       forceDisablePreferFmp4 = true;

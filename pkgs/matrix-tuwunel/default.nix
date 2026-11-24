@@ -17,8 +17,9 @@
       hash = "sha256-klBp0a9ad+TTNr5t3CDhCpM/t5Ndqw3FIxVvm6kMmvA=";
     };
     cargoHash = "sha256-f7864AwkfSnYLYuFjHLXGKmf+vZoSp4cm+ROIzXBeBw=";
-    cargoBuildFeatures = old.cargoBuildFeatures ++ ["s3_storage"];
-    cargoCheckFeatures = old.cargoCheckFeatures ++ ["s3_storage"];
+    # Without "email" Tuwunel refuses to start once smtp.connection_uri is set.
+    cargoBuildFeatures = old.cargoBuildFeatures ++ ["email" "s3_storage"];
+    cargoCheckFeatures = old.cargoCheckFeatures ++ ["email" "s3_storage"];
     # cargoSetupHook makes aws-lc-sys use the system library.
     buildInputs = (old.buildInputs or []) ++ [aws-lc jemalloc];
     # Both supported Linux targets use jevmalloc's unprefixed ABI. Its

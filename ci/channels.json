@@ -122,6 +122,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.llama-cpp-inkling",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.mcp-nix",
         "visibility": "public"
       },
@@ -263,18 +267,6 @@
       },
       {
         "attribute": "packages.aarch64-darwin.spotatui",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-darwin.t3code",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-darwin.t3code-nightly",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-darwin.t3code-server-nightly",
         "visibility": "public"
       },
       {
@@ -532,6 +524,14 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.llama-cpp-inkling",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.llama-cpp-inkling-vulkan",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.matrix-tuwunel",
         "visibility": "public"
       },
@@ -697,18 +697,6 @@
       },
       {
         "attribute": "packages.x86_64-linux.spotatui",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.x86_64-linux.t3code",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.x86_64-linux.t3code-nightly",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.x86_64-linux.t3code-server-nightly",
         "visibility": "public"
       },
       {
@@ -934,6 +922,14 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-linux.llama-cpp-inkling",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.llama-cpp-inkling-vulkan",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-linux.matrix-tuwunel",
         "visibility": "public"
       },
@@ -1063,14 +1059,6 @@
       },
       {
         "attribute": "packages.aarch64-linux.slskd-mcp",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-linux.t3code-nightly",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-linux.t3code-server-nightly",
         "visibility": "public"
       },
       {
