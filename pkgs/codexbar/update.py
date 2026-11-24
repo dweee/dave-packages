@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
-"""Update both Linux CodexBar CLI assets from one frozen stable release."""
+"""Update the CodexBar CLI source pin from one frozen stable release tag."""
 import argparse
-import base64
 import json
 import os
 from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 
 REPOSITORY = "steipete/CodexBar"
-ARCHITECTURES = {"x86_64-linux": "x86_64", "aarch64-linux": "aarch64"}
+# Package.resolved alone determines the SwiftPM vendor hash; nixpkgs comes from this flake.
+DEPS_EXPRESSION = '''
+{ flake, rev, narHash }:
+let
+  pkgs = (builtins.getFlake flake).inputs.nixpkgs.legacyPackages.${builtins.currentSystem};
+  src = builtins.fetchTree { type = "github"; owner = "steipete"; repo = "CodexBar"; inherit rev narHash; };
+in pkgs.fetchSwiftPMDeps { name = "codexbar-cli-swiftpm-deps"; inherit src; hash = ""; }
+'''
 
 
 def api(path):
@@ -59,56 +66,56 @@ def candidate(snapshot):
         obj = peeled["object"]
     if obj["type"] != "commit" or obj["sha"] != snapshot["upstreamRevision"]:
         raise ValueError("Upstream revision does not match the tag object")
-    assets = {}
-    selected = {}
-    for system, arch in ARCHITECTURES.items():
-        name = f"CodexBarCLI-{tag}-linux-{arch}.tar.gz"
-        matches = [item for item in release["assets"] if item["name"] == name]
-        if len(matches) != 1:
-            raise ValueError(f"Expected exactly one {system} CLI asset")
-        asset = matches[0]
-        url = f"https://github.com/{REPOSITORY}/releases/download/{tag}/{name}"
-        if asset["browser_download_url"] != url or not isinstance(asset["id"], int):
-            raise ValueError("Unexpected release asset identity or URL")
-        digest = asset.get("digest", "")
-        if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
-            raise ValueError("GitHub asset SHA256 is required")
-        sri = "sha256-" + base64.b64encode(bytes.fromhex(digest.split(":")[1])).decode()
-        assets[system] = {"name": name, "hash": sri}
-        selected[system] = asset
-    return {"version": tag[1:], "assets": assets}, selected
+    return {"version": tag[1:], "revision": snapshot["upstreamRevision"]}
+
+
+def source_hash(revision):
+    output = subprocess.run(["nix", "flake", "prefetch", "--json", f"github:{REPOSITORY}/{revision}"],
+                            check=True, capture_output=True, text=True, timeout=900)
+    fetched = json.loads(output.stdout)
+    if fetched.get("locked", {}).get("rev") != revision:
+        raise ValueError("Prefetched source does not match the release revision")
+    return fetched["hash"]
+
+
+def swiftpm_deps_hash(revision, narHash):
+    # A fixed-output build with an empty hash fails and reports the actual hash.
+    with tempfile.TemporaryDirectory() as directory:
+        expression = Path(directory) / "deps.nix"
+        expression.write_text(DEPS_EXPRESSION)
+        result = subprocess.run(["nix", "build", "--no-link", "--impure", "--file", str(expression),
+                                 "--argstr", "flake", "path:" + os.getcwd(), "--argstr", "rev", revision,
+                                 "--argstr", "narHash", narHash],
+                                capture_output=True, text=True, timeout=1800)
+    found = re.findall(r"got:\s+(sha256-[A-Za-z0-9+/]{43}=)", result.stderr)
+    if result.returncode == 0 or len(found) != 1:
+        raise ValueError("Could not determine the SwiftPM dependency hash")
+    return found[0]
 
 
 def update(pin_file, snapshot, apply=False):
     before = pin_file.read_bytes()
     current = json.loads(before)
-    proposed, assets = candidate(snapshot)
+    proposed = candidate(snapshot)
     report = {"package": "codexbar-cli", "oldVersion": current["version"],
               "newVersion": proposed["version"], "upstreamRevision": snapshot["upstreamRevision"],
-              "tag": snapshot["release"]["tag_name"], "changed": current != proposed,
-              "applied": False, "verifiedAssets": []}
+              "tag": snapshot["release"]["tag_name"],
+              "changed": {k: current.get(k) for k in proposed} != proposed, "applied": False}
     old = tuple(map(int, current["version"].split(".")))
     new = tuple(map(int, proposed["version"].split(".")))
     if new < old:
         raise ValueError("Refusing a release downgrade")
     if new == old:
-        if current != proposed:
-            raise ValueError("Published assets for the installed version changed; refusing replacement")
+        if current.get("revision") != proposed["revision"]:
+            raise ValueError("The installed release tag moved; refusing replacement")
         return report
     if not apply:
         return report
-    # Fetch actual bytes through maintained Nix tooling before changing any pin.
-    for system, asset in assets.items():
-        output = subprocess.run(["nix", "store", "prefetch-file", "--json", "--name", asset["name"],
-                                 asset["browser_download_url"]], check=True, capture_output=True,
-                                text=True, timeout=600)
-        fetched = json.loads(output.stdout)
-        if fetched["hash"] != proposed["assets"][system]["hash"]:
-            raise ValueError(f"Downloaded {system} asset does not match GitHub SHA256")
-        report["verifiedAssets"].append({"system": system, "id": asset["id"],
-                                         "hash": fetched["hash"], "storePath": fetched["storePath"]})
+    # Hash the source and its SwiftPM dependencies through Nix before changing any pin.
+    proposed["hash"] = source_hash(proposed["revision"])
+    proposed["swiftpmDepsHash"] = swiftpm_deps_hash(proposed["revision"], proposed["hash"])
     if pin_file.read_bytes() != before:
-        raise ValueError("Pin file changed during asset verification; preserving concurrent edit")
+        raise ValueError("Pin file changed during hashing; preserving concurrent edit")
     data = json.dumps(proposed, indent=2) + "\n"
     temporary = pin_file.with_name(pin_file.name + ".update.tmp")
     temporary.write_text(data)

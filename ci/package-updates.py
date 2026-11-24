@@ -93,16 +93,11 @@ def normalized(path, content):
             raise ValueError("Unexpected Flutter lock schema")
         return "<generated Flutter dependency lock>"
     if path == "pkgs/codexbar/cli-pin.json":
-        if set(value) != {"version", "assets"} or not SEMVER.fullmatch(value["version"]):
-            raise ValueError("Unexpected CodexBar pin schema")
-        if set(value["assets"]) != {"x86_64-linux", "aarch64-linux"}:
-            raise ValueError("Incomplete CodexBar native assets")
-        for system, asset in value["assets"].items():
-            arch = system.removesuffix("-linux")
-            if (set(asset) != {"name", "hash"} or not SRI.fullmatch(asset["hash"])
-                    or asset["name"] != f'CodexBarCLI-v{value["version"]}-linux-{arch}.tar.gz'):
-                raise ValueError("Invalid CodexBar asset pin")
-        return "<generated CodexBar pins>"
+        if (set(value) != {"version", "revision", "hash", "swiftpmDepsHash"} or not SEMVER.fullmatch(value["version"])
+                or not SHA.fullmatch(value["revision"]) or not SRI.fullmatch(value["hash"])
+                or not SRI.fullmatch(value["swiftpmDepsHash"])):
+            raise ValueError("Unexpected CodexBar source pin schema")
+        return "<generated CodexBar source pin>"
     if path == "pkgs/retro-rewind-pack/pin.json":
         if set(value) != {"version", "hash"} or not SEMVER.fullmatch(value["version"]) or not SRI.fullmatch(value["hash"]):
             raise ValueError("Unexpected Retro Rewind pin schema")

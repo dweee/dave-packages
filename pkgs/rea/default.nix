@@ -11,9 +11,13 @@
   makeBinaryWrapper,
   procps,
   util-linux,
+  swift,
+  apple-sdk,
+  # See runtime-tools.nix: false uses the Mac's xcrun swiftc at runtime.
+  bundleDarwinSwift ? true,
 }:
 let
-  runtimeTools = callPackage ./runtime-tools.nix { };
+  runtimeTools = callPackage ./runtime-tools.nix { inherit bundleDarwinSwift; };
   androidFixture = fetchurl {
     # REA's own independently hashed Android conformance target; never executed.
     url = "https://github.com/appium/android-apidemos/releases/download/v6.0.18/ApiDemos-debug.apk";
@@ -108,6 +112,11 @@ buildNpmPackage {
   doInstallCheck = true;
   installCheckPhase = ''
     runHook preInstallCheck
+    ${lib.optionalString (stdenv.hostPlatform.isDarwin && !bundleDarwinSwift) ''
+      # The sandbox hides the system compiler that xcrun finds at runtime, so
+      # only the smoke test (JADX compiles the process helper) uses Nix swift.
+      export REA_DARWIN_SWIFTC_PATH=${swift}/bin/swiftc SDKROOT=${apple-sdk.sdkroot}
+    ''}
     ${nodejs_24}/bin/node ${./smoke-test.mjs} "$out" ${androidFixture}
     runHook postInstallCheck
   '';
