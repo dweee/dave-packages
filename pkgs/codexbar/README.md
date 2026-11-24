@@ -19,12 +19,26 @@ printf '%s' "$UNLID_API_KEY" | codexbar config set-api-key --provider unlid --st
 codexbar usage --provider unlid
 ```
 
-`codexbar-plasmoid` applies `patches/summary-pace-markers.patch` to the pinned
-fork. The provider tabs and both overview bars use the same expected-usage
+`codexbar-plasmoid` applies presentation patches to the pinned fork. The
+provider tabs and overview bars use the same expected-usage
 markers and pace colors as the detailed provider cards. They follow **Show
 pace**, **Work days**, and the used/remaining display setting. Tabs use the
 window behind their percentage, including the weekly fallback. Missing,
 unknown, synthetic, exhausted, or ineligible windows have no pace marker.
+
+OpenCode Go's exhausted monthly quota overrides the panel percentage and reset
+countdown, and appears in the overview alongside the 5-hour and weekly windows.
+Both shorter windows say they are blocked by the monthly quota; their bars are
+dimmed and their pace forecasts are hidden until the monthly allowance resets.
+Cursor's lanes use the CLI's provider labels — **Total**, **Cursor**, and
+**Third Party** — in the card, overview, and quota notifications. Its unified
+weekly plan keeps the **Weekly** label.
+
+Antigravity's overview, tabs, and panel prefer Gemini's 5-hour and weekly
+quotas. Each cadence falls back to Claude/GPT when its Gemini reading is
+unavailable, with the overview label identifying the selected family. The
+**Lowest** panel mode compares these preferred windows. The detailed card
+continues to list both families.
 
 Build and run the packaged JavaScript checks with:
 
