@@ -3,19 +3,19 @@
     "launcher": {
       "assets": {
         "aarch64-darwin": {
-          "hash": "sha256-Tz3d3xwVhHS8+BGeIA1USiMjSeUkh7Xw9neYUs9OPsY=",
-          "url": "https://github.com/horizon-rust/horizon/releases/download/launcher%400.2.107/horizon-launcher-macos-arm64.zip"
+          "hash": "sha256-3TenBqNsK+q1UnsrISNmfE8/r0ZoMHjpgW0JALcRhQ8=",
+          "url": "https://github.com/horizon-rust/horizon/releases/download/launcher%400.2.108/horizon-launcher-macos-arm64.zip"
         },
         "x86_64-darwin": {
-          "hash": "sha256-zvTTumWQvkReVRbQxC+L7heGVUE9xvSbWUxKv6NMZ/c=",
-          "url": "https://github.com/horizon-rust/horizon/releases/download/launcher%400.2.107/horizon-launcher-macos-x64.zip"
+          "hash": "sha256-CD2sWE/u3K+M+pSZeiGJV0WyaKhprEL2WKhg2rRwSfg=",
+          "url": "https://github.com/horizon-rust/horizon/releases/download/launcher%400.2.108/horizon-launcher-macos-x64.zip"
         },
         "x86_64-linux": {
-          "hash": "sha256-5Ga6U+ZUq/TYpYvZF3xfohLZ3dbcVj8y7PuMTzN656o=",
-          "url": "https://github.com/horizon-rust/horizon/releases/download/launcher%400.2.107/horizon-launcher-linux-x86_64.tar.gz"
+          "hash": "sha256-qX94e/vOab9W83ppv0SeDZp+9037y5B4ZakTsiaRo2U=",
+          "url": "https://github.com/horizon-rust/horizon/releases/download/launcher%400.2.108/horizon-launcher-linux-x86_64.tar.gz"
         }
       },
-      "version": "0.2.107"
+      "version": "0.2.108"
     },
     "stable": {
       "game": {
@@ -86,10 +86,10 @@
   },
   "game": {
     "head": {
-      "cargoHash": "sha256-NgI2OfPGNJ6Au8IdfWo255APzS507+mZ+GAYFdC6gT0=",
-      "hash": "sha256-yxY++BkP0sqqrDg6zBYlf9LxCVz24nuc5W8f3cSFUAM=",
-      "rev": "03cbeb4b93d3572c2c3a3e5ef5031920bb81b722",
-      "version": "0-unstable-2026-11-23"
+      "cargoHash": "sha256-XJ7tixrPQY6UCBjm8SLatnYnE7bfJHDyKIQ1grQFVbQ=",
+      "hash": "sha256-nKmy8b/Yn0eyBwC6f7OlLjcOIYV09Q5aUqU+nvAgQKc=",
+      "rev": "0177efc644c9b4b4130ce8a3b48c5d50b79d543b",
+      "version": "0-unstable-2026-11-24"
     },
     "stable": {
       "cargoHash": "sha256-AntMEaWFflhCUx0SpUvi/sKyuOADh9cnk2OBzG7b2J8=",
@@ -111,16 +111,16 @@
   "launcher": {
     "head": {
       "cargoHash": "sha256-xzTGNEacKbZkYd3SQUMKoqaJ2Tf/KSJdrWcQgAmTK4s=",
-      "hash": "sha256-yxY++BkP0sqqrDg6zBYlf9LxCVz24nuc5W8f3cSFUAM=",
-      "rev": "03cbeb4b93d3572c2c3a3e5ef5031920bb81b722",
-      "version": "0.2.107-unstable-2026-11-23"
+      "hash": "sha256-nKmy8b/Yn0eyBwC6f7OlLjcOIYV09Q5aUqU+nvAgQKc=",
+      "rev": "0177efc644c9b4b4130ce8a3b48c5d50b79d543b",
+      "version": "0.2.108-unstable-2026-11-24"
     },
     "stable": {
-      "cargoHash": "sha256-1aKxEy4ICZlrjwYtT3gaGer2H64mTYbHeHyMtBjMQQI=",
-      "hash": "sha256-IeYWiXRsTSWtc1InbinNnrDsUP6G/hlE1yWQBOUfCJU=",
-      "release": "0.2.107",
-      "rev": "41d546ef2f95465e45091accad4777c45a391b81",
-      "version": "0.2.107"
+      "cargoHash": "sha256-xzTGNEacKbZkYd3SQUMKoqaJ2Tf/KSJdrWcQgAmTK4s=",
+      "hash": "sha256-OmhaPR7JO75rhly2dhByDzEzBkBnuk5iMbSuQpYtazg=",
+      "release": "0.2.108",
+      "rev": "7954f21558d9b9a0b782af03c28726cc96d43bad",
+      "version": "0.2.108"
     }
   },
   "mixins": {
@@ -129,5 +129,5 @@
     "rev": "e59da9094f0c2fdda6c627fe9eff22dec6a906f0",
     "version": "0.6.0-unstable-2026-11-09"
   },
-  "updated": "2026-11-23"
+  "updated": "2026-11-24"
 }
