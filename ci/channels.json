@@ -122,6 +122,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.llama-cpp-inkling",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.mcp-nix",
         "visibility": "public"
       },
@@ -520,6 +524,14 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.llama-cpp-inkling",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.llama-cpp-inkling-vulkan",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.matrix-tuwunel",
         "visibility": "public"
       },
@@ -907,6 +919,14 @@
       },
       {
         "attribute": "packages.aarch64-linux.linux-android-avf",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.llama-cpp-inkling",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.aarch64-linux.llama-cpp-inkling-vulkan",
         "visibility": "public"
       },
       {

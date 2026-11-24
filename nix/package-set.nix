@@ -35,6 +35,15 @@ let
     )
     + "-${inputs.mkw-recomp-src.shortRev}";
   definitions = {
+    llama-cpp-inkling = import ../pkgs/llama-cpp-inkling {
+      pkgs = prev;
+      upstream = inputs.llama-cpp-inkling;
+    };
+    llama-cpp-inkling-vulkan = import ../pkgs/llama-cpp-inkling {
+      pkgs = prev;
+      upstream = inputs.llama-cpp-inkling;
+      useVulkan = true;
+    };
     hookshot = final.callPackage ../pkgs/hookshot {
       src = inputs.hookshot-src;
       version = hookshotVersion;
