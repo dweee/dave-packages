@@ -329,13 +329,13 @@
         "rev": "db35b122a93ea15d536842d19b77fd1f14301853",
         "revCount": 2297,
         "type": "git",
-        "url": "https://git.notrexed.dev/Hookshot/Hookshot.git"
+        "url": "https://github.com/ItsNotRexed/Hookshot.git"
       },
       "original": {
         "ref": "main",
         "rev": "db35b122a93ea15d536842d19b77fd1f14301853",
         "type": "git",
-        "url": "https://git.notrexed.dev/Hookshot/Hookshot.git"
+        "url": "https://github.com/ItsNotRexed/Hookshot.git"
       }
     },
     "import-tree": {
