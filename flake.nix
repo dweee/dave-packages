@@ -7,7 +7,7 @@
     };
     nixpkgs.url = "github:nixos/nixpkgs/2786a2a72088ecf32aea5b3ec52099e6a7cff78f";
     nix-zed-extensions = {
-      url = "github:SwornSystems/nix-zed-extensions/174e3c8db102500e006538331fba46d3fc45b543";
+      url = "github:SwornSystems/nix-zed-extensions/0ca9e9c917b649b074080fec0247c00ee77dd3cd";
       flake = false;
     };
     mcp-nix = {
@@ -56,10 +56,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/ea2084066e0f3fed86a76a2654658ed2eb998046";
+      url = "github:oxalica/rust-overlay/639e209cc8eecd0c307fd95c8aabc011bf047c41";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/ce9fc27f80cee11ec0c9a8e7723fe680bd5ec7f8";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/0f7e55350d932eeae7a781ecebc2d757f4297ef5";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -74,7 +74,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=444343ce12587234c17026cc32390525ed852b17";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=bea841651333ca481313532cbe740e6c460a554d";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
@@ -124,7 +124,7 @@
       flake = false;
     };
     mkw-recomp-src = {
-      url = "github:adriadam10/mkw-recomp/a10de49f2e2ea1badbb898ee1a249df4e24213a7";
+      url = "github:adriadam10/mkw-recomp/dbf523bc93d4d9baae55049e311b8b051bf6813b";
       flake = false;
     };
     # Swift and SwiftPM 6.2.4+ are required by Pared.

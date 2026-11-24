@@ -10,7 +10,7 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "codexbar-plasmoid";
-  version = "0.7.1-dave.1";
+  version = "0.7.1-dave.2";
 
   src = fetchFromGitHub {
     owner = "dweee";
@@ -20,7 +20,10 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     hash = "sha256-rUfQBM6VLkV1wDNNjDMVSBrCRUvzsMMhrbgvjjXfPMQ=";
   };
 
-  patches = [ ./patches/summary-pace-markers.patch ];
+  patches = [
+    ./patches/summary-pace-markers.patch
+    ./patches/quota-presentation.patch
+  ];
 
   dontBuild = true;
 
