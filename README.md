@@ -34,13 +34,6 @@ backend limitations. Package installation does not edit client configuration.
 Raw REA's install check covers MCP initialization, tool discovery and native PTY
 creation. The composed headless check also compiles and executes recovered C.
 
-## T3 Code
-
-`t3code-nightly` and `t3code-server-nightly` share a source-build override with
-the Cursor Max Mode backport. Both are built by the native catalog runners.
-See [the package notes](pkgs/t3code/README.md) for the upstream fix, version,
-context-tier behavior and NixOS/nix-darwin/Home Manager consumption.
-
 On Darwin the overlay's `spotify` excludes `favicon.ico` from LLVM stripping:
 the strip tool mistakes its ICO header for COFF and corrupts/expands the icon.
 Spicetify inherits the exclusion. This unfree package is exposed through

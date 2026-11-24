@@ -266,18 +266,6 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.aarch64-darwin.t3code",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-darwin.t3code-nightly",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-darwin.t3code-server-nightly",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.aarch64-darwin.tabrix",
         "visibility": "public"
       },
@@ -700,18 +688,6 @@
         "visibility": "public"
       },
       {
-        "attribute": "packages.x86_64-linux.t3code",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.x86_64-linux.t3code-nightly",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.x86_64-linux.t3code-server-nightly",
-        "visibility": "public"
-      },
-      {
         "attribute": "packages.x86_64-linux.tabrix",
         "visibility": "public"
       },
@@ -1063,14 +1039,6 @@
       },
       {
         "attribute": "packages.aarch64-linux.slskd-mcp",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-linux.t3code-nightly",
-        "visibility": "public"
-      },
-      {
-        "attribute": "packages.aarch64-linux.t3code-server-nightly",
         "visibility": "public"
       },
       {
