@@ -90,9 +90,11 @@ await new Promise((resolve, reject) => {
 console.log("CLI aliases, direct dispatcher, and native PTY passed");
 
 // Obtain the actual installed child environment, with no ambient tools/settings.
-// This also exercises the native Darwin interpreter wrapper.
+// This also exercises the native Darwin interpreter wrapper. A check-only
+// REA_DARWIN_SWIFTC_PATH (bundleDarwinSwift = false) stands in for the system
+// compiler that the build sandbox hides.
 const cleanEnv = Object.fromEntries(Object.entries(env).filter(([key]) =>
-  !key.startsWith("REA_") && key !== "JAVA_HOME"));
+  (!key.startsWith("REA_") || key === "REA_DARWIN_SWIFTC_PATH") && key !== "JAVA_HOME"));
 const wrappedNode = join(out, "libexec/rea-node");
 const runtime = JSON.parse(execFileSync(wrappedNode,
   ["-e", "console.log(JSON.stringify(process.env))"], { env: cleanEnv, encoding: "utf8" }));

@@ -175,7 +175,7 @@ jobs:
     - name: Save selected runtime closures independently of cache publication
       timeout-minutes: 15
       env:
-        MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'handy' && '10240' || matrix.package == 'yaas' && (vars.YAAS_MAX_CLOSURE_MIB || '16384') || (vars.MAX_CLOSURE_MIB || '4096') }}
+        MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'linkwarden' && '8192' || matrix.package == 'handy' && '10240' || matrix.package == 'yaas' && (vars.YAAS_MAX_CLOSURE_MIB || '16384') || (vars.MAX_CLOSURE_MIB || '4096') }}
       run: python3 ci/transfer-closures.py export --directory closure-transfer --manifest cache-outputs.txt
       id: cache_transfer
       if: ${{ always() && !cancelled() && !matrix.build_only && hashFiles('cache-outputs.txt') != '' }}
@@ -234,7 +234,7 @@ jobs:
     - name: Import data without running any package programs
       timeout-minutes: 15
       env:
-        MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'handy' && '10240' || matrix.package == 'yaas' && (vars.YAAS_MAX_CLOSURE_MIB || '16384') || (vars.MAX_CLOSURE_MIB || '4096') }}
+        MAX_CLOSURE_MIB: ${{ startsWith(matrix.package, 'rea') && (vars.REA_MAX_CLOSURE_MIB || '16384') || matrix.package == 'linkwarden' && '8192' || matrix.package == 'handy' && '10240' || matrix.package == 'yaas' && (vars.YAAS_MAX_CLOSURE_MIB || '16384') || (vars.MAX_CLOSURE_MIB || '4096') }}
       run: python3 ci/transfer-closures.py import --directory closure-transfer
     - name: Publish to Niks3 with GitHub OIDC and verify S3 integrity
       run: python3 ci/push-niks3.py --outputs closure-transfer/outputs.txt

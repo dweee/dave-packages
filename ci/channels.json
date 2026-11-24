@@ -30,6 +30,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.fastfetch",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.gdb-mcp",
         "visibility": "public"
       },
@@ -484,6 +488,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.x86_64-linux.linkwarden",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.x86_64-linux.jellyfin-web",
         "visibility": "public"
       },
@@ -649,6 +657,10 @@
       },
       {
         "attribute": "packages.x86_64-linux.redlib",
+        "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.rustdesk-flutter",
         "visibility": "public"
       },
       {
