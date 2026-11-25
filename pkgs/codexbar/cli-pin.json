@@ -1,6 +1,6 @@
 {
-  "version": "0.84.0",
-  "revision": "5bebf9a05e68059eae11d5031c7239f1aa1d49ef",
-  "hash": "sha256-tfx6eCGbUpmswA4AxMfx8mbrw//lyhNRthx9zHjzSQQ=",
-  "swiftpmDepsHash": "sha256-R5cEV+dsLo0tR/asknINSFSQDUHl1rSsS/JfG/ciWj4="
+  "version": "0.85.0",
+  "revision": "5dd48cab770a326691b25a124d37ffee12c5f7ac",
+  "hash": "sha256-2v/sHIRMg13E3gUvGdCcqZnuYXDm2JVat+hcCBnvQok=",
+  "swiftpmDepsHash": "sha256-2otVZ3y+ZM0pSaeesp3SeWLTJPEzR1R79S9LydB76UU="
 }
