@@ -306,17 +306,17 @@
     "handy-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1794391892,
-        "narHash": "sha256-JdUEWp3OkoSf/76+95eDIzuy3/YwYq4p5VXOjDxaQpE=",
+        "lastModified": 1795489740,
+        "narHash": "sha256-yvbCDA6pjN8y+Ft8HpZxR180aigTHVuZfUbIEWGMsLo=",
         "owner": "cjpais",
         "repo": "Handy",
-        "rev": "f2483011d60fccab639d3c33f40b3456e92f2940",
+        "rev": "a822741f9c697b6f6a00c557e4817bf59ae70867",
         "type": "github"
       },
       "original": {
         "owner": "cjpais",
         "repo": "Handy",
-        "rev": "f2483011d60fccab639d3c33f40b3456e92f2940",
+        "rev": "a822741f9c697b6f6a00c557e4817bf59ae70867",
         "type": "github"
       }
     },

@@ -33,7 +33,7 @@
       inputs.uv2nix.follows = "uv2nix";
     };
     handy-src = {
-      url = "github:cjpais/Handy/f2483011d60fccab639d3c33f40b3456e92f2940";
+      url = "github:cjpais/Handy/a822741f9c697b6f6a00c557e4817bf59ae70867";
       flake = false;
     };
     # Preserve the toolchain used to build Handy 0.10.0.
