@@ -33,7 +33,7 @@
       inputs.uv2nix.follows = "uv2nix";
     };
     handy-src = {
-      url = "github:cjpais/Handy/f2483011d60fccab639d3c33f40b3456e92f2940";
+      url = "github:cjpais/Handy/a822741f9c697b6f6a00c557e4817bf59ae70867";
       flake = false;
     };
     # Preserve the toolchain used to build Handy 0.10.0.
@@ -56,10 +56,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/639e209cc8eecd0c307fd95c8aabc011bf047c41";
+      url = "github:oxalica/rust-overlay/67021b279bfffe654a0201ede805748a255ae5a7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/56700ee7b6b32dfc4a4da3bdda7696dae339d800";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/35aae783da597ade51b29ffaac0db4e659a56702";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -68,7 +68,7 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/920a3823872b21640181fe8065a5fb35fcb06e3f";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/7c2981ca35651aa3aae60531a9c605a3750cc889";
     darwin = {
       url = "github:nix-darwin/nix-darwin/663d8b962a11cda261b6e9f14e03911fac94baf0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -78,7 +78,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=5b578859f18e9832978f9147ea12240560ddc2bb";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=d7a0167d329b598b65a203351ab0184e92ab7bf0";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
@@ -124,7 +124,7 @@
       flake = false;
     };
     mkw-recomp-src = {
-      url = "github:adriadam10/mkw-recomp/14fe63bbd1fca1f0eb50967577957e46ef834d43";
+      url = "github:adriadam10/mkw-recomp/674af978c80be2c4d97533866a646425421926a7";
       flake = false;
     };
     # Swift and SwiftPM 6.2.4+ are required by Pared.

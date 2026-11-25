@@ -20,7 +20,7 @@
       "source": "github:NixOS/nixpkgs/40aa5a0e9ff16a78d4b5d5c39e72f0382cb44061"
     },
     "handy-src": {
-      "source": "github:cjpais/Handy/f2483011d60fccab639d3c33f40b3456e92f2940"
+      "source": "github:cjpais/Handy/a822741f9c697b6f6a00c557e4817bf59ae70867"
     },
     "hookshot-src": {
       "source": "git+https://github.com/ItsNotRexed/Hookshot.git?ref=main"
