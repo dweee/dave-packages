@@ -59,7 +59,7 @@
       url = "github:oxalica/rust-overlay/639e209cc8eecd0c307fd95c8aabc011bf047c41";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/0f7e55350d932eeae7a781ecebc2d757f4297ef5";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/56700ee7b6b32dfc4a4da3bdda7696dae339d800";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -107,7 +107,7 @@
       flake = false;
     };
     ghidra-mcp = {
-      url = "github:bethington/ghidra-mcp/a57b56d71fffd5ea2560625521246014518575a7";
+      url = "github:bethington/ghidra-mcp/5bcb9e98b0cb135cbf7521494d1134f6877caf33";
       flake = false;
     };
     # Jellarr's own flake: consumers take its NixOS module from this same pin.
@@ -124,7 +124,7 @@
       flake = false;
     };
     mkw-recomp-src = {
-      url = "github:adriadam10/mkw-recomp/dbf523bc93d4d9baae55049e311b8b051bf6813b";
+      url = "github:adriadam10/mkw-recomp/14fe63bbd1fca1f0eb50967577957e46ef834d43";
       flake = false;
     };
     # Swift and SwiftPM 6.2.4+ are required by Pared.
