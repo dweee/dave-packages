@@ -6,6 +6,7 @@
   cmake,
   ninja,
   python314,
+  p7zip,
   file,
   src,
   version,
@@ -13,6 +14,7 @@
 let
   buildPins = lib.importJSON ./windows-build-inputs.json;
   setupPins = lib.importJSON ./windows-setup-inputs.json;
+  clangVersion = setupPins.llvm-clang.version;
   llvm-mingw = callPackage ../llvm-mingw.nix {
     version = "20261020";
     hash = buildPins.llvm-mingw.sha256;
@@ -48,6 +50,7 @@ stdenvNoCC.mkDerivation {
     cmake
     ninja
     python314
+    p7zip
     file
   ];
   dontConfigure = true;
@@ -64,10 +67,17 @@ stdenvNoCC.mkDerivation {
     mkdir -p build/win/dl build/dist/dl
     ${stage "build/win/dl" buildPins}
     ${stage "build/dist/dl" setupPins}
+    # llvm_clang.py uses an extracted-binary cache before fetching its installer.
+    clangCache=build/dist/dl/llvm-${clangVersion}-windows
+    mkdir -p "$clangCache"
+    7z e -y "-o$clangCache" build/dist/dl/LLVM-${clangVersion}-win64.exe bin/clang.exe >/dev/null
+    test -s "$clangCache/clang.exe"
     ln -s ${llvm-mingw} build/win/llvm-mingw
     python3 -I tools/build/windeps.py
     python3 -I tools/build/build.py --target windows --dist --runtime-only --jobs "$NIX_BUILD_CORES"
-    python3 -I tools/build/dist.py --target windows
+    # Keep Python's environment and user site isolated while allowing the
+    # pinned dist.py to import its sibling llvm_clang.py.
+    python3 -Es tools/build/dist.py --target windows
     runHook postBuild
   '';
 
@@ -76,6 +86,7 @@ stdenvNoCC.mkDerivation {
     dist=build/dist/windows
     file "$dist/mkw.exe" | grep -E 'PE32\+.*x86-64'
     test -s "$dist/setup/lib/crt/link.json"
+    test -s "$dist/setup/clang/clang.exe"
     test -f "$dist/setup/src/tools/prepare/prepare.py"
     mkdir -p "$out" "$out/share/licenses/mkw-recomp"
     cp -a "$dist/." "$out/"
