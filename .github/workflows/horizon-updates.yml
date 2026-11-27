@@ -1,13 +1,9 @@
 name: Horizon updates
-# Scheduled Horizon maintenance runs with the other handlers in package-updates.yml.
-# Keep this manual entry point; use the same guarded publisher and routine PR.
 on:
   workflow_dispatch:
-permissions:
-  contents: write
-  pull-requests: write
-  actions: write
+permissions: {}
 jobs:
-  update:
-    uses: ./.github/workflows/package-updates.yml
-    secrets: inherit
+  paused:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'Horizon updates are paused while the upstream repository and release downloads are unavailable.'

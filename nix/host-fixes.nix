@@ -46,8 +46,10 @@ final: prev: {
     nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.removeReferencesTo ];
     postFixup = (old.postFixup or "") + ''
       find "$out" -name librustdesk.so -type f | while IFS= read -r so; do
-        grep -aoE "$NIX_STORE/[a-z0-9]{32}-(rustc|gcc)-[0-9.]+(-lib)?" "$so" | sort -u \
-          | grep -vE -- '-lib$' | while IFS= read -r ref; do
+        # grep exits 1 when the library contains no compiler references.
+        { grep -aoE "$NIX_STORE/[a-z0-9]{32}-(rustc|gcc)-[0-9.]+(-lib)?" "$so" || test "$?" -eq 1; } \
+          | sort -u | while IFS= read -r ref; do
+            case "$ref" in *-lib) continue ;; esac
             remove-references-to -t "$ref" "$so"
           done
       done

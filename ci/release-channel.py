@@ -279,6 +279,11 @@ def policy():
         owners = ({p for entry in json.loads(owners_file.read_text()).values() for p in entry['packages']}
                   if owners_file.exists() and not value.get('integrationInventory') else set())
         expected = {'packages.'+s+'.'+p for s, ps in inventory.items() for p in ps if p not in owners}
+        paused = set(value.get('pausedPackages', []))
+        paused_targets = {target for target in expected if target.rsplit('.', 1)[-1] in paused}
+        if paused != {target.rsplit('.', 1)[-1] for target in paused_targets}:
+            raise ValueError('Paused packages must belong to the catalog native inventory')
+        expected -= paused_targets
         build_only_file = ROOT / 'nix/build-only-packages.json'
         if build_only_file.exists():
             build_only = {'packages.'+s+'.'+p for s, ps in json.loads(build_only_file.read_text()).items() for p in ps}

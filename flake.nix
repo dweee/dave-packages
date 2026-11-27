@@ -5,9 +5,9 @@
       url = "github:ggml-org/llama.cpp/29b52d398b294509746ec0a3f28948a3107c0213";
       flake = false;
     };
-    nixpkgs.url = "github:nixos/nixpkgs/0bb8272318b4ca41bf0edc6224df3e3e3046b70d";
+    nixpkgs.url = "github:nixos/nixpkgs/2786a2a72088ecf32aea5b3ec52099e6a7cff78f";
     nix-zed-extensions = {
-      url = "github:SwornSystems/nix-zed-extensions/8d338ca70f5a269bf2edf885fce8ae2f43442778";
+      url = "github:SwornSystems/nix-zed-extensions/0ca9e9c917b649b074080fec0247c00ee77dd3cd";
       flake = false;
     };
     mcp-nix = {
@@ -52,14 +52,14 @@
     };
     # Retain the packaging flake's Node/pnpm pin and fixed dependency hashes.
     nixos-jellyfin = {
-      url = "github:matt1432/nixos-jellyfin/2b464890ce33c84b5affdcfa98ed62b03f0d3fe0";
+      url = "github:matt1432/nixos-jellyfin/c93abed0d744ab1a5cd9369ced8e523b8108a9b8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/a5c999945da3991d7aa3cc2a6075cfd22bd387e9";
+      url = "github:oxalica/rust-overlay/67021b279bfffe654a0201ede805748a255ae5a7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/c8fe2d78b0617d8f6e52041e57d90a6ffe0573ac";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/35aae783da597ade51b29ffaac0db4e659a56702";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -68,26 +68,26 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/ffdb35a774334ae2f1aca81817f5f5519edbadd5";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/7c2981ca35651aa3aae60531a9c605a3750cc889";
     darwin = {
-      url = "github:nix-darwin/nix-darwin/ff0e21a414d4547183396da1b44a66f2577b65e9";
+      url = "github:nix-darwin/nix-darwin/663d8b962a11cda261b6e9f14e03911fac94baf0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=037279521417aba9d1d672e7f6623d947a577ebd";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=bea841651333ca481313532cbe740e6c460a554d";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=b55832adfeb6705e2e0ccd2259793c214d60befa";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=d7a0167d329b598b65a203351ab0184e92ab7bf0";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
     tabrix = {
-      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=78d2b633385355547c869b6ced8b1e99b039012e";
+      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=d247b03664254b787a5d478adcf8883da358dac9";
     };
     rekordbox-mcp = {
-      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=429a2cf0409c37e1b5c75f1b0ac0159236fd6cf3";
+      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=9e4562e2150048b44f4b2d96d435a2b77f4f01a3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kuna-src = {
@@ -95,7 +95,7 @@
       flake = false;
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=019b74e8fc9339f314d8ef7797468e5447914c76&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=f79fee114e2fe66dfa180c346f8d1d195f13310b&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
@@ -107,7 +107,7 @@
       flake = false;
     };
     ghidra-mcp = {
-      url = "github:bethington/ghidra-mcp/a57b56d71fffd5ea2560625521246014518575a7";
+      url = "github:bethington/ghidra-mcp/5bcb9e98b0cb135cbf7521494d1134f6877caf33";
       flake = false;
     };
     # Jellarr's own flake: consumers take its NixOS module from this same pin.
@@ -116,15 +116,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wiicompiled = {
-      url = "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&rev=ffbde831317c2a3fc7841f53e7244db83f024ff2&submodules=1";
+      url = "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&rev=6e41ad0495e9bb6e7c85817392ffc9a6711c38f9&submodules=1";
       flake = false;
     };
     hookshot-src = {
-      url = "git+https://github.com/ItsNotRexed/Hookshot.git?ref=main&rev=db35b122a93ea15d536842d19b77fd1f14301853";
+      url = "git+https://github.com/ItsNotRexed/Hookshot.git?ref=main&rev=38b90dfe70abcd9e9a9c09d17b70808c16f0153d";
       flake = false;
     };
     mkw-recomp-src = {
-      url = "github:adriadam10/mkw-recomp/8dd78017067221c76b79a7463026d64fc07034df";
+      url = "github:adriadam10/mkw-recomp/674af978c80be2c4d97533866a646425421926a7";
       flake = false;
     };
     # Swift and SwiftPM 6.2.4+ are required by Pared.
