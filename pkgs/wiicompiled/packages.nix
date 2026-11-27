@@ -2,6 +2,12 @@
 let
   inherit (final) lib;
   sources = import ./sources.nix { inherit lib root; };
+  launcherProps = builtins.readFile (root + "/Launcher/Directory.Build.props");
+  versionMatch = builtins.match ".*<Version>([^<[:space:]]+)</Version>.*" launcherProps;
+  version =
+    if versionMatch == null
+    then throw "WiiCompiled Launcher/Directory.Build.props is missing the product version"
+    else builtins.head versionMatch;
 in
 {
   wiicompiled = final.callPackage
@@ -18,7 +24,7 @@ in
   };
   wiicompiled-setup =
     if final.stdenv.hostPlatform.isDarwin then
-      final.callPackage ./setup-macos.nix { src = sources.setup; }
+      final.callPackage ./setup-macos.nix { src = sources.setup; inherit version; }
     else
-      final.callPackage ./setup.nix { src = sources.setup; };
+      final.callPackage ./setup.nix { src = sources.setup; inherit version; };
 }

@@ -28,10 +28,15 @@ in
   mkw-recomp-setup-layout = pkgs.runCommand "mkw-recomp-setup-layout" { } ''
     s=${pkgs.mkw-recomp}/share/mkw-recomp/setup
     $s/python/bin/python3 -I -c 'import numpy, lz4'
+    $s/python/bin/python3 -I -c 'import sys; sys.path.insert(0, sys.argv[1]); import game_fonts' "$s/src/tools/i18n"
     test -f $s/src/tools/prepare/prepare.py
     test -f $s/zig/lib/std/std.zig
     $s/zig/zig version
     $s/glslc/bin/glslc --version
+    $s/glslc/bin/glslangValidator --version
+    test -x "$s/glslc/bin/spirv-cross"
+    $s/glslc/bin/spirv-opt --version
+    $s/glslc/bin/spirv-val --version
     test -f $s/glslc/lib/libshaderc_shared.so.1
     touch $out
   '';
