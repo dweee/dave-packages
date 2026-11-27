@@ -74,18 +74,14 @@ jobs:
         run: |
           nix develop --no-update-lock-file --no-write-lock-file .#package-updates --command \
             python3 ci/package-updates.py prepare --handler "$SELECTED_HANDLER" --proposal "$RUNNER_TEMP/package-update-proposal.json"
-      - name: Preserve Horizon recipe and public dependency gates before publication
+      - name: Verify public dependency gates before publication
         run: |
-          for system in x86_64-linux aarch64-linux aarch64-darwin; do
-            nix eval --json ".#legacyPackages.$system.horizonPackages.packages" \
-              --apply "ps: builtins.mapAttrs (_: p: p.drvPath) (builtins.removeAttrs ps (builtins.filter (n: !(builtins.elem \"$system\" ps.\${n}.meta.platforms)) (builtins.attrNames ps)))" > /dev/null
-          done
           python3 - <<'PYTHON'
           import json, subprocess
           policy = json.load(open('ci/channels.json'))
           for system, targets in policy['targets'].items():
               for target in targets:
-                  if target['visibility'] == 'public' and (target['attribute'].rsplit('.', 1)[-1].startswith('horizon') or target['attribute'].rsplit('.', 1)[-1] in {'byparr', 'trawl', 'lightning-matrix-client'}):
+                  if target['visibility'] == 'public' and target['attribute'].rsplit('.', 1)[-1] in {'byparr', 'trawl', 'lightning-matrix-client'}:
                       subprocess.run(['python3', 'ci/public-closure.py', '.#' + target['attribute']], check=True)
           for target in ['.#packages.x86_64-linux.byparr.geoipMmdbZip', '.#packages.x86_64-linux.trawl.camoufox-bin.geoip']:
               subprocess.run(['python3', 'ci/public-closure.py', target], check=True)

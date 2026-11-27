@@ -8,11 +8,6 @@
     ],
     [
       "python3",
-      "pkgs/horizon/update.py",
-      "--check"
-    ],
-    [
-      "python3",
       "pkgs/wiicompiled/update.py",
       "--check"
     ]

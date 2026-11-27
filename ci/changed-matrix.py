@@ -50,8 +50,15 @@ def inventory_at(revision, family):
     inventory = read(filename)
     owners = set() if family == 'cache-only' else {
         name for info in read('forks.json').values() for name in info['packages']}
+    paused = set()
+    if family != 'cache-only':
+        policy_path = 'ci/channels.json'
+        if subprocess.check_output(['git', 'ls-tree', revision, '--', policy_path], cwd=ROOT):
+            policy = json.loads(subprocess.check_output(
+                ['git', 'show', f'{revision}:{policy_path}'], cwd=ROOT, text=True))
+            paused = set(policy.get('pausedPackages', []))
     return {(system, name) for system, names in inventory.items() for name in names
-            if name not in owners}
+            if name not in owners and name not in paused}
 
 
 def metadata_only(paths):

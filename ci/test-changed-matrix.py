@@ -95,12 +95,13 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'unavailable'):
             self.matrix.matrix('others', 'missing')
 
-    def test_real_inventory_covers_every_unforked_package_once(self):
+    def test_real_inventory_covers_every_active_unforked_package_once(self):
         real = load(CI / 'matrix.py', 'real_matrix')
         platforms = json.loads((ROOT / 'nix/platforms.json').read_text())
         forks = {n for info in json.loads((ROOT / 'nix/forks.json').read_text()).values() for n in info['packages']}
+        paused = set(json.loads((ROOT / 'ci/channels.json').read_text()).get('pausedPackages', []))
         expected = sorted((system, name) for system, names in platforms.items() for name in names
-                          if name not in forks)
+                          if name not in forks and name not in paused)
         found = jobs(real.matrix('darwin')) + jobs(real.matrix('others'))
         self.assertEqual(sorted(found), expected)
         self.assertEqual(len(found), len(set(found)))
@@ -140,6 +141,19 @@ class DispatchScopeTests(unittest.TestCase):
         self.assertEqual(jobs(result), [('x86_64-linux', 'branch-new')])
         self.assertEqual(self.module.dispatched('darwin', 'changed', 'refs/heads/automation/input-updates', 'main'),
                          {'include': []})
+
+    def test_resuming_a_paused_package_schedules_its_existing_platforms(self):
+        policy = self.root / 'ci' / 'channels.json'
+        policy.write_text(json.dumps({'pausedPackages': ['shared']}))
+        git(self.root, 'add', 'ci/channels.json')
+        git(self.root, 'commit', '-qm', 'pause shared')
+        paused = git(self.root, 'rev-parse', 'HEAD')
+        self.assertNotIn('shared', {name for _, name in jobs(self.module.load_matrix('others', 'all'))})
+        git(self.root, 'rm', '-q', 'ci/channels.json')
+        git(self.root, 'commit', '-qm', 'resume shared')
+        resumed = git(self.root, 'rev-parse', 'HEAD')
+        self.assertEqual(jobs(self.module.changed('others', 'all', paused, resumed)),
+                         [('aarch64-linux', 'shared'), ('x86_64-linux', 'shared')])
 
     def test_main_merged_into_the_branch_is_not_rebuilt(self):
         git(self.root, 'checkout', '-q', 'main')

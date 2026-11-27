@@ -109,16 +109,37 @@ class Horizon(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 pub.normalized('pkgs/horizon/sources.json', json.dumps(bad).encode())
 
-    def test_workflows_reuse_guarded_publisher_without_legacy_closures(self):
+    def test_horizon_is_paused_without_removing_package_outputs(self):
+        platforms = json.loads((ROOT / 'nix/platforms.json').read_text())
+        horizon = {name for names in platforms.values() for name in names
+                   if name == 'horizon' or name.startswith('horizon-')}
+        self.assertIn('horizon', horizon)
+        rules = pub.channel.policy()
+        self.assertEqual(set(rules['pausedPackages']), horizon)
+        self.assertFalse(horizon & {
+            target['attribute'].rsplit('.', 1)[-1]
+            for targets in rules['targets'].values() for target in targets
+        })
+        for family in ('others', 'darwin'):
+            native = json.loads(subprocess.check_output(
+                ['python3', 'ci/matrix.py', family], cwd=ROOT, text=True))
+            self.assertTrue(native['include'])
+            self.assertFalse(horizon & {job['package'] for job in native['include']})
+        policy, _, allowed = pub.configuration()
+        self.assertNotIn('horizon', policy['handlers'])
+        self.assertNotIn('pkgs/horizon/sources.json', allowed)
+        monitor = json.loads((ROOT / 'ci/update-monitor.json').read_text())
+        self.assertFalse(any('pkgs/horizon/update.py' in command for command in monitor['checks']))
+
+    def test_manual_horizon_workflow_reports_pause(self):
         caller = (ROOT / '.github/workflows/horizon-updates.yml').read_text()
         workflow = (ROOT / '.github/workflows/package-updates.yml').read_text()
-        self.assertIn('uses: ./.github/workflows/package-updates.yml', caller)
-        self.assertNotIn('gh pr close', caller)
-        self.assertNotIn('automation/horizon-', caller)
+        self.assertIn('Horizon updates are paused', caller)
+        self.assertIn('permissions: {}', caller)
+        self.assertNotIn('uses:', caller)
         self.assertIn('workflow_call:', workflow)
         self.assertIn('ci/package-updates.py publish', workflow)
         self.assertIn('ci/public-closure.py', workflow)
-        self.assertIn('legacyPackages.$system.horizonPackages.packages', workflow)
 
 
 if __name__ == '__main__': unittest.main()
