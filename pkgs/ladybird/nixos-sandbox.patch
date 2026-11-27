@@ -1,0 +1,46 @@
+--- a/Services/Compositor/main.cpp
++++ b/Services/Compositor/main.cpp
+@@ -19,6 +19,9 @@
+ #include <LibCore/ResourceImplementationFile.h>
+ #include <LibCore/StatsLog.h>
+ #include <LibGfx/Font/Font.h>
++#ifdef USE_FONTCONFIG
++#    include <LibGfx/Font/GlobalFontConfig.h>
++#endif
+ #include <LibGfx/GpuDeviceIdentity.h>
+ #include <LibIPC/SingleServer.h>
+ #include <LibMain/Main.h>
+@@ -100,6 +103,12 @@
+     if (force_fontconfig)
+         Compositor::set_font_rasterizer(Compositor::FontRasterizer::FreeType);
+ 
++#ifdef USE_FONTCONFIG
++    // Parse system and user font rules before Landlock confines filesystem access.
++    // The compositor only queries these cached rules; font data arrives over IPC.
++    (void)Gfx::GlobalFontConfig::the();
++#endif
++
+ #if defined(AK_OS_LINUX)
+     // NB: The GPU driver starts threads, and Landlock does not confine a thread that already runs. Seccomp covers every
+     //     thread, so the rest of the sandbox can wait until the driver is done with the syscalls that only its setup uses.
+--- a/Libraries/LibSandbox/GpuDriverPaths.cpp
++++ b/Libraries/LibSandbox/GpuDriverPaths.cpp
+@@ -87,6 +87,8 @@
+     auto config_directories = environment_or("XDG_CONFIG_DIRS"sv, "/etc/xdg"sv);
+     for (auto directory : config_directories.split_view(':'))
+         vulkan_search_roots.append(directory);
++    // The Nix package supplies its driver manifests alongside their library closure.
++    vulkan_search_roots.append("@nixMesaShare@"sv);
+     vulkan_search_roots.append("/etc"sv);
+     vulkan_search_roots.append("/usr/local/etc"sv);
+     vulkan_search_roots.append(environment_or("XDG_DATA_HOME"sv, ByteString::formatted("{}/.local/share", home)));
+@@ -133,6 +135,9 @@
+     // The driver loads more libraries after Landlock is in place, and they must come from where the libraries that we
+     // already use came from. Otherwise the dynamic loader skips to another copy, such as the system's instead of our own.
+     TRY(add_loaded_library_directories(paths));
++    // Only immutable library directories from the packaged driver closure are added.
++    // Do not grant access to the whole Nix store or move GPU setup before Landlock.
++#include "NixGpuRuntimePaths.inc"
+     // cpptrace opens loaded ELF objects when symbolizing in-process stack traces, and drivers read it too.
+     TRY(add_landlock_path_if_exists(paths, TRY(Core::System::current_executable_path()), LandlockPath::Access::ReadOnly));
+     TRY(add_landlock_path_if_exists(paths, "/etc/glvnd"sv, LandlockPath::Access::ReadOnly));
