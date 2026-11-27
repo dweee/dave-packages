@@ -7,8 +7,8 @@
 # library, settings and caches, links setup/ there to the store, and starts it.
 #
 # setup/ as dist.py lays it out (tools/prepare/machine.py and runtime/ui/launcher/launcher_setup.cpp find it there):
-#   python/  Python 3.14 with numpy and lz4        zig/  zig and its lib/ (the game code's C compiler)
-#   glslc/   bin/glslc and lib/libshaderc_shared  src/  dist.SOURCES, the sources the setup runs
+#   python/  Python and setup dependencies    zig/  zig and its lib/ (the game code's C compiler)
+#   glslc/   shader and HDR tone-mapping tools  src/  dist.SOURCES, the sources the setup runs
 # NVIDIA's nvdisasm and ptxas (nvidia-tools.nix) go by MKW_NVIDIA_BIN (sm86/spec/spec.py), unfree and opt-in.
 # By default spec.py obtains them at runtime, which on NixOS needs nix-ld.
 #
@@ -30,6 +30,9 @@
   vulkan-loader,
   zig,
   shaderc,
+  glslang,
+  spirv-cross,
+  spirv-tools,
   libarchive,
   dbus,
   coreutils,
@@ -48,8 +51,17 @@ let
     sha256 = "8487b7995ad3b263eb73bc5b9a77d71aa69b6bef5d58a715c02d2663afd81f1a";
   };
 
-  # dist.py's portable CPython with numpy and lz4 (pyproject.toml: requires-python >= 3.14)
+  # dist.py uses the same pure Python wheel on Linux and Windows.
+  fonttoolsPin = (lib.importJSON ./windows-setup-inputs.json).fonttools;
+  fonttools = python314.pkgs.buildPythonPackage {
+    pname = "fonttools";
+    version = "4.68.0";
+    format = "wheel";
+    src = fetchurl fonttoolsPin;
+  };
+
   python = python314.withPackages (ps: [
+    fonttools
     ps.numpy
     ps.lz4
   ]);
@@ -122,6 +134,10 @@ stdenv.mkDerivation (finalAttrs: {
     ln -s ${lib.getExe zig} $setup/zig/zig
     ln -s ${zig}/lib/zig $setup/zig/lib
     ln -s ${lib.getBin shaderc}/bin/glslc $setup/glslc/bin/glslc
+    ln -s ${lib.getBin glslang}/bin/glslang $setup/glslc/bin/glslangValidator
+    ln -s ${lib.getBin spirv-cross}/bin/spirv-cross $setup/glslc/bin/spirv-cross
+    ln -s ${lib.getBin spirv-tools}/bin/spirv-opt $setup/glslc/bin/spirv-opt
+    ln -s ${lib.getBin spirv-tools}/bin/spirv-val $setup/glslc/bin/spirv-val
     ln -s ${lib.getLib shaderc}/lib/libshaderc_shared.so.1 $setup/glslc/lib/libshaderc_shared.so.1
 
     install -Dm644 LICENSE $out/share/licenses/mkw-recomp/LICENSE
