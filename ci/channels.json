@@ -786,6 +786,10 @@
       {
         "attribute": "packages.x86_64-linux.jellarr",
         "visibility": "public"
+      },
+      {
+        "attribute": "packages.x86_64-linux.ladybird",
+        "visibility": "public"
       }
     ],
     "aarch64-linux": [
