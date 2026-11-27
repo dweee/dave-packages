@@ -10,20 +10,15 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "codexbar-plasmoid";
-  version = "0.7.1-dave.2";
+  version = "0.7.1-dave.3";
 
   src = fetchFromGitHub {
     owner = "dweee";
     repo = "codexbar-plasmoid";
-    # main (0.7.1 + PR #2 googledeveloper provider)
-    rev = "44bc2609f3488a8ef21c2b8eaad1ded3759e68bc";
-    hash = "sha256-rUfQBM6VLkV1wDNNjDMVSBrCRUvzsMMhrbgvjjXfPMQ=";
+    # Overview quota presentation from the widget fork.
+    rev = "0a855c8443f073b1b6558a44bc1bad8b2e756f04";
+    hash = "sha256-CYLSNo9DSqPRbGx9WU62uEbKofZ6P4Ek/POM4/e+mGE=";
   };
-
-  patches = [
-    ./patches/summary-pace-markers.patch
-    ./patches/quota-presentation.patch
-  ];
 
   dontBuild = true;
 
