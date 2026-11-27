@@ -22,13 +22,13 @@
   openssl,
   zlib,
   src,
+  version,
   wiicompiled-translator,
 }:
 let
   setupUnwrapped = buildDotnetModule {
     pname = "wiicompiled-setup-unwrapped";
-    version = "0.9.4";
-    inherit src;
+    inherit src version;
     patches = [ ./portable-baseline.patch ];
     # Keep the automatic download of the key-bearing extractor out of setup.
     postPatch = ''
@@ -65,8 +65,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "wiicompiled-setup";
-  version = "0.9.4";
-  inherit src;
+  inherit src version;
   patches = [ ./portable-baseline.patch ];
 
   nativeBuildInputs = [ copyDesktopItems ];

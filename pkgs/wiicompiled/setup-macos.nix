@@ -6,6 +6,7 @@
   cmake,
   ninja,
   src,
+  version,
   wiicompiled-translator,
 }:
 let
@@ -13,8 +14,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "wiicompiled-setup";
-  version = "0.9.4";
-  inherit src;
+  inherit src version;
   patches = [ ./portable-baseline.patch ];
 
   dontConfigure = true;
