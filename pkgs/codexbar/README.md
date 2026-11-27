@@ -19,8 +19,8 @@ printf '%s' "$UNLID_API_KEY" | codexbar config set-api-key --provider unlid --st
 codexbar usage --provider unlid
 ```
 
-`codexbar-plasmoid` applies presentation patches to the pinned fork. The
-provider tabs and overview bars use the same expected-usage
+`codexbar-plasmoid` builds from the pinned widget fork. The provider tabs
+and Overview bars use the same expected-usage
 markers and pace colors as the detailed provider cards. They follow **Show
 pace**, **Work days**, and the used/remaining display setting. Tabs use the
 window behind their percentage, including the weekly fallback. Missing,
@@ -34,11 +34,12 @@ Cursor's lanes use the CLI's provider labels — **Total**, **Cursor**, and
 **Third Party** — in the card, overview, and quota notifications. Its unified
 weekly plan keeps the **Weekly** label.
 
-Antigravity's overview, tabs, and panel prefer Gemini's 5-hour and weekly
-quotas. Each cadence falls back to Claude/GPT when its Gemini reading is
-unavailable, with the overview label identifying the selected family. The
-**Lowest** panel mode compares these preferred windows. The detailed card
-continues to list both families.
+Overview lists the reported quota windows from the provider cards. It omits
+synthetic and unknown readings and keeps exhausted quotas visible. A weekly-only
+Codex plan shows only Weekly. Antigravity puts Gemini’s reported windows first
+in Overview and also lists the other model quotas. The tab and panel prefer
+Gemini, falling back per cadence to Claude/GPT. The **Lowest** panel mode
+compares those preferred windows.
 
 Build and run the packaged JavaScript checks with:
 
