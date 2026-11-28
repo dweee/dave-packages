@@ -87,17 +87,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1795373241,
-        "narHash": "sha256-Gd1+Oaj8nS+p1qLpKk4MGv/qGh62+lTkX4262e2UDgc=",
+        "lastModified": 1795747999,
+        "narHash": "sha256-VTPsIOYem/zQCO1QF3cpa4pLg2EoexjX5R1u3fs3L4k=",
         "owner": "nix-darwin",
         "repo": "nix-darwin",
-        "rev": "663d8b962a11cda261b6e9f14e03911fac94baf0",
+        "rev": "594c680c429be020d7130cc2b17d43c4760d17c7",
         "type": "github"
       },
       "original": {
         "owner": "nix-darwin",
         "repo": "nix-darwin",
-        "rev": "663d8b962a11cda261b6e9f14e03911fac94baf0",
+        "rev": "594c680c429be020d7130cc2b17d43c4760d17c7",
         "type": "github"
       }
     },
@@ -402,17 +402,17 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1795490834,
-        "narHash": "sha256-WaRPLB2uSyu+Gh1LFk6rn87BGdBwjVZ1p/+VRZFD8H8=",
+        "lastModified": 1795755537,
+        "narHash": "sha256-2AmxaVQ2h23upIdvIg16SvqndpXweTjy7Q2Osytijok=",
         "ref": "tested",
-        "rev": "bea841651333ca481313532cbe740e6c460a554d",
-        "revCount": 1626,
+        "rev": "5a717237a3862d86153108fad5f37e143b4f320f",
+        "revCount": 1787,
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "bea841651333ca481313532cbe740e6c460a554d",
+        "rev": "5a717237a3862d86153108fad5f37e143b4f320f",
         "type": "git",
         "url": "https://github.com/dweee/kopuz.git"
       }
@@ -507,17 +507,17 @@
     "mkw-recomp-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1795618252,
-        "narHash": "sha256-ZYiQoEExJgn3jbCu4fF4p1ynSzVGfk/27d/OrsF2Inc=",
+        "lastModified": 1795796617,
+        "narHash": "sha256-Jpw2D3XxeSLq5i8CfF5t9jAkuQE8JhmyBKQN48H0NrQ=",
         "owner": "adriadam10",
         "repo": "mkw-recomp",
-        "rev": "674af978c80be2c4d97533866a646425421926a7",
+        "rev": "f52012061eeb2fb79d10d451ea409492ab5f2459",
         "type": "github"
       },
       "original": {
         "owner": "adriadam10",
         "repo": "mkw-recomp",
-        "rev": "674af978c80be2c4d97533866a646425421926a7",
+        "rev": "f52012061eeb2fb79d10d451ea409492ab5f2459",
         "type": "github"
       }
     },
@@ -596,17 +596,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1795570543,
-        "narHash": "sha256-fzTG9H+M/Ct2qyiFHZAYOHb8n2G4CSCHf3tv1fCRYfg=",
+        "lastModified": 1795741760,
+        "narHash": "sha256-HlnL2pmxTSz/ql/1AGsHhiP5Rdj26QSsI4kcm6BxAMw=",
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "7c2981ca35651aa3aae60531a9c605a3750cc889",
+        "rev": "2294a3b7da84c589792b586e66d9989400977977",
         "type": "github"
       },
       "original": {
         "owner": "xddxdd",
         "repo": "nix-cachyos-kernel",
-        "rev": "7c2981ca35651aa3aae60531a9c605a3750cc889",
+        "rev": "2294a3b7da84c589792b586e66d9989400977977",
         "type": "github"
       }
     },
@@ -672,11 +672,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1795527036,
-        "narHash": "sha256-WZlzRIaJiOiJFIKEFydRWbX9380QxIaYRAAAf3Rl49w=",
+        "lastModified": 1795713569,
+        "narHash": "sha256-I0H06mgyqmKSDgT38iT09G4O5tmnCRiYhhQNNNgONg0=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "52a93865f031ba894c0d19121dda6b75c0f2b2b8",
+        "rev": "171cb8d3b7fb1dfee5d7d4e11db06bd42201653f",
         "type": "github"
       },
       "original": {
@@ -822,17 +822,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1795603929,
-        "narHash": "sha256-i7oraEJRh6RDinhcmKFWMHZp0dRqeNtpeGsPo9/rNp8=",
+        "lastModified": 1795752236,
+        "narHash": "sha256-4yAmijA79vANRLfTNAN6/FeSzHlYgVn6MWhvQ2+j+gg=",
         "ref": "tested",
-        "rev": "d7a0167d329b598b65a203351ab0184e92ab7bf0",
-        "revCount": 1222,
+        "rev": "6e30aac5b5e3ef6ea73215f875792cb4df0abd04",
+        "revCount": 1224,
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "d7a0167d329b598b65a203351ab0184e92ab7bf0",
+        "rev": "6e30aac5b5e3ef6ea73215f875792cb4df0abd04",
         "type": "git",
         "url": "https://github.com/dweee/paneru.git"
       }
@@ -910,17 +910,17 @@
     },
     "pumpkin-nixpkgs": {
       "locked": {
-        "lastModified": 1795617943,
-        "narHash": "sha256-lIi7+aBfh3M3ShAT/f/Q2UHpILbYYJnU5q4K2zAH2Y0=",
+        "lastModified": 1795823961,
+        "narHash": "sha256-hw2cWg7FxiVPFVOhVa8wO4qY19slcFRz9BlqPf+dk7w=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "35aae783da597ade51b29ffaac0db4e659a56702",
+        "rev": "469dbb90c30584d8953a11d8469c1000b2b0083e",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "35aae783da597ade51b29ffaac0db4e659a56702",
+        "rev": "469dbb90c30584d8953a11d8469c1000b2b0083e",
         "type": "github"
       }
     },
@@ -979,17 +979,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1795350617,
-        "narHash": "sha256-jYjLZXbN8mQVNxyLVsMMoXkm7rCS0GCmYTV43dU03lU=",
+        "lastModified": 1795748543,
+        "narHash": "sha256-oOYvT6jykQ91woX0cVDT3Y8/gfmRZ5R/9jX6KmY12fk=",
         "ref": "tested",
-        "rev": "9e4562e2150048b44f4b2d96d435a2b77f4f01a3",
-        "revCount": 119,
+        "rev": "b508c391bf59a83e63a50423cab8981322e32272",
+        "revCount": 121,
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "9e4562e2150048b44f4b2d96d435a2b77f4f01a3",
+        "rev": "b508c391bf59a83e63a50423cab8981322e32272",
         "type": "git",
         "url": "https://github.com/dweee/rekordbox-mcp.git"
       }
@@ -1081,17 +1081,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1795429968,
-        "narHash": "sha256-MJVmTxxAm87tT7yxH5BU8EnKGza32SQ2pqYsHWpJ1H4=",
+        "lastModified": 1795522582,
+        "narHash": "sha256-2UgrrjTeYt4UMmsjdcUjhxSnCGYOlzMuGuk7dRB5Kq4=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "ea2084066e0f3fed86a76a2654658ed2eb998046",
+        "rev": "639e209cc8eecd0c307fd95c8aabc011bf047c41",
         "type": "github"
       },
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "ea2084066e0f3fed86a76a2654658ed2eb998046",
+        "rev": "639e209cc8eecd0c307fd95c8aabc011bf047c41",
         "type": "github"
       }
     },
@@ -1102,17 +1102,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1795604585,
-        "narHash": "sha256-rsB/BPQf+Q9p7O7WhqtmG64b3F175ly7swafxWS1etM=",
+        "lastModified": 1795689650,
+        "narHash": "sha256-gvke5rg5P9S2TAXdOASCqEPc/OdvPKaHIGoMlbYLJ/E=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "67021b279bfffe654a0201ede805748a255ae5a7",
+        "rev": "8771c4aba509d6efb8bf376fd8cb657cce52b013",
         "type": "github"
       },
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "67021b279bfffe654a0201ede805748a255ae5a7",
+        "rev": "8771c4aba509d6efb8bf376fd8cb657cce52b013",
         "type": "github"
       }
     },
@@ -1123,18 +1123,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1795378583,
-        "narHash": "sha256-n06VesYSINQeJOijnd1TUKifVNBDwOECPl5VOvHysP4=",
+        "lastModified": 1795751380,
+        "narHash": "sha256-H9yHF+2P0mUFDqMhe4nc2OaVlV+4oCyu3KdCDJXE5Sc=",
         "ref": "tested",
-        "rev": "f79fee114e2fe66dfa180c346f8d1d195f13310b",
-        "revCount": 3753,
+        "rev": "0997c85512b7b561e41984ef220c02995310f02e",
+        "revCount": 3759,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "f79fee114e2fe66dfa180c346f8d1d195f13310b",
+        "rev": "0997c85512b7b561e41984ef220c02995310f02e",
         "submodules": true,
         "type": "git",
         "url": "https://github.com/dweee/schildi-revenge.git"
@@ -1208,17 +1208,17 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1795350610,
-        "narHash": "sha256-3F+H8xtGRjrj8PpRdziTOrnA3xG0P9W+mJxqRyoS5Eo=",
+        "lastModified": 1795750650,
+        "narHash": "sha256-u4LaH/qaMu4y9u14pl9IP46P4lvlaU9RJC6poaVywpA=",
         "ref": "tested",
-        "rev": "d247b03664254b787a5d478adcf8883da358dac9",
-        "revCount": 1827,
+        "rev": "4e49d5f549ee2112b39eb15d1d7a07596d98d796",
+        "revCount": 1829,
         "type": "git",
         "url": "https://github.com/dweee/tabrix.git"
       },
       "original": {
         "ref": "tested",
-        "rev": "d247b03664254b787a5d478adcf8883da358dac9",
+        "rev": "4e49d5f549ee2112b39eb15d1d7a07596d98d796",
         "type": "git",
         "url": "https://github.com/dweee/tabrix.git"
       }
@@ -1311,18 +1311,18 @@
     "wiicompiled": {
       "flake": false,
       "locked": {
-        "lastModified": 1795436188,
-        "narHash": "sha256-Q5cMReAu1sZ27NYIegWeW1/IfW7cbmcDg2QAuv9Xn8Y=",
+        "lastModified": 1795643702,
+        "narHash": "sha256-wf/pK9bHMx2uer+2RvuVbUpRQJ5/8HfpmOwoAPCecuQ=",
         "ref": "main",
-        "rev": "6e41ad0495e9bb6e7c85817392ffc9a6711c38f9",
-        "revCount": 237,
+        "rev": "47219444676a1d1afba7c35d43f6513e18df4e84",
+        "revCount": 238,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/patchzyy/Wiicompiled.git"
       },
       "original": {
         "ref": "main",
-        "rev": "6e41ad0495e9bb6e7c85817392ffc9a6711c38f9",
+        "rev": "47219444676a1d1afba7c35d43f6513e18df4e84",
         "submodules": true,
         "type": "git",
         "url": "https://github.com/patchzyy/Wiicompiled.git"
