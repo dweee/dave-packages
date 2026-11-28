@@ -43,7 +43,7 @@
   },
   "kopuz": {
     "repository": "https://github.com/dweee/kopuz",
-    "revision": "5a717237a3862d86153108fad5f37e143b4f320f",
+    "revision": "5774303ca54c503dc692ab6ffafc18a1955fa81b",
     "branch": "flakey",
     "packages": [
       "kopuz"
