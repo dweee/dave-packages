@@ -17,7 +17,12 @@ def matrix(family, selected="all"):
     owners = {package: info["repository"] for info in forks.values() for package in info["packages"]}
     if selected in owners:
         raise ValueError("Package CI belongs to its application fork: " + owners[selected])
-    inventory = {system: [package for package in packages if package not in owners]
+    policy_file = nix_dir.parent / "ci" / "channels.json"
+    paused = set(json.loads(policy_file.read_text()).get("pausedPackages", [])) if policy_file.exists() else set()
+    if selected in paused:
+        raise ValueError("Package CI is paused: " + selected)
+    excluded = owners.keys() | paused
+    inventory = {system: [package for package in packages if package not in excluded]
                  for system, packages in inventory.items()}
     runners = {"aarch64-darwin": "macos-15", "x86_64-linux": "ubuntu-24.04",
                "aarch64-linux": "ubuntu-24.04-arm"}

@@ -495,6 +495,14 @@ class PublishedMetadataGate(unittest.TestCase):
 
 
 class NativeCheckSelection(unittest.TestCase):
+    def test_horizon_pause_covers_package_checks_and_linux_server_fixture(self):
+        rules = c.policy()
+        checks = ['horizon', 'horizon-server', 'horizon-server-module',
+                  'horizon-darwin-module', 'real-test']
+        self.assertEqual(c.paused_native_checks(rules, checks),
+                         {'horizon', 'horizon-server', 'horizon-server-module'})
+        self.assertEqual(c.paused_native_checks({}, checks), set())
+
     def test_checks_reusing_inventory_outputs_are_skipped(self):
         outputs = {'hello': [A], 'multi': [A, B], 'real-test': ['/nix/store/' + 'c'*32 + '-test']}
         self.assertEqual(c.distinct_checks(outputs, [A]), ['multi', 'real-test'])

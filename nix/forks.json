@@ -1,7 +1,7 @@
 {
   "paneru": {
     "repository": "https://github.com/dweee/paneru",
-    "revision": "b55832adfeb6705e2e0ccd2259793c214d60befa",
+    "revision": "d7a0167d329b598b65a203351ab0184e92ab7bf0",
     "branch": "flakey",
     "packages": [
       "paneru",
@@ -12,7 +12,7 @@
   },
   "tabrix": {
     "repository": "https://github.com/dweee/tabrix",
-    "revision": "78d2b633385355547c869b6ced8b1e99b039012e",
+    "revision": "d247b03664254b787a5d478adcf8883da358dac9",
     "branch": "flakey",
     "packages": [
       "tabrix",
@@ -23,7 +23,7 @@
   },
   "rekordbox-mcp": {
     "repository": "https://github.com/dweee/rekordbox-mcp",
-    "revision": "429a2cf0409c37e1b5c75f1b0ac0159236fd6cf3",
+    "revision": "9e4562e2150048b44f4b2d96d435a2b77f4f01a3",
     "branch": "flakey",
     "packages": [
       "rekordbox-mcp"
@@ -33,7 +33,7 @@
   },
   "schildi-revenge": {
     "repository": "https://github.com/dweee/schildi-revenge",
-    "revision": "019b74e8fc9339f314d8ef7797468e5447914c76",
+    "revision": "f79fee114e2fe66dfa180c346f8d1d195f13310b",
     "branch": "flakey",
     "packages": [
       "schildi-revenge"
@@ -43,7 +43,7 @@
   },
   "kopuz": {
     "repository": "https://github.com/dweee/kopuz",
-    "revision": "037279521417aba9d1d672e7f6623d947a577ebd",
+    "revision": "bea841651333ca481313532cbe740e6c460a554d",
     "branch": "flakey",
     "packages": [
       "kopuz"

@@ -13,6 +13,11 @@ pin commits, changed PR heads, active checks and ambiguous routine PRs stop an
 update. It never force-pushes, closes another PR, enables auto-merge or changes
 repository protections. Native build/check/cache/channel gates remain required.
 
+Horizon updates are paused while the upstream repository and release downloads
+are unavailable. The existing recipes and pins are still available to consumers.
+The catalog excludes Horizon from native CI and tested-channel coverage during
+the pause. See `pausedPackages` in `ci/channels.json`.
+
 Current package handlers:
 
 - `geoip`: the newest stable dated releases for Byparr's exact ZIP asset and
@@ -24,11 +29,6 @@ Current package handlers:
   while its ancestry already on the canonical base permits the next update.
   Upstream can still delete older releases: this is regular refresh, not a
   permanent-retention guarantee.
-- `horizon`: stable dated Nightly, rolling Nightly, main source and launcher semver;
-  one frozen API/raw snapshot, Nix-generated source/vendor hashes, official asset
-  checksums and the mixins revision from the selected new launcher. Unsupported
-  binary platform pairs remain absent. Nightly expiry still requires regular updates.
-
 - `lightning`: the newest stable `Mizerd/lightning` release, its exact peeled
   tag commit and Nix-generated source NAR hash. Release/source versions must
   agree; downgrades and moved release tags require review. The small Qt 6

@@ -1,4 +1,20 @@
 final: prev: {
+  # 1.4.44 calls the Wayland macro even when GTK uses the Quartz backend.
+  remmina = prev.remmina.overrideAttrs (
+    old:
+    prev.lib.optionalAttrs (old.version == "1.4.44") {
+      postPatch = (old.postPatch or "") + ''
+        wayland_macro='#define IS_WAYLAND(widget) (GDK_IS_WAYLAND_DISPLAY(gtk_widget_get_display(GTK_WIDGET(widget))))'
+        substituteInPlace src/rcw.c --replace-fail "$wayland_macro" \
+          "#ifdef GDK_WINDOWING_WAYLAND
+        $wayland_macro
+        #else
+        #define IS_WAYLAND(widget) FALSE
+        #endif"
+      '';
+    }
+  );
+
   # LLVM's Darwin strip mistakes the ICO header for COFF and expands this
   # 19 KiB resource to 771 MiB. Same exclusion as nixpkgs PR #299480.
   # Spicetify inherits this attribute when overriding the base package.
@@ -46,8 +62,10 @@ final: prev: {
     nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.removeReferencesTo ];
     postFixup = (old.postFixup or "") + ''
       find "$out" -name librustdesk.so -type f | while IFS= read -r so; do
-        grep -aoE "$NIX_STORE/[a-z0-9]{32}-(rustc|gcc)-[0-9.]+(-lib)?" "$so" | sort -u \
-          | grep -vE -- '-lib$' | while IFS= read -r ref; do
+        # grep exits 1 when the library contains no compiler references.
+        { grep -aoE "$NIX_STORE/[a-z0-9]{32}-(rustc|gcc)-[0-9.]+(-lib)?" "$so" || test "$?" -eq 1; } \
+          | sort -u | while IFS= read -r ref; do
+            case "$ref" in *-lib) continue ;; esac
             remove-references-to -t "$ref" "$so"
           done
       done

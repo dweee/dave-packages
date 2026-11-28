@@ -279,6 +279,11 @@ def policy():
         owners = ({p for entry in json.loads(owners_file.read_text()).values() for p in entry['packages']}
                   if owners_file.exists() and not value.get('integrationInventory') else set())
         expected = {'packages.'+s+'.'+p for s, ps in inventory.items() for p in ps if p not in owners}
+        paused = set(value.get('pausedPackages', []))
+        paused_targets = {target for target in expected if target.rsplit('.', 1)[-1] in paused}
+        if paused != {target.rsplit('.', 1)[-1] for target in paused_targets}:
+            raise ValueError('Paused packages must belong to the catalog native inventory')
+        expected -= paused_targets
         build_only_file = ROOT / 'nix/build-only-packages.json'
         if build_only_file.exists():
             build_only = {'packages.'+s+'.'+p for s, ps in json.loads(build_only_file.read_text()).items() for p in ps}
@@ -688,6 +693,15 @@ def distinct_checks(check_outputs, roots):
     """
     built = set(roots)
     return sorted(name for name, paths in check_outputs.items() if not set(paths) <= built)
+
+
+def paused_native_checks(rules, checks):
+    """Apply the catalog pause to package checks and the server integration build."""
+    paused = set(rules.get('pausedPackages', []))
+    if 'horizon-server' in paused:
+        # The NixOS fixture's system closure includes the Horizon server.
+        paused.add('horizon-server-module')
+    return paused.intersection(checks)
 
 
 def audit(rules, sha, system, record, env, flake=None, expression=None):
@@ -1303,10 +1317,13 @@ def build(system):
         check_outputs = native_check_outputs(flake, system, env)
         if set(check_outputs) != set(checks):
             raise ValueError('Native check inventory changed during evaluation')
-        distinct = distinct_checks(check_outputs, roots)
-        print(f'Building {len(distinct)} of {len(checks)} native checks; the other '
-              f'{len(checks) - len(distinct)} are inventory outputs already built and published', flush=True)
-        progress(f'checks 0/{len(distinct)} ({len(checks) - len(distinct)} are inventory outputs)', force=True)
+        paused = paused_native_checks(rules, checks)
+        active_outputs = {name: paths for name, paths in check_outputs.items() if name not in paused}
+        distinct = distinct_checks(active_outputs, roots)
+        covered = len(active_outputs) - len(distinct)
+        print(f'Building {len(distinct)} of {len(checks)} native checks; '
+              f'{len(paused)} paused, {covered} covered by published inventory outputs', flush=True)
+        progress(f'checks 0/{len(distinct)} ({covered} are inventory outputs)', force=True)
         for number, name in enumerate(distinct, 1):
             native_build_ready(rules, system, env)
             progress(f'checks {number}/{len(distinct)} ' + name, force=number == len(distinct))
