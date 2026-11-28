@@ -208,6 +208,10 @@
         "visibility": "public"
       },
       {
+        "attribute": "packages.aarch64-darwin.remmina",
+        "visibility": "public"
+      },
+      {
         "attribute": "packages.aarch64-darwin.sable-desktop-legacy",
         "visibility": "public"
       },
