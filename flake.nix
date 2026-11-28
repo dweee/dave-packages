@@ -5,7 +5,7 @@
       url = "github:ggml-org/llama.cpp/29b52d398b294509746ec0a3f28948a3107c0213";
       flake = false;
     };
-    nixpkgs.url = "github:nixos/nixpkgs/2786a2a72088ecf32aea5b3ec52099e6a7cff78f";
+    nixpkgs.url = "github:nixos/nixpkgs/58d0d3e9d527ca7263be6a45d1f86eacdc700dab";
     nix-zed-extensions = {
       url = "github:SwornSystems/nix-zed-extensions/0ca9e9c917b649b074080fec0247c00ee77dd3cd";
       flake = false;
@@ -56,10 +56,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     rust-overlay = {
-      url = "github:oxalica/rust-overlay/67021b279bfffe654a0201ede805748a255ae5a7";
+      url = "github:oxalica/rust-overlay/f88aa8dea8f4136a0897fd7baddb3a07481f29f6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/35aae783da597ade51b29ffaac0db4e659a56702";
+    pumpkin-nixpkgs.url = "github:NixOS/nixpkgs/50f77b992c17416658da7676adf072058a7ad0be";
     audio = {
       url = "github:polygon/audio.nix/3da0962c21f0de2559fb5185a9fd4e10fc9ae326";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -68,26 +68,26 @@
       url = "github:nix-community/nixos-avf/d0a62c3f64b45a39570fde31a3a490b214bf19ee";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/7c2981ca35651aa3aae60531a9c605a3750cc889";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/a7007e69122c80d09252224b19cc5ad466627217";
     darwin = {
-      url = "github:nix-darwin/nix-darwin/663d8b962a11cda261b6e9f14e03911fac94baf0";
+      url = "github:nix-darwin/nix-darwin/594c680c429be020d7130cc2b17d43c4760d17c7";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kopuz = {
-      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=bea841651333ca481313532cbe740e6c460a554d";
+      url = "git+https://github.com/dweee/kopuz.git?ref=tested&rev=5774303ca54c503dc692ab6ffafc18a1955fa81b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     paneru = {
-      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=d7a0167d329b598b65a203351ab0184e92ab7bf0";
+      url = "git+https://github.com/dweee/paneru.git?ref=tested&rev=6e30aac5b5e3ef6ea73215f875792cb4df0abd04";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.nix-darwin.follows = "darwin";
     };
     # Match the standalone native workflow instead of overriding its toolchain.
     tabrix = {
-      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=d247b03664254b787a5d478adcf8883da358dac9";
+      url = "git+https://github.com/dweee/tabrix.git?ref=tested&rev=4e49d5f549ee2112b39eb15d1d7a07596d98d796";
     };
     rekordbox-mcp = {
-      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=9e4562e2150048b44f4b2d96d435a2b77f4f01a3";
+      url = "git+https://github.com/dweee/rekordbox-mcp.git?ref=tested&rev=b508c391bf59a83e63a50423cab8981322e32272";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kuna-src = {
@@ -95,7 +95,7 @@
       flake = false;
     };
     schildi-revenge = {
-      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=f79fee114e2fe66dfa180c346f8d1d195f13310b&submodules=1";
+      url = "git+https://github.com/dweee/schildi-revenge.git?ref=tested&rev=0997c85512b7b561e41984ef220c02995310f02e&submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     slskd-mcp = {
@@ -116,7 +116,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wiicompiled = {
-      url = "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&rev=6e41ad0495e9bb6e7c85817392ffc9a6711c38f9&submodules=1";
+      url = "git+https://github.com/patchzyy/Wiicompiled.git?ref=main&rev=8ad99be22fd8fb4b6262a92afe1f6451b54632b1&submodules=1";
       flake = false;
     };
     hookshot-src = {
@@ -124,7 +124,7 @@
       flake = false;
     };
     mkw-recomp-src = {
-      url = "github:adriadam10/mkw-recomp/674af978c80be2c4d97533866a646425421926a7";
+      url = "github:adriadam10/mkw-recomp/a808ce226c30544f4e1b70be86075de67aa27352";
       flake = false;
     };
     # Swift and SwiftPM 6.2.4+ are required by Pared.
