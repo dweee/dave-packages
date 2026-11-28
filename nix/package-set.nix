@@ -35,6 +35,7 @@ let
     )
     + "-${inputs.mkw-recomp-src.shortRev}";
   definitions = {
+    inherit (fixes) remmina;
     llama-cpp-inkling = import ../pkgs/llama-cpp-inkling {
       pkgs = prev;
       upstream = inputs.llama-cpp-inkling;
