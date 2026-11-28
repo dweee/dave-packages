@@ -275,6 +275,9 @@
             openjdk25 = (pkgsFor system).jdk21;
           };
         }
+        // nixpkgs.lib.optionalAttrs (self.packages.${system} ? ladybird) {
+          ladybird-sandbox-fontconfig = self.packages.${system}.ladybird.tests.sandbox-fontconfig;
+        }
         // nixpkgs.lib.optionalAttrs (self.packages.${system} ? hookshot) {
           hookshot-prerequisites = (pkgsFor system).callPackage ./pkgs/hookshot/checks.nix { };
         }
